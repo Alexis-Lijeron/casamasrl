@@ -1,0 +1,18 @@
+<!-- Footer Start -->
+<footer class="footer">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-6">
+                2025 &copy; Tecnología Web</a>
+            </div>
+            <div class="col-md-6">
+                <div class="text-md-right footer-links d-none d-sm-block">
+                    <a href="#">Sobre nosotros</a>
+                    <a href="#">Ayuda</a>
+                    <a href="#">Contáctanos</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</footer>
+<!-- end Footer -->
