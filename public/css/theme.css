@@ -1,0 +1,218 @@
+/* 🎨 Tema Base (Predeterminado) */
+:root {
+    --bg-primary: #f4f4f4;
+    --text-primary: #333;
+    --accent-color: #3498db;
+    --menu-bg: #2c3e50;
+    --menu-text: #ecf0f1;
+    --menu-hover: #34495e;
+    --content-bg: #ffffff;
+    --content-shadow: rgba(0, 0, 0, 0.1);
+}
+
+/* 🧸 Tema Niños */
+.theme-children {
+    /* Softer, more playful color palette */
+    --bg-primary: #FFF3E0;  /* Soft cream background */
+    --text-primary: #2C3E50;  /* Dark blue-gray for better readability */
+    --accent-color: #FF6B6B;  /* Softer, friendlier red */
+    --menu-bg: #FFD54F;  /* Warm, sunny yellow */
+    --menu-text: #333;  /* Dark gray for better contrast */
+    --menu-hover: #FFCA28;  /* Lighter yellow on hover */
+    --font-size-base: 16px;
+    --font-family: 'Nunito', 'Comic Sans MS', cursive;  /* More readable, playful font */
+    --content-bg: #FFFFFF;  /* Clean white content area */
+    --content-shadow: rgba(255, 109, 0, 0.15);  /* Soft, warm shadow */
+
+    /* Additional child-friendly adjustments */
+    line-height: 1.6;
+    letter-spacing: 0.5px;
+}
+
+/* 🎧 Tema Jóvenes */
+.theme-youth {
+    /* More vibrant, modern color scheme */
+    --bg-primary: #F0F4F8;  /* Soft blue-gray background */
+    --text-primary: #1F2937;  /* Deep charcoal for readability */
+    --accent-color: #3B82F6;  /* Bright, modern blue */
+    --menu-bg: #4338CA;  /* Deep indigo for menu */
+    --menu-text: #F9FAFB;  /* Light gray text for contrast */
+    --menu-hover: #6366F1;  /* Bright indigo on hover */
+    --font-size-base: 18px;
+    --font-family: 'Inter', 'Arial', sans-serif;  /* Modern, clean font */
+    --content-bg: #FFFFFF;  /* Clean white content area */
+    --content-shadow: rgba(59, 130, 246, 0.15);  /* Soft blue shadow */
+
+    /* Enhanced readability and modern feel */
+    line-height: 1.7;
+    letter-spacing: 0.3px;
+}
+
+/* 👨‍💼 Tema Adultos */
+.theme-adults {
+    --bg-primary: #f5f5f5;
+    --text-primary: #000;
+    --accent-color: #4caf50;
+    --menu-bg: #2e7d32;
+    --menu-text: #ffffff;
+    --menu-hover: #1b5e20;
+    --font-size-base: 22px;
+    --font-family: 'Roboto', serif;
+    --content-bg: #c8e6c9;
+    --content-shadow: rgba(76, 175, 80, 0.2);
+}
+
+/* 🌙 Tema Nocturno */
+.theme-night {
+    --bg-primary: #121212;
+    --text-primary: #e0e0e0;
+    --accent-color: #bb86fc;
+    --menu-bg: #1c1c1c;
+    --menu-text: #ffffff;
+    --menu-hover: #333;
+    --font-size-base: 18px;
+    --font-family: 'Poppins', sans-serif;
+    --content-bg: #333;
+    --content-shadow: rgba(187, 134, 252, 0.2);
+}
+
+/* 🖥️ Estilos Generales */
+body {
+    background-color: var(--bg-primary);
+    color: var(--text-primary);
+    font-family: var(--font-family, 'Arial', sans-serif);
+    font-size: var(--font-size-base, 16px);
+    transition: all 0.3s ease;
+}
+
+/* 📦 Contenedor del Contenido */
+.container, main {
+    background-color: var(--content-bg);
+    color: var(--text-primary);
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 6px var(--content-shadow);
+    transition: all 0.3s ease;
+}
+
+/* 📜 Barra Lateral */
+.sidebar {
+    width: 250px;
+    background-color: var(--menu-bg);
+    color: var(--menu-text);
+    transition: all 0.3s ease;
+    padding: 15px;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+.sidebar.collapsed {
+    width: 70px;
+    padding: 15px 5px;
+}
+
+.sidebar.collapsed .nav-link span,
+.sidebar.collapsed .btn-text {
+    display: none;
+}
+
+/* Ajustar los iconos al centro */
+.sidebar.collapsed .nav-link i {
+    width: 100%;
+    text-align: center;
+    font-size: 18px;
+}
+
+/* Ajustar botón de cerrar sesión */
+.sidebar.collapsed .logout-btn {
+    display: flex;
+    justify-content: center;
+}
+
+/* Estilos de los enlaces del menú */
+.sidebar .nav-link {
+    color: var(--menu-text);
+    padding: 10px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    transition: background-color 0.3s ease;
+    border-radius: 5px;
+}
+
+.sidebar .nav-link i {
+    font-size: 18px;
+    min-width: 24px;
+    text-align: center;
+}
+
+.sidebar .nav-link:hover {
+    background-color: var(--menu-hover);
+
+}
+
+/* 🎭 Botón de Cerrar Sesión */
+.sidebar .logout-btn {
+    background-color: var(--accent-color);
+    color: white;
+    border: none;
+    padding: 10px;
+    width: 100%;
+    border-radius: 5px;
+    transition: background-color 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+}
+
+.sidebar button:hover {
+    background-color: darken(var(--accent-color), 10%);
+}
+
+/* 🎨 Dropdown Selector de Temas */
+.dropdown-menu {
+    background-color: var(--menu-bg);
+    border: none;
+}
+
+.dropdown-item {
+    color: var(--menu-text);
+    transition: background-color 0.3s ease;
+}
+
+.dropdown-item:hover {
+    background-color: var(--menu-hover);
+    border-radius: 5px;
+}
+
+/* Additional enhancements for both themes */
+.theme-children .sidebar,
+.theme-youth .sidebar {
+    border-radius: 15px;  /* Softer sidebar edges */
+    margin: 10px;  /* Add some breathing room */
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);  /* Subtle elevation */
+}
+
+.theme-children .nav-link,
+.theme-youth .nav-link {
+    transition: all 0.25s ease;
+    transform: scale(1);
+}
+
+.theme-children .nav-link:hover,
+.theme-youth .nav-link:hover {
+    transform: scale(1.05);  /* Subtle hover effect */
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+/* Responsive typography and spacing */
+@media (max-width: 768px) {
+    .theme-children,
+    .theme-youth {
+        --font-size-base: 14px;  /* Smaller font on mobile */
+    }
+}
