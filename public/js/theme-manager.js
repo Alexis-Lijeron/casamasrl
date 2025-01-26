@@ -51,6 +51,17 @@ document.addEventListener('DOMContentLoaded', () => {
             this.toggleBtn.addEventListener('click', () => {
                 this.sidebar.classList.toggle('collapsed');
                 this.saveSidebarState();
+
+                // Optional: Focus management
+                if (this.sidebar.classList.contains('collapsed')) {
+                    document.querySelectorAll('.sidebar .menu-title').forEach(el => {
+                        el.style.display = 'none';
+                    });
+                } else {
+                    document.querySelectorAll('.sidebar .menu-title').forEach(el => {
+                        el.style.display = 'block';
+                    });
+                }
             });
         },
 
@@ -98,7 +109,33 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
 
+    // Submenu Management
+    const submenuManager = {
+        init() {
+            // Close submenus when clicking outside
+            document.addEventListener('click', (event) => {
+                const dropdownItems = document.querySelectorAll('.sidebar .nav-item.dropdown');
+                dropdownItems.forEach(item => {
+                    if (!item.contains(event.target)) {
+                        item.classList.remove('open');
+                    }
+                });
+            });
+
+            // Toggle dropdown on click
+            const dropdownToggles = document.querySelectorAll('.sidebar .nav-link.dropdown-toggle');
+            dropdownToggles.forEach(toggle => {
+                toggle.addEventListener('click', (event) => {
+                    event.preventDefault();
+                    const parentItem = toggle.closest('.nav-item.dropdown');
+                    parentItem.classList.toggle('open');
+                });
+            });
+        }
+    };
+
     // Initialize all managers
+    submenuManager.init();
     themeManager.init();
     sidebarManager.init();
     userInteractionTracker.init();
