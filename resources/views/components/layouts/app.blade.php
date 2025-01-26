@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Farmacia Alicia</title>
+    <title>CASAMA SRL</title>
 
     <!-- Favicon -->
     <link rel="shortcut icon" href="{{ asset('assets/images/farmacia.ico') }}" type="image/x-icon"/>
@@ -97,4 +97,8 @@
 
     @stack('js')
 </body>
+<footer class="text-center mt-4">
+    <p>Esta página ha sido visitada {{ $visitCount ?? 0 }} veces.</p>
+</footer>
+
 </html>

@@ -18,6 +18,9 @@ use App\Http\Controllers\RolController;
 use App\Http\Controllers\UsuarioController;
 use App\Http\Controllers\VentaController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\PageController;
+
+Route::get('/mi-pagina', [PageController::class, 'show'])->name('mi-pagina');
 
 
 Route::controller(AuthController::class)->group(function () {
