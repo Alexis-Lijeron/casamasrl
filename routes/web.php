@@ -21,11 +21,18 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\PageController;
 
 Route::get('/mi-pagina', [PageController::class, 'show'])->name('mi-pagina');
+// Ruta para el landing page
+Route::get('/', function () {
+    return view('welcome');
+});
 
+Route::get('/login', function () {
+    return view('auth.login');
+})->name('login');
 
 Route::controller(AuthController::class)->group(function () {
-    Route::get('/', 'index')->name('auth.index');
-    Route::post('/', 'login')->name('auth.login');
+    Route::get('/login', 'index')->name('auth.index');
+    Route::post('/login', 'login')->name('auth.login');
     Route::post('/logout', 'logout')->name('auth.logout');
 });
 
