@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200">
+  <!-- Milk Bottle Shape -->
+  <path d="M50 60 Q100 30 150 60 L150 160 Q100 190 50 160 Z" fill="#F0F8FF" stroke="#4682B4" stroke-width="5"/>
+  
+  <!-- Milk Drop -->
+  <path d="M80 40 Q100 20 120 40 Q140 60 120 80 Q100 100 80 80 Z" fill="#FFFFFF" stroke="#87CEEB" stroke-width="3"/>
+  
+  <!-- Milk Cap -->
+  <rect x="50" y="50" width="100" height="20" rx="10" ry="10" fill="#4682B4"/>
+  
+  <!-- Leaf Accent -->
+  <path d="M130 140 Q140 130 150 140 Q160 150 150 160 Q140 170 130 160 Z" fill="#90EE90" stroke="#3CB371" stroke-width="2"/>
+  
+  <!-- Text -->
+  <text x="100" y="190" text-anchor="middle" font-family="Arial, sans-serif" font-size="20" font-weight="bold" fill="#4682B4">
+    Lácteos
+  </text>
+</svg>

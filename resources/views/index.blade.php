@@ -8,11 +8,11 @@
 
                         <div class="text-center w-75 m-auto">
                             <a href="">
-                                <span><img src="{{ asset('assets/images/farmacia.png') }}" alt="" height="150"></span>
+                                <span><img src="{{ asset('/images/lego.jpg') }}" alt="" height="150"></span>
                             </a>
                             <h2 class="mb-4 mt-2 text-uppercase font-weight-bold"
-                                style="color: #1A1A1A; user-select: none;">
-                                <span style="color: #780001">Farmacia</span> Alicia
+                                style="color: #1a1a1a; user-select: none;">
+                                <span style="color: #1f3fe1">CASAMA</span> SRL
                             </h2>
                         </div>
 
@@ -66,44 +66,7 @@
 
 
     @push('js')
-    {{-- <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            const loginForm = document.getElementById('loginForm');
 
-            loginForm.addEventListener('submit', function (event) {
-                event.preventDefault();
-
-                const email = loginForm.querySelector('[name="email"]').value;
-                const password = loginForm.querySelector('[name="password"]').value;
-
-                const url = "{{ env('URL_SERVER_API') }}" + "/login";
-    const data = { email, password }; // Datos a enviar en la solicitud
-
-    fetch(url, {
-    method: 'POST',
-    headers: {
-    'Content-Type': 'application/json',
-    },
-    body: JSON.stringify(data),
-    })
-    .then(response => {
-    if (!response.ok) {
-    throw new Error('Error de autenticación');
-    }
-    return response.json();
-    })
-    .then(data => {
-    const token = data.token;
-    localStorage.setItem('token', token);
-
-    window.location.href = '/dashboard';
-    })
-    .catch(error => {
-    console.error('Error de autenticación:', error);
-    });
-    });
-    });
-    </script> --}}
 
     @endpush
 

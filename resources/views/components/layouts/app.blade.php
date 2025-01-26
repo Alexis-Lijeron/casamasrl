@@ -6,7 +6,7 @@
     <title>CASAMA SRL</title>
 
     <!-- Favicon -->
-    <link rel="shortcut icon" href="{{ asset('assets/images/farmacia.ico') }}" type="image/x-icon"/>
+    <link rel="shortcut icon" href="{{ asset('/images/lego.jpg') }}" type="image/x-icon"/>
 
     <!-- Custom Theme CSS -->
     <link href="{{ asset('css/theme.css') }}" rel="stylesheet" type="text/css">
