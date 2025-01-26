@@ -4,7 +4,6 @@
         <div class="row justify-content-center">
             <div class="col-md-8 col-lg-6 col-xl-5">
                 <div class="card">
-
                     <div class="card-body p-4">
 
                         <div class="text-center w-75 m-auto">
@@ -12,20 +11,23 @@
                                 <span><img src="{{ asset('assets/images/farmacia.png') }}" alt="" height="150"></span>
                             </a>
                             <h2 class="mb-4 mt-2 text-uppercase font-weight-bold"
-                                style="color: #1A1A1A; user-select: none;"><span style="color: #780001">Farmacia</span>
-                                Alicia</h2>
+                                style="color: #1A1A1A; user-select: none;">
+                                <span style="color: #780001">Farmacia</span> Alicia
+                            </h2>
                         </div>
 
                         <h5 class="auth-title">Iniciar Sesión</h5>
 
+                        {{-- Mostrar mensajes de bloqueo o errores --}}
                         @if(session('error'))
                         <div class="alert alert-danger">{{ session('error') }}</div>
                         @endif
-                        
+
                         @error('login_invalid')
                         <div class="alert alert-danger">{{ $message }}</div>
                         @enderror
-                        <form method="POST" action="">
+
+                        <form method="POST" action="{{ route('auth.login') }}">
                             @csrf
                             <div class="form-group mb-3">
                                 <label for="email">Correo Electrónico:</label>
@@ -47,7 +49,7 @@
 
                             <div class="form-group">
                                 <div class="col-12 text-right">
-                                    <p> <a href="#" class="text-muted ml-1">¿Olvidaste tu contraseña?</a></p>
+                                    <p><a href="#" class="text-muted ml-1">¿Olvidaste tu contraseña?</a></p>
                                 </div>
                             </div>
 
@@ -56,13 +58,10 @@
                             </div>
 
                         </form>
-
                     </div>
                 </div>
-
             </div>
         </div>
-
     </div>
 
 
@@ -78,32 +77,32 @@
                 const password = loginForm.querySelector('[name="password"]').value;
 
                 const url = "{{ env('URL_SERVER_API') }}" + "/login";
-                const data = { email, password }; // Datos a enviar en la solicitud
+    const data = { email, password }; // Datos a enviar en la solicitud
 
-                fetch(url, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify(data),
-                })
-                .then(response => {
-                    if (!response.ok) {
-                        throw new Error('Error de autenticación');
-                    }
-                    return response.json();
-                })
-                .then(data => {
-                    const token = data.token;
-                    localStorage.setItem('token', token);
+    fetch(url, {
+    method: 'POST',
+    headers: {
+    'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(data),
+    })
+    .then(response => {
+    if (!response.ok) {
+    throw new Error('Error de autenticación');
+    }
+    return response.json();
+    })
+    .then(data => {
+    const token = data.token;
+    localStorage.setItem('token', token);
 
-                    window.location.href = '/dashboard';
-                })
-                .catch(error => {
-                    console.error('Error de autenticación:', error);
-                });
-            });
-        });
+    window.location.href = '/dashboard';
+    })
+    .catch(error => {
+    console.error('Error de autenticación:', error);
+    });
+    });
+    });
     </script> --}}
 
     @endpush
