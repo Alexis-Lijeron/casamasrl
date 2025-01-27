@@ -199,5 +199,12 @@ Route::get('/report', [EmailController::class, 'report'])->name('report.index');
 Route::post('/report/send_report', [EmailController::class, 'sendReport'])->name('report.sendReport');
 Route::get('/search', [SearchController::class, 'search'])->name('search');
 
-// En routes/web.php
-Route::resource('promociones', PromocionController::class);
+Route::controller(PromocionController::class)->group(function () {
+    Route::get('/promociones', 'index')->name('promociones.index');
+    Route::get('/promociones/create', 'create')->name('promociones.create');
+    Route::get('/promociones/edit/{promocion}', 'edit')->name('promociones.edit');
+    Route::get('/promociones/show/{promocion}', 'show')->name('promociones.show');
+    Route::post('/promociones', 'store')->name('promociones.store');
+    Route::put('/promociones/update/{promocion}', 'update')->name('promociones.update');
+    Route::post('/promociones/delete/{promocion}', 'destroy')->name('promociones.delete');
+});

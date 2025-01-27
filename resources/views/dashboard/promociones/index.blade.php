@@ -49,7 +49,7 @@
                                                 <i class="fas fa-edit"></i>
                                             </a>
                                             <form id="formDeletePromocion_{{ $promocion->id }}"
-                                                  action="{{ route('promociones.destroy', $promocion->id) }}"
+                                                  action="{{ route('promociones.delete', $promocion->id) }}"
                                                   method="POST">
                                                 @csrf
                                                 @method('DELETE')
