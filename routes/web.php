@@ -21,6 +21,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\SearchController;
 use App\Http\Controllers\AjusteInventarioController;
 use App\Http\Controllers\EmailController;
+use App\Http\Controllers\PromocionController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -197,3 +198,6 @@ Route::controller(ReporteController::class)->group(function () {
 Route::get('/report', [EmailController::class, 'report'])->name('report.index');
 Route::post('/report/send_report', [EmailController::class, 'sendReport'])->name('report.sendReport');
 Route::get('/search', [SearchController::class, 'search'])->name('search');
+
+// En routes/web.php
+Route::resource('promociones', PromocionController::class);
