@@ -74,7 +74,7 @@
             </a>
             <ul class="nav-second-level">
                 <li><a href="{{ route('compras.index') }}">Compras</a></li>
-                <li><a href="{{ route('devoluciones.index') }}">Devoluciones</a></li>
+                
             </ul>
         </li>
 

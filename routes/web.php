@@ -5,7 +5,6 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CategoriaController;
 use App\Http\Controllers\ClienteController;
 use App\Http\Controllers\CompraController;
-use App\Http\Controllers\DevolucionController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\MarcaController;
 use App\Http\Controllers\MetodoPagoController;
@@ -175,16 +174,6 @@ Route::controller(AjusteInventarioController::class)->group(function () {
     Route::post('/ajustes-inventario', 'store')->name('ajustes.store');
     Route::put('/ajustes-inventario/update/{id}', 'update')->name('ajustes.update');
     Route::post('/ajustes-inventario/delete/{id}', 'destroy')->name('ajustes.delete');
-});
-
-Route::controller(DevolucionController::class)->group(function () {
-    Route::get('/devoluciones', 'index')->name('devoluciones.index');
-    Route::get('/devoluciones/create', 'create')->name('devoluciones.create');
-    Route::get('/devoluciones/edit/{id}', 'edit')->name('devoluciones.edit');
-    Route::get('/devoluciones/show/{id}', 'show')->name('devoluciones.show');
-    Route::post('/devoluciones/{compraId}', 'store')->name('devoluciones.store');
-    Route::put('/devoluciones/update/{id}', 'update')->name('devoluciones.update');
-    Route::post('/devoluciones/delete/{id}', 'destroy')->name('devoluciones.delete');
 });
 
 Route::controller(ReporteController::class)->group(function () {

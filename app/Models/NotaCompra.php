@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 class NotaCompra extends Model
 {
     use HasFactory;
-    
+
     protected $table = 'nota_compras';
     protected $fillable = [
         'monto_total',
@@ -17,13 +17,13 @@ class NotaCompra extends Model
         'proveedor_id',
         'usuario_id',
     ];
-    
+
     // Relación uno a muchos (inversa) con la tabla proveedores
     public function proveedor()
     {
         return $this->belongsTo(Proveedor::class, 'proveedor_id');
     }
-    
+
     // Relación muchos a muchos con la tabla producto_almacen
     public function productosAlmacen()
     {
@@ -31,17 +31,11 @@ class NotaCompra extends Model
             ->withPivot('cantidad', 'precio_compra')
             ->withTimestamps();
     }
-    
+
     // Relación uno a muchos (inversa) con la tabla usuarios
     public function usuario()
     {
         return $this->belongsTo(Usuario::class, 'usuario_id');
     }
-    
-    // Relación uno a muchos con la tabla devoluciones
-    public function devoluciones()
-    {
-        return $this->hasMany(Devolucion::class, 'compra_id');
-    }
-   
+
 }

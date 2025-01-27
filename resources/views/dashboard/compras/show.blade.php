@@ -43,7 +43,7 @@
                       <th class="text-center">Cantidad</th>
                       <th class="text-center">Precio Unitario</th>
                       <th class="text-center">Subtotal</th>
-                      <th class="text-center">Devolución</th>
+
                     </tr>
                   </thead>
                   <tbody id="productos-table-body">
@@ -65,18 +65,7 @@
                       <td class="align-middle text-center">Bs. {{ formatearNumero($producto['precio_compra']) }}</td>
                       <td class="align-middle text-center">Bs. {{ formatearNumero($producto['subtotal']) }}</td>
                       <td class="align-middle text-center">
-                        <form id="formDevolucionCompra_{{ $compra->id }}"
-                          action="{{ route('devoluciones.store', $compra->id) }}" method="POST">
-                          @csrf
-                          <button type="button" class="btn btn-sm btn-success mx-1"
-                            onclick="mostrarModalDevolucion({{ $compra->id }}, {{ $producto['precio_compra'] }}, {{ $producto['productoAlmacenId'] }}, {{ $producto['cantidad'] }}, {{ obtenerStockDisponibleAlmacen($producto['id'], $producto['almacenId']) }})">
-                            <i class="fas fa-truck-loading"></i>
-                          </button>
-                          <input type="hidden" name="cantidad" id="cantidad_{{ $compra->id }}">
-                          <input type="hidden" name="motivo" id="motivo_{{ $compra->id }}">
-                          <input type="hidden" name="monto_total" id="monto_{{ $compra->id }}">
-                          <input type="hidden" name="producto_almacen_id" id="producto_almacen_id_{{ $compra->id }}">
-                        </form>
+
                       </td>
                     </tr>
                     @endforeach
@@ -98,72 +87,5 @@
       </div>
     </div>
   </x-layouts.content>
-
-  @push('js')
-  <script>
-    function mostrarModalDevolucion(id, precioCompra, productoAlmacenId, cantidadProducto, cantidadDisponible) {
-          Swal.fire({
-              title: 'Devolver Compra',
-              html: `
-                  <div class="form-group text-left">
-                      <label for="cantidad">Cantidad:</label>
-                      <input type="number" id="cantidadInput" class="form-control" min="1" required>
-                  </div>
-                  <div class="form-group text-left">
-                      <label for="motivo">Motivo:</label>
-                      <textarea id="motivoInput" class="form-control" rows="3" required></textarea>
-                  </div>
-              `,
-              showCancelButton: true,
-              confirmButtonColor: '#556ee6',
-              cancelButtonColor: '#f46a6a',
-              confirmButtonText: 'Confirmar',
-              cancelButtonText: 'Cancelar',
-              preConfirm: () => {
-                  const cantidad = Swal.getPopup().querySelector('#cantidadInput').value;
-                  const motivo = Swal.getPopup().querySelector('#motivoInput').value;
-
-                  if (!cantidad || !motivo) {
-                      Swal.showValidationMessage('Por favor, complete ambos campos.');
-                      return false;
-                  }
-
-                  return { cantidad, motivo };
-              }
-          }).then((result) => {
-              if (result.isConfirmed) {
-                  // Verificar que la cantidad a devolver no sea mayor a la cantidad comprada
-                  if (result.value.cantidad > cantidadProducto) {
-                    Swal.fire({
-                      icon: 'error',
-                      title: 'Error',
-                      text: 'La cantidad a devolver no puede ser mayor a la cantidad comprada.'
-                    });
-                    return;
-                  }
-                  
-                  if (result.value.cantidad > cantidadDisponible) {
-                    Swal.fire({
-                      icon: 'error',
-                      title: 'Error',
-                      text: 'La cantidad a devolver no puede ser mayor al stock disponible en el almacén.'
-                    });
-                    return;
-                  }
-                  
-                  // Rellenar los campos ocultos del formulario
-                  document.getElementById(`cantidad_${id}`).value = result.value.cantidad;
-                  document.getElementById(`motivo_${id}`).value = result.value.motivo;
-                  document.getElementById(`monto_${id}`).value = precioCompra * result.value.cantidad;
-                  document.getElementById(`producto_almacen_id_${id}`).value = productoAlmacenId;
-                  
-                  // Enviar el formulario
-                  document.getElementById(`formDevolucionCompra_${id}`).submit();
-              }
-          });
-      }
-  </script>
-  @endpush
-
 
 </x-layouts.app>
