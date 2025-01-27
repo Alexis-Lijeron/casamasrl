@@ -11,28 +11,28 @@ class CategoriaSeeder extends Seeder
     public function run(): void
     {
         Categoria::create([
-            'nombre' => 'Medicamentos',
-            'descripcion' => 'Productos farmacéuticos'
-        ]);        
-        
-        Categoria::create([
-            'nombre' => 'Inyectables',
-            'descripcion' => 'Productos inyectables'
+            'nombre' => 'Leches',
+            'descripcion' => 'Variedades de leche líquida y en polvo'
         ]);
-        
+
         Categoria::create([
-            'nombre' => 'Vacunas',
-            'descripcion' => 'Vacunas para enfermedades'
+            'nombre' => 'Quesos',
+            'descripcion' => 'Diferentes tipos de quesos frescos y maduros'
         ]);
-        
+
         Categoria::create([
-            'nombre' => 'Jarabes',
-            'descripcion' => 'Jarabes para enfermedades'
+            'nombre' => 'Yogures',
+            'descripcion' => 'Yogures naturales y con sabores'
         ]);
-        
+
         Categoria::create([
-            'nombre' => 'Pastillas',
-            'descripcion' => 'Pastillas para enfermedades'
+            'nombre' => 'Mantequillas',
+            'descripcion' => 'Mantequillas y margarinas'
+        ]);
+
+        Categoria::create([
+            'nombre' => 'Postres Lácteos',
+            'descripcion' => 'Flanes, natillas y otros postres lácteos'
         ]);
     }
 }
