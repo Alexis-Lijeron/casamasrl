@@ -24,8 +24,9 @@
                                         <option value="0">Todos</option>
                                         @foreach ($usuarios as $administrativo)
                                         <option value="{{ $administrativo['id'] }}"
-                                        @if ($administrativo['id'] == old('id_empleado')) selected @endif>
-                                        {{ $administrativo['nombre'] }} {{ $administrativo['apellido'] }}</option>
+                                            @if ($administrativo['id']==old('id_empleado')) selected @endif>
+                                            {{ $administrativo['nombre'] }} {{ $administrativo['apellido'] }}
+                                        </option>
                                         @endforeach
                                     </select>
                                     <span id="mensajeAdministrativo" class="error text-danger"></span>
@@ -40,8 +41,9 @@
                                         <option value="0">Todos</option>
                                         @foreach ($clientes as $cliente)
                                         <option value="{{ $cliente['id'] }}"
-                                        @if ($cliente['id'] == old('id_cliente')) selected @endif>
-                                            {{ $cliente['nombre'] }} {{ $cliente['apellido'] }}</option>
+                                            @if ($cliente['id']==old('id_cliente')) selected @endif>
+                                            {{ $cliente['nombre'] }} {{ $cliente['apellido'] }}
+                                        </option>
                                         @endforeach
                                     </select>
                                     <span id="mensajeCliente" class="error text-danger"></span>
@@ -176,165 +178,197 @@
     </x-layouts.content>
 
     @push('styles')
-        <style>
-            .container {
-                height: 120px;
-                width: 100%;
+    <style>
+        .container {
+            height: 120px;
+            width: 100%;
+        }
+
+        .loader {
+            height: 20px;
+            width: 250px;
+            position: relative;
+            top: 0;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            margin: auto;
+        }
+
+        .loader--dot {
+            animation-name: loader;
+            animation-timing-function: ease-in-out;
+            animation-duration: 3s;
+            animation-iteration-count: infinite;
+            height: 20px;
+            width: 20px;
+            border-radius: 100%;
+            background-color: black;
+            position: absolute;
+            border: 2px solid white;
+        }
+
+        .loader--dot:first-child {
+            background-color: #8cc759;
+            animation-delay: 0.5s;
+        }
+
+        .loader--dot:nth-child(2) {
+            background-color: #8c6daf;
+            animation-delay: 0.4s;
+        }
+
+        .loader--dot:nth-child(3) {
+            background-color: #ef5d74;
+            animation-delay: 0.3s;
+        }
+
+        .loader--dot:nth-child(4) {
+            background-color: #f9a74b;
+            animation-delay: 0.2s;
+        }
+
+        .loader--dot:nth-child(5) {
+            background-color: #60beeb;
+            animation-delay: 0.1s;
+        }
+
+        .loader--dot:nth-child(6) {
+            background-color: #fbef5a;
+            animation-delay: 0s;
+        }
+
+        .loader--text {
+            position: absolute;
+            top: 200%;
+            left: 0;
+            right: 0;
+            width: 4rem;
+            margin: auto;
+        }
+
+        .loader--text:after {
+            content: "Cargando";
+            font-weight: bold;
+            animation-name: loading-text;
+            animation-duration: 3s;
+            animation-iteration-count: infinite;
+        }
+
+        @keyframes loader {
+            15% {
+                transform: translateX(0);
             }
 
-            .loader {
-                height: 20px;
-                width: 250px;
-                position: relative;
-                top: 0;
-                bottom: 0;
-                left: 0;
-                right: 0;
-                margin: auto;
+            45% {
+                transform: translateX(230px);
             }
-            .loader--dot {
-                animation-name: loader;
-                animation-timing-function: ease-in-out;
-                animation-duration: 3s;
-                animation-iteration-count: infinite;
-                height: 20px;
-                width: 20px;
-                border-radius: 100%;
-                background-color: black;
-                position: absolute;
-                border: 2px solid white;
+
+            65% {
+                transform: translateX(230px);
             }
-            .loader--dot:first-child {
-                background-color: #8cc759;
-                animation-delay: 0.5s;
+
+            95% {
+                transform: translateX(0);
             }
-            .loader--dot:nth-child(2) {
-                background-color: #8c6daf;
-                animation-delay: 0.4s;
-            }
-            .loader--dot:nth-child(3) {
-                background-color: #ef5d74;
-                animation-delay: 0.3s;
-            }
-            .loader--dot:nth-child(4) {
-                background-color: #f9a74b;
-                animation-delay: 0.2s;
-            }
-            .loader--dot:nth-child(5) {
-                background-color: #60beeb;
-                animation-delay: 0.1s;
-            }
-            .loader--dot:nth-child(6) {
-                background-color: #fbef5a;
-                animation-delay: 0s;
-            }
-            .loader--text {
-                position: absolute;
-                top: 200%;
-                left: 0;
-                right: 0;
-                width: 4rem;
-                margin: auto;
-            }
-            .loader--text:after {
+        }
+
+        @keyframes loading-text {
+            0% {
                 content: "Cargando";
-                font-weight: bold;
-                animation-name: loading-text;
-                animation-duration: 3s;
-                animation-iteration-count: infinite;
             }
 
-            @keyframes loader {
-                15% {
-                    transform: translateX(0);
-                }
-                45% {
-                    transform: translateX(230px);
-                }
-                65% {
-                    transform: translateX(230px);
-                }
-                95% {
-                    transform: translateX(0);
-                }
+            25% {
+                content: "Cargando.";
             }
-            @keyframes loading-text {
-                0% {
-                    content: "Cargando";
-                }
-                25% {
-                    content: "Cargando.";
-                }
-                50% {
-                    content: "Cargando..";
-                }
-                75% {
-                    content: "Cargando...";
-                }
+
+            50% {
+                content: "Cargando..";
             }
-        </style>
+
+            75% {
+                content: "Cargando...";
+            }
+        }
+    </style>
     @endpush
     @push('js')
-<script src="{{ asset('assets/plugins/flatpickr/flatpickr.js') }}"></script>
-<script>
-    document.addEventListener('DOMContentLoaded', function () {
-        const fechaDesde = document.getElementById('fechaDesde');
-        const fechaHasta = document.getElementById('fechaHasta');
-        const administrativo = document.getElementById('id_empleado');
-        const cliente = document.getElementById('id_cliente');
-        const estado = document.getElementById('estado');
-        const concepto = document.getElementById('concepto');
-        const btnConsultar = document.getElementById('btnConsultar');
-        const btnPdf = document.getElementById('btnPdf');
-        const tablePagosBody = document.querySelector('#table-pagos tbody');
-        const loadingIndicator = document.getElementById('loadingIndicator');
-        const datosDiv = document.getElementById('datos');
-        const dividerDatos = document.getElementById('dividerDatos');
+    <script src="{{ asset('assets/plugins/flatpickr/flatpickr.js') }}"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const fechaDesde = document.getElementById('fechaDesde');
+            const fechaHasta = document.getElementById('fechaHasta');
+            const administrativo = document.getElementById('id_empleado');
+            const cliente = document.getElementById('id_cliente');
+            const estado = document.getElementById('estado');
+            const concepto = document.getElementById('concepto');
+            const btnConsultar = document.getElementById('btnConsultar');
+            const btnPdf = document.getElementById('btnPdf');
+            const tablePagosBody = document.querySelector('#table-pagos tbody');
+            const loadingIndicator = document.getElementById('loadingIndicator');
+            const datosDiv = document.getElementById('datos');
+            const dividerDatos = document.getElementById('dividerDatos');
 
-        ocultarMensaje();
-
-        // Manejar el clic en el botón "Consultar"
-        btnConsultar.addEventListener('click', function (event) {
-            event.preventDefault();
-
-            if (validarDatos()) {
-                datosDiv.style.display = 'none';
-                dividerDatos.style.display = 'none';
-                btnPdf.disabled = true;
-                loadingIndicator.style.display = 'block';
-
-                const data = {
-                    id_empleado: administrativo.value || null,
-                    id_cliente: cliente.value || null,
-                    estado: estado.value || null,
-                    concepto: concepto.value || null,
-                    fechaDesde: fechaDesde.value ? convertirFecha(fechaDesde.value) : null,
-                    fechaHasta: fechaHasta.value ? convertirFecha(fechaHasta.value) : null,
-                };
-
-                const urlApi = "{{ env('URL_SERVER_API') }}";
-                const url = `${urlApi}/reportes-pagos`;
-
-                fetch(url, {
-                    method: 'POST',
-                    headers: {
-                        'X-CSRF-TOKEN': "{{ csrf_token() }}",
-                        'Content-Type': 'application/json',
+            // Inicializar flatpickr
+            flatpickr('.flatpickr', {
+                enableTime: false,
+                dateFormat: 'd/m/Y',
+                locale: {
+                    firstDayOfWeek: 1,
+                    weekdays: {
+                        shorthand: ["Dom", "Lun", "Mar", "Mié", "Jue", "Vie", "Sáb"],
+                        longhand: ["Domingo", "Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado"],
                     },
-                    body: JSON.stringify(data),
-                })
-                    .then(response => response.json())
-                    .then(data => {
-                        dividerDatos.style.display = 'block';
-                        datosDiv.style.display = 'block';
-                        loadingIndicator.style.display = 'none';
-                        verificarCampos();
+                    months: {
+                        shorthand: ["Ene", "Feb", "Mar", "Abr", "May", "Jun", "Jul", "Ago", "Sep", "Oct", "Nov", "Dic"],
+                        longhand: ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"],
+                    },
+                },
+            });
 
-                        tablePagosBody.innerHTML = '';
+            ocultarMensajes();
 
-                        if (data.pagos.length > 0) {
-                            data.pagos.forEach(pago => {
-                                const row = `
+            btnConsultar.addEventListener('click', function(event) {
+                event.preventDefault();
+
+                if (validarDatos()) {
+                    datosDiv.style.display = 'none';
+                    dividerDatos.style.display = 'none';
+                    btnPdf.disabled = true;
+                    loadingIndicator.style.display = 'block';
+
+                    const data = {
+                        id_empleado: administrativo.value || null,
+                        id_cliente: cliente.value || null,
+                        estado: estado.value || null,
+                        concepto: concepto.value || null,
+                        fechaDesde: fechaDesde.value ? convertirFecha(fechaDesde.value) : null,
+                        fechaHasta: fechaHasta.value ? convertirFecha(fechaHasta.value) : null,
+                    };
+
+                    const urlApi = "{{ env('URL_SERVER_API') }}";
+                    const url = `${urlApi}/reportes-pagos`;
+
+                    fetch(url, {
+                            method: 'POST',
+                            headers: {
+                                'X-CSRF-TOKEN': "{{ csrf_token() }}",
+                                'Content-Type': 'application/json',
+                            },
+                            body: JSON.stringify(data),
+                        })
+                        .then(response => response.json())
+                        .then(data => {
+                            dividerDatos.style.display = 'block';
+                            datosDiv.style.display = 'block';
+                            loadingIndicator.style.display = 'none';
+                            verificarCampos();
+
+                            tablePagosBody.innerHTML = '';
+
+                            if (data.pagos && data.pagos.length > 0) {
+                                data.pagos.forEach(pago => {
+                                    const row = `
                                     <tr class="text-nowrap text-center">
                                         <th scope="row" class="align-middle">${pago.id}</th>
                                         <td class="align-middle">${pago.fecha}</td>
@@ -344,100 +378,74 @@
                                         <td class="align-middle">${pago.concepto}</td>
                                         <td class="align-middle">Bs. ${formatearNumero(pago.monto)}</td>
                                     </tr>`;
-                                tablePagosBody.insertAdjacentHTML('beforeend', row);
-                            });
-                        } else {
-                            const noResultsRow = `
+                                    tablePagosBody.insertAdjacentHTML('beforeend', row);
+                                });
+                            } else {
+                                const noResultsRow = `
                                 <tr class="text-nowrap text-center">
                                     <td colspan="7" class="align-middle">No hay registros</td>
                                 </tr>`;
-                            tablePagosBody.insertAdjacentHTML('beforeend', noResultsRow);
-                        }
-                    })
-                    .catch(error => {
-                        console.error('Error en la petición fetch:', error);
-                    });
-            }
-        });
-
-        // Manejar el clic en el botón "Generar PDF"
-        btnPdf.addEventListener('click', function (event) {
-            event.preventDefault();
-            generarPDF();
-        });
-
-        function generarPDF() {
-            const url = `/dashboard/generar-reporte-pagos/pdf/${administrativo.value || 'null'}/${cliente.value || 'null'}/${estado.value || 'null'}/${concepto.value || 'null'}/${fechaDesde.value ? convertirFecha(fechaDesde.value) : 'null'}/${fechaHasta.value ? convertirFecha(fechaHasta.value) : 'null'}`;
-            window.open(url, '_blank');
-        }
-
-        function validarDatos() {
-            let valid = true;
-
-            if (!fechaDesde.value && !fechaHasta.value && !administrativo.value && !cliente.value && !estado.value && !concepto.value) {
-                mostrarErrores();
-                valid = false;
-            }
-            return valid;
-        }
-
-        function mostrarErrores() {
-            if (!fechaDesde.value) document.getElementById('mensajeFechaDesde').textContent = "El campo fecha desde es requerido.";
-            if (!fechaHasta.value) document.getElementById('mensajeFechaHasta').textContent = "El campo fecha hasta es requerido.";
-            if (!administrativo.value) document.getElementById('mensajeAdministrativo').textContent = "El campo administrativo es requerido.";
-            if (!cliente.value) document.getElementById('mensajeCliente').textContent = "El campo cliente es requerido.";
-            if (!estado.value) document.getElementById('mensajeEstado').textContent = "El campo estado es requerido.";
-            if (!concepto.value) document.getElementById('mensajeConcepto').textContent = "El campo concepto es requerido.";
-        }
-
-        function verificarCampos() {
-            if (fechaDesde.value && fechaHasta.value && administrativo.value && cliente.value && estado.value && concepto.value) {
-                btnPdf.disabled = false;
-            } else {
-                btnPdf.disabled = true;
-            }
-        }
-
-        function ocultarMensaje() {
-            const fields = [fechaDesde, fechaHasta, administrativo, cliente, estado, concepto];
-            fields.forEach(field => {
-                field.addEventListener('change', function () {
-                    const messageId = `mensaje${field.id.charAt(0).toUpperCase() + field.id.slice(1)}`;
-                    document.getElementById(messageId).textContent = '';
-                });
+                                tablePagosBody.insertAdjacentHTML('beforeend', noResultsRow);
+                            }
+                        })
+                        .catch(error => console.error('Error en la petición fetch:', error));
+                }
             });
-        }
 
-        function convertirFecha(fecha) {
-            const partes = fecha.split('/');
-            return `${partes[2]}-${partes[1]}-${partes[0]}`;
-        }
+            btnPdf.addEventListener('click', function(event) {
+                event.preventDefault();
+                generarPDF();
+            });
 
-        function formatearNumero(numero) {
-            numero = parseFloat(numero);
-            if (isNaN(numero)) return '0,00';
-            numero = numero.toFixed(2);
-            const partes = numero.split('.');
-            partes[0] = partes[0].replace(/\B(?=(\d{3})+(?!\d))/g, '.');
-            return partes.join(',');
-        }
+            function generarPDF() {
+                const url = `/dashboard/generar-reporte-pagos/pdf/${administrativo.value || 'null'}/${cliente.value || 'null'}/${estado.value || 'null'}/${concepto.value || 'null'}/${fechaDesde.value ? convertirFecha(fechaDesde.value) : 'null'}/${fechaHasta.value ? convertirFecha(fechaHasta.value) : 'null'}`;
+                window.open(url, '_blank');
+            }
 
-        flatpickr('.flatpickr', {
-            enableTime: false,
-            dateFormat: 'd/m/Y',
-            locale: {
-                firstDayofWeek: 1,
-                weekdays: {
-                    shorthand: ["Dom", "Lun", "Mar", "Mié", "Jue", "Vie", "Sáb"],
-                    longhand: ["Domingo", "Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado"],
-                },
-                months: {
-                    shorthand: ["Ene", "Feb", "Mar", "Abr", "May", "Jun", "Jul", "Ago", "Sep", "Oct", "Nov", "Dic"],
-                    longhand: ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"],
-                },
-            },
+            function validarDatos() {
+                let valid = true;
+                if (!fechaDesde.value && !fechaHasta.value && !administrativo.value && !cliente.value && !estado.value && !concepto.value) {
+                    mostrarErrores();
+                    valid = false;
+                }
+                return valid;
+            }
+
+            function mostrarErrores() {
+                if (!fechaDesde.value) document.getElementById('mensajeFechaDesde').textContent = "El campo fecha desde es requerido.";
+                if (!fechaHasta.value) document.getElementById('mensajeFechaHasta').textContent = "El campo fecha hasta es requerido.";
+                if (!administrativo.value) document.getElementById('mensajeAdministrativo').textContent = "El campo administrativo es requerido.";
+                if (!cliente.value) document.getElementById('mensajeCliente').textContent = "El campo cliente es requerido.";
+                if (!estado.value) document.getElementById('mensajeEstado').textContent = "El campo estado es requerido.";
+                if (!concepto.value) document.getElementById('mensajeConcepto').textContent = "El campo concepto es requerido.";
+            }
+
+            function verificarCampos() {
+                btnPdf.disabled = !(fechaDesde.value && fechaHasta.value && administrativo.value && cliente.value && estado.value && concepto.value);
+            }
+
+            function ocultarMensajes() {
+                const fields = [fechaDesde, fechaHasta, administrativo, cliente, estado, concepto];
+                fields.forEach(field => {
+                    field.addEventListener('change', function() {
+                        const messageId = `mensaje${field.id.charAt(0).toUpperCase() + field.id.slice(1)}`;
+                        document.getElementById(messageId).textContent = '';
+                    });
+                });
+            }
+
+            function convertirFecha(fecha) {
+                const partes = fecha.split('/');
+                return `${partes[2]}-${partes[1]}-${partes[0]}`;
+            }
+
+            function formatearNumero(numero) {
+                numero = parseFloat(numero);
+                if (isNaN(numero)) return '0,00';
+                return numero.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, '.').replace('.', ',');
+            }
         });
-    });
-</script>
-@endpush
+    </script>
+    @endpush
+
 </x-layouts.app>

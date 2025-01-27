@@ -52,9 +52,7 @@
 
                             <div class="col-md-3 px-1">
                                 <div class="form-group">
-                                    <label for="producto" class="control-label mb-1 pl-1">
-                                        <striong>Elige el Producto</striong>
-                                    </label>
+                                    <label for="producto" class="control-label mb-1 pl-1"><strong>Elige el Producto</strong></label>
                                     <select name="producto" id="producto" class="form-control text-truncate" data-toggle="select2">
                                         <option value="0">Todos</option>
                                         @foreach($productos as $producto)
@@ -69,9 +67,7 @@
 
                             <div class="col-md-3 px-1">
                                 <div class="form-group">
-                                    <label for="categoria" class="control-label mb-1 pl-1">
-                                        <striong>Elige la Categoría</striong>
-                                    </label>
+                                    <label for="categoria" class="control-label mb-1 pl-1"><strong>Elige la Categoría</strong></label>
                                     <select name="categoria" id="categoria" class="form-control text-truncate" data-toggle="select2">
                                         <option value="0">Todos</option>
                                         @foreach($categorias as $categoria)
@@ -138,9 +134,14 @@
                             </table>
                         </div>
 
-                        {{-- <a href="{{ route('show.email.form') }}" class="btn btn-primary">Enviar por correo</a> --}}
-                        <a href="{{ route('report.index') }}" class="btn btn-primary">Enviar</a>
-
+                        {{-- Envie el reporte a su correo electrónico --}}
+                        <form id="formEnviarReporte" action="{{ route('reportes.email.ventas') }}" method="POST">
+                            @csrf
+                            <button type="submit" id="btnEnviarReporte" class="btn btn-lg btn-primary mt-2">
+                                Enviar por correo
+                            </button>
+                            <input type="hidden" name="message" id="datosReporte">
+                        </form>
 
                     </div>
 
@@ -174,74 +175,66 @@
 
     @push('js')
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const formularioReporte = document.getElementById('formularioReporte');
-            const tablaResultados = document.getElementById('tablaResultados');
-            const noResultados = document.getElementById('noResultados');
-            const tableBody = document.getElementById('ventas-table-body');
+        document.getElementById('formularioReporte').addEventListener('submit', function(e) {
+            e.preventDefault(); // Prevenir el envío normal del formulario
 
-            formularioReporte.addEventListener('submit', function(e) {
-                e.preventDefault(); // Prevenir el envío normal del formulario
+            var formData = new FormData(this); // Recoger los datos del formulario
 
-                const formData = new FormData(this); // Recoger los datos del formulario
+            // Enviar la solicitud AJAX
+            fetch("{{ route('reportes.mostrarVentasResultados') }}", {
+                    method: "POST",
+                    body: formData,
+                    headers: {
+                        "X-Requested-With": "XMLHttpRequest", // Indicar que es una solicitud AJAX
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    // Limpiar la tabla antes de actualizar
+                    const tableBody = document.getElementById('ventas-table-body');
+                    tableBody.innerHTML = '';
 
-                // Enviar la solicitud con fetch
-                fetch("{{ route('reportes.mostrarVentasResultados') }}", {
-                        method: "POST",
-                        body: formData,
-                        headers: {
-                            "X-Requested-With": "XMLHttpRequest" // Indicar que es una solicitud AJAX
-                        }
-                    })
-                    .then(response => {
-                        if (!response.ok) {
-                            throw new Error(`Error en la solicitud: ${response.status}`);
-                        }
-                        return response.json();
-                    })
-                    .then(data => {
-                        // Limpiar la tabla antes de actualizar
-                        tableBody.innerHTML = '';
+                    console.log(data);
 
-                        console.log(data);
+                    if (data.length > 0) {
+                        // Mostrar la tabla
+                        document.getElementById('tablaResultados').style.display = 'block';
+                        document.getElementById('noResultados').style.display = 'none';
 
-                        if (data.length > 0) {
-                            // Mostrar la tabla y ocultar el mensaje de "No resultados"
-                            tablaResultados.style.display = 'block';
-                            noResultados.style.display = 'none';
+                        // Recorrer los datos y agregar las filas a la tabla
+                        data.forEach(venta => {
+                            const row = document.createElement('tr');
+                            row.innerHTML = `
+                                <td class="align-middle">${venta.id}</td>
+                                <td class="align-middle">${venta.fecha_venta}</td>
+                                <td class="align-middle">${venta.usuario.nombre} ${venta.usuario.apellido}</td>
+                                <td class="align-middle">${venta.cliente.nombre} ${venta.cliente.apellido}</td>
+                                <td class="align-middle">
+                                    <ul>
+                                        ${venta.productos_almacen.map(producto => `<li>${producto.producto.nombre}</li>`).join('')}
+                                    </ul>
+                                </td>
+                                <td class="align-middle">
+                                    <ul>
+                                        ${venta.productos_almacen.map(producto => `<li>${producto.producto.categoria.nombre}</li>`).join('')}
+                                    </ul>
+                                </td>
+                                <td class="align-middle">Bs. ${venta.monto_total}</td>
+                            `;
+                            tableBody.appendChild(row);
+                        });
 
-                            // Recorrer los datos y agregar las filas a la tabla
-                            data.forEach(venta => {
-                                const row = document.createElement('tr');
-                                row.innerHTML = `
-                            <td class="align-middle">${venta.id}</td>
-                            <td class="align-middle">${venta.fecha_venta}</td>
-                            <td class="align-middle">${venta.usuario.nombre} ${venta.usuario.apellido}</td>
-                            <td class="align-middle">${venta.cliente.nombre} ${venta.cliente.apellido}</td>
-                            <td class="align-middle">
-                                <ul>
-                                    ${venta.productos_almacen.map(producto => `<li>${producto.producto.nombre}</li>`).join('')}
-                                </ul>
-                            </td>
-                            <td class="align-middle">
-                                <ul>
-                                    ${venta.productos_almacen.map(producto => `<li>${producto.producto.categoria.nombre}</li>`).join('')}
-                                </ul>
-                            </td>
-                            <td class="align-middle">Bs. ${venta.monto_total}</td>
-                        `;
-                                tableBody.appendChild(row);
-                            });
-                        } else {
-                            // Si no hay datos, mostrar el mensaje de "No se encontraron resultados"
-                            tablaResultados.style.display = 'none';
-                            noResultados.style.display = 'block';
-                        }
-                    })
-                    .catch(error => {
-                        console.error('Error al realizar la solicitud:', error);
-                    });
-            });
+                        // Asignar el valor de message 
+                        document.getElementById('datosReporte').value = JSON.stringify(data);
+                    } else {
+                        // Si no hay datos, mostrar el mensaje de "No se encontraron resultados"
+                        document.getElementById('tablaResultados').style.display = 'none';
+                        document.getElementById('noResultados').style.display = 'block';
+                    }
+                })
+                .catch(error => {
+                    console.error('Error al realizar la solicitud:', error);
+                });
         });
     </script>
     @endpush

@@ -13,25 +13,34 @@
                     @if(session('error'))
                     <div class="alert alert-danger">{{ session('error') }}</div>
                     @endif
-                    <form action="{{ route('report.sendReport') }}" method="POST" enctype="multipart/form-data"
+                    <form action="{{ route('reportes.enviar.ventas') }}" method="POST" enctype="multipart/form-data"
                         class="px-4 mb-4">
                         @csrf
                         <div class="mb-3">
                             <label for="to" class="form-label">Destinatarios:</label>
                             <input type="text" name="to" id="to" class="form-control"
-                                placeholder="Introduzca los emails separados por coma">
+                                placeholder="Introduzca los emails separados por coma" required>
                             <small id="emailHelp" class="form-text text-muted">Ejemplo: ejemplo1@gmail.com,
                                 ejemplo2@gmail.com</small>
+                            @error('to')
+                            <span class="text-danger">{{ $message }}</span>
+                            @enderror
                         </div>
                         <div class="mb-3">
                             <label for="subject" class="form-label">Asunto:</label>
                             <input type="text" name="subject" id="subject" class="form-control"
-                                placeholder="Introduzca el asunto">
+                                placeholder="Introduzca el asunto" required>
+                            @error('subject')
+                            <span class="text-danger">{{ $message }}</span>
+                            @enderror
                         </div>
                         <div class="mb-3">
                             <label for="message" class="form-label">Mensaje:</label>
-                            <textarea id="message" name="message"></textarea>
+                            <textarea id="message" name="message" required></textarea>
                             <input type="hidden" name="content" value="{{ json_encode($data) }}">
+                            @error('message')
+                            <span class="text-danger">{{ $message }}</span>
+                            @enderror
                         </div>
                         {{-- <div class="mb-3">
                             <label for="attachment" class="form-label">Adjuntar Archivos:</label>
@@ -60,7 +69,7 @@
             // Obtener los datos desde el backend
             const data = @json($data);
 
-            // Construir la tabla HTML
+            // Crear la tabla HTML como cadena
             let tableHtml = `
             <table border="1" style="border-collapse: collapse;">
                 <thead>
@@ -105,7 +114,7 @@
             </table>
         `;
 
-            // Asignar la tabla HTML al campo <textarea> para TinyMCE
+            // Asignar la tabla HTML al campo <textarea>
             const messageField = document.getElementById('message');
             if (messageField) {
                 messageField.value = tableHtml;
@@ -113,5 +122,6 @@
         });
     </script>
     @endpush
+
 
 </x-layouts.app>

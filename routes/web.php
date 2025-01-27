@@ -181,11 +181,16 @@ Route::controller(ReporteController::class)->group(function () {
     Route::get('/reportes-ventas', 'reporteVentas')->name('reportes.ventas');
     Route::get('/reportes-pagos', 'reportePagos')->name('reportes.pagos');
     Route::post('/reportes-ventas-resultados', 'mostrarVentasResultados')->name('reportes.mostrarVentasResultados');
+    Route::post('/reportes-compras-resultados', 'mostrarComprasResultados')->name('reportes.mostrarComprasResultados');
 });
 // Route::get('/send-email', [EmailController::class, 'showForm'])->name('show.email.form');
 // Route::post('/send-email', [EmailController::class, 'sendEmail'])->name('send.email');
-Route::get('/report', [EmailController::class, 'report'])->name('report.index');
-Route::post('/report/send_report', [EmailController::class, 'sendReport'])->name('report.sendReport');
+Route::controller(EmailController::class)->group(function () {
+    Route::post('/reporte/ventas', 'reporteVentas')->name('reportes.email.ventas');
+    Route::post('/reporte/enviar-reporte-ventas', 'enviarReporteVentas')->name('reportes.enviar.ventas');
+    Route::post('/reporte/compras', 'reporteCompras')->name('reportes.email.compras');
+    Route::post('/reporte/enviar-reporte-compras', 'enviarReporteCompras')->name('reportes.enviar.compras');
+});
 Route::get('/search', [SearchController::class, 'search'])->name('search');
 
 Route::controller(PromocionController::class)->group(function () {
