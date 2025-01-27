@@ -11,19 +11,19 @@ class ProveedorSeeder extends Seeder
     public function run(): void
     {
         Proveedor::create([
-            'nombre_empresa' => 'ABC',
-            'nombre_encargado' => 'Proveedor 1',
-            'direccion' => 'Dirección 1',
-            'telefono' => '12345678',
-            'email' => 'proveedor1@gmail.com',
+            'nombre_empresa' => 'Lácteos del Valle',
+            'nombre_encargado' => 'Carlos Mendoza',
+            'direccion' => 'Av. Central 123, Ciudad A',
+            'telefono' => '5551234567',
+            'email' => 'contacto@lacteosdelvalle.com',
         ]);
-        
+
         Proveedor::create([
-            'nombre_empresa' => 'XYZ',
-            'nombre_encargado' => 'Proveedor 2',
-            'direccion' => 'Dirección 2',
-            'telefono' => '87654321',
-            'email' => 'proveedor2@gmail.com',
+            'nombre_empresa' => 'Quesos La Finca',
+            'nombre_encargado' => 'María López',
+            'direccion' => 'Calle 45 #678, Ciudad B',
+            'telefono' => '5559876543',
+            'email' => 'ventas@quesoslafinca.com',
         ]);
     }
 }

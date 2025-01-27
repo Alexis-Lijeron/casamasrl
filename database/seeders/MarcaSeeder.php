@@ -10,17 +10,16 @@ class MarcaSeeder extends Seeder
 {
     public function run(): void
     {
-        // Marcas de productos farmacéuticos
-        Marca::create(['nombre' => 'Bayer']);
-        Marca::create(['nombre' => 'Pfizer']);
-        Marca::create(['nombre' => 'Roche']);
-        Marca::create(['nombre' => 'Novartis']);
-        Marca::create(['nombre' => 'Merck']);
-        Marca::create(['nombre' => 'Sanofi']);
-        Marca::create(['nombre' => 'GlaxoSmithKline']);
-        Marca::create(['nombre' => 'Johnson & Johnson']);
-        Marca::create(['nombre' => 'AbbVie']);
-        Marca::create(['nombre' => 'AstraZeneca']);
-        
+        // Marcas de productos lácteos
+        Marca::create(['nombre' => 'Nestlé']);
+        Marca::create(['nombre' => 'Danone']);
+        Marca::create(['nombre' => 'La Serenísima']);
+        Marca::create(['nombre' => 'Alpura']);
+        Marca::create(['nombre' => 'Lala']);
+        Marca::create(['nombre' => 'Parmalat']);
+        Marca::create(['nombre' => 'Sancor']);
+        Marca::create(['nombre' => 'Gloria']);
+        Marca::create(['nombre' => 'Yoplait']);
+        Marca::create(['nombre' => 'Santa Clara']);
     }
 }
