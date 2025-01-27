@@ -25,7 +25,7 @@ class SearchController extends Controller
             ['title' => 'Proveedores', 'url' => route('proveedor.index')],
             ['title' => 'Métodos de Pago', 'url' => route('metodos-pago.index')],
             ['title' => 'Pagos', 'url' => route('pagos.index')],
-            ['title' => 'Devoluciones', 'url' => route('devoluciones.index')],
+            ['title' => 'Promociones', 'url' => route('promociones.index')],
             ['title' => 'Reportes Compras', 'url' => route('reportes.compras')],
             ['title' => 'Reportes Ventas', 'url' => route('reportes.ventas')],
             ['title' => 'Reportes Pagos', 'url' => route('reportes.pagos')],

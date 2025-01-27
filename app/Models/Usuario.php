@@ -20,7 +20,7 @@ class Usuario extends Authenticatable
         'telefono',
         'rol_id'
     ];
-    
+
     protected $hidden = [
         'password',
     ];
@@ -30,23 +30,17 @@ class Usuario extends Authenticatable
     {
         return $this->hasMany(NotaVenta::class, 'usuario_id');
     }
-    
+
     // Relación uno a muchos con la tabla nota_compras
     public function notaCompras()
     {
         return $this->hasMany(NotaCompra::class, 'usuario_id');
     }
-    
+
     // Relación uno a muchos con la tabla ajuste_inventarios
     public function ajusteInventarios()
     {
         return $this->hasMany(AjusteInventario::class, 'usuario_id');
-    }
-
-    // Relación uno a muchos con la tabla devoluciones
-    public function devoluciones()
-    {
-        return $this->hasMany(Devolucion::class, 'usuario_id');
     }
 
     // Relación muchos a uno con la tabla rol

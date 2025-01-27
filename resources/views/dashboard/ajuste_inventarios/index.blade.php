@@ -2,14 +2,7 @@
     <x-layouts.content title="Ajustes de Inventario" subtitle="" name="Ajustes de Inventario">
         <div class="row">
             <div class="col-12">
-                {{-- <div class="mb-2 d-flex justify-content-between">
-                  <div class="form-group">
-                      <a href="{{ route('ajustes.create') }}" class="btn btn-primary waves-effect waves-light">
-                <i class="fas fa-plus-circle"></i>&nbsp;
-                Nueva Devolución
-                </a>
-            </div>
-        </div> --}}
+               
         <div class="card-box">
             <div class="table-responsive">
                 <table id="table-ajustes" class="table table-hover mb-0 dts">
