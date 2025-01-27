@@ -23,7 +23,7 @@ class VentaController extends Controller
     public function create()
     {
         $clientes = Cliente::all();
-        $productos = Producto::all();
+        $productos = Producto::with('promociones')->get();
         return view('dashboard.ventas.create', compact('clientes', 'productos'));
     }
 

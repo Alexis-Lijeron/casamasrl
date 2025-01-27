@@ -23,13 +23,29 @@
                     <select id="producto_id" class="form-control" style="width: 100%;" data-toggle="select2">
                       <option value="">Seleccione un producto</option>
                       @foreach ($productos as $producto)
-                      <option value="{{ $producto->id }}" data-nombre="{{ $producto->nombre }}"
-                        data-precio="{{ $producto->precio_venta }}"
-                        data-stock="{{ obtenerStockDisponible($producto->id) }}"
-                        data-stock-minimo="{{ $producto->stock_minimo }}">
-                        {{ $producto->nombre }}
-                      </option>
-                      @endforeach
+                            @php
+                                // Obtener la promoción activa más reciente (si existe)
+                                $promocionActiva = $producto->promociones
+                                    ->where('estado', 'activo')
+                                    ->where('fecha_inicio', '<=', now())
+                                    ->where('fecha_fin', '>=', now())
+                                    ->sortByDesc('fecha_inicio') // Para obtener la promoción más reciente
+                                    ->first();
+
+                                // Si hay promoción activa, usa el precio con descuento
+                                $precioConDescuento = $promocionActiva ? $promocionActiva->pivot->precio_con_descuento : $producto->precio_venta;
+                            @endphp
+
+                            <option value="{{ $producto->id }}"
+                                    data-nombre="{{ $producto->nombre }}"
+                                    data-precio="{{ $producto->precio_venta }}"
+                                    data-precio-descuento="{{ $precioConDescuento }}"
+                                    data-stock="{{ obtenerStockDisponible($producto->id) }}"
+                                    data-stock-minimo="{{ $producto->stock_minimo }}">
+                                {{ $producto->nombre }}
+                            </option>
+                        @endforeach
+
                     </select>
                   </div>
 
@@ -171,7 +187,8 @@
       productoSelect.addEventListener('change', function() {
         const selectedOption = productoSelect.options[productoSelect.selectedIndex];
         const precio = selectedOption.dataset.precio || 0;
-        precioInput.value = precio;
+        let precioDescuento = selectedOption.dataset.precioDescuento || precio;
+        precioInput.value = precioDescuento;
 
         // Actualizar el texto del badge
         if (productoSelect.value) {
