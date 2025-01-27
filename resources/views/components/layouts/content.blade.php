@@ -3,36 +3,42 @@
 
     <main class="flex-grow-1 p-4">
         <div class="container">
-            <!-- start page title -->
-            <div class="search-container">
-                <input type="text" id="search-input" class="form-control" placeholder="Buscar...">
-                <div id="search-results" class="list-group position-absolute w-100" style="z-index: 1000; display: none;"></div>
+            <!-- Contenedor de búsqueda y breadcrumb en la misma fila -->
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <!-- Buscador -->
+                <div class="search-container" style="width: 50%;">
+                    <input type="text" id="search-input" class="form-control" placeholder="Buscar...">
+                    <div id="search-results" class="list-group position-absolute w-100" style="z-index: 1000; display: none;"></div>
+                </div>
+
+                <!-- Navegación (Breadcrumbs) -->
+                <div class="page-title-right">
+                    <ol class="breadcrumb m-0">
+                        <li class="breadcrumb-item"><a href="javascript:void(0);">Panel Admin</a></li>
+                        @if(!empty($subtitle))
+                            <li class="breadcrumb-item"><a href="javascript:void(0);">{{ $title }}</a></li>
+                            <li class="breadcrumb-item active">{{ $subtitle }}</li>
+                        @else
+                            <li class="breadcrumb-item active">{{ $title }}</li>
+                        @endif
+                    </ol>
+                </div>
             </div>
 
+            <!-- Título de la Página -->
             <div class="row">
                 <div class="col-12">
                     <div class="page-title-box">
-                        <div class="page-title-right">
-                            <ol class="breadcrumb m-0">
-                                <li class="breadcrumb-item"><a href="javascript: void(0);">Panel Admin</a></li>
-                                @if(!empty($subtitle))
-                                    <li class="breadcrumb-item"><a href="javascript: void(0);">{{ $title }}</a></li>
-                                    <li class="breadcrumb-item active">{{ $subtitle }}</li>
-                                @else
-                                    <li class="breadcrumb-item active">{{ $title }}</li>
-                                @endif
-                            </ol>
-                        </div>
                         <h4 class="page-title">{{ $name }}</h4>
                     </div>
                 </div>
             </div>
-            <!-- end page title -->
 
             {{ $slot }}
         </div>
     </main>
 </div>
+
 <script>
     document.addEventListener('DOMContentLoaded', function () {
         const searchInput = document.getElementById('search-input');
