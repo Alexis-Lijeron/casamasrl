@@ -18,9 +18,9 @@ use App\Http\Controllers\RolController;
 use App\Http\Controllers\UsuarioController;
 use App\Http\Controllers\VentaController;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\PageController;
 use App\Http\Controllers\SearchController;
 use App\Http\Controllers\AjusteInventarioController;
+use App\Http\Controllers\EmailController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -190,6 +190,10 @@ Route::controller(ReporteController::class)->group(function () {
     Route::get('/reportes-compras', 'reporteCompras')->name('reportes.compras');
     Route::get('/reportes-ventas', 'reporteVentas')->name('reportes.ventas');
     Route::get('/reportes-pagos', 'reportePagos')->name('reportes.pagos');
+    Route::post('/reportes-ventas-resultados', 'mostrarVentasResultados')->name('reportes.mostrarVentasResultados');
 });
-
+// Route::get('/send-email', [EmailController::class, 'showForm'])->name('show.email.form');
+// Route::post('/send-email', [EmailController::class, 'sendEmail'])->name('send.email');
+Route::get('/report', [EmailController::class, 'report'])->name('report.index');
+Route::post('/report/send_report', [EmailController::class, 'sendReport'])->name('report.sendReport');
 Route::get('/search', [SearchController::class, 'search'])->name('search');

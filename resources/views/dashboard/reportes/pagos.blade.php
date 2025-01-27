@@ -274,326 +274,170 @@
             }
         </style>
     @endpush
-
     @push('js')
-        <script src="{{ asset('assets/plugins/flatpickr/flatpickr.js') }}"></script>
-        <script src="{{ asset('assets/libs/select2/select2.min.js') }}"></script>
+<script src="{{ asset('assets/plugins/flatpickr/flatpickr.js') }}"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const fechaDesde = document.getElementById('fechaDesde');
+        const fechaHasta = document.getElementById('fechaHasta');
+        const administrativo = document.getElementById('id_empleado');
+        const cliente = document.getElementById('id_cliente');
+        const estado = document.getElementById('estado');
+        const concepto = document.getElementById('concepto');
+        const btnConsultar = document.getElementById('btnConsultar');
+        const btnPdf = document.getElementById('btnPdf');
+        const tablePagosBody = document.querySelector('#table-pagos tbody');
+        const loadingIndicator = document.getElementById('loadingIndicator');
+        const datosDiv = document.getElementById('datos');
+        const dividerDatos = document.getElementById('dividerDatos');
 
-        <script>
-            $(document).ready(function() {
-                $('[data-toggle="select2"]').select2({
-                    placeholder: "Seleccionar",
-                    allowClear: true // Agrega un botón para borrar la selección
-                });
+        ocultarMensaje();
 
-                let fechaDesde = $('#fechaDesde');
-                let fechaHasta = $('#fechaHasta');
+        // Manejar el clic en el botón "Consultar"
+        btnConsultar.addEventListener('click', function (event) {
+            event.preventDefault();
 
-                ocultarMensaje();
+            if (validarDatos()) {
+                datosDiv.style.display = 'none';
+                dividerDatos.style.display = 'none';
+                btnPdf.disabled = true;
+                loadingIndicator.style.display = 'block';
 
-                // Manejar el clic en el botón "Consultar"
-                $('#btnConsultar').on('click', function (event) {
-                    event.preventDefault(); // Evitar el envío del formulario por defecto
+                const data = {
+                    id_empleado: administrativo.value || null,
+                    id_cliente: cliente.value || null,
+                    estado: estado.value || null,
+                    concepto: concepto.value || null,
+                    fechaDesde: fechaDesde.value ? convertirFecha(fechaDesde.value) : null,
+                    fechaHasta: fechaHasta.value ? convertirFecha(fechaHasta.value) : null,
+                };
 
-                    let success = validarDatos();
+                const urlApi = "{{ env('URL_SERVER_API') }}";
+                const url = `${urlApi}/reportes-pagos`;
 
-                    if (success) {
-                        $("#datos").hide();
-                        $("#dividerDatos").hide();
-                        $("#btnPdf").prop("disabled", true);
-                        $("#loadingIndicator").show();
-
-                        let data = {
-                            "id_empleado": $('#id_empleado').val(),
-                            "id_cliente": $('#id_cliente').val(),
-                            "estado": $('#estado').val(),
-                            "concepto": $('#concepto').val(),
-                            "fechaDesde": ($('#fechaDesde').val()) ? convertirFecha($('#fechaDesde').val()) : null,
-                            "fechaHasta": ($('#fechaHasta').val()) ? convertirFecha($('#fechaHasta').val()) : null,
-                        };
-                        console.log(data);
-                        console.log('=====================');
-
-                        const urlApi = "{{ env('URL_SERVER_API') }}";
-                        const url = `${urlApi}/reportes-pagos`;
-
-                        // Realizar la solicitud fetch
-                        fetch(url, {
-                            method: 'POST',
-                            headers: {
-                                "X-CSRF-TOKEN": "{{ csrf_token() }}",
-                                "Content-Type": "application/json",
-                            },
-                            body: JSON.stringify(data)
-                        })
-                        .then(response => response.json())
-                        .then(data => {
-
-                            $("#dividerDatos").show();
-                            $("#datos").show();
-                            $("#loadingIndicator").hide();
-                            verificarCampos();
-
-                            // Limpiar la tabla antes de agregar nuevos datos
-                            let pagos = data.pagos;
-                            console.log(pagos);
-                            $('#table-pagos tbody').empty();
-
-                            // Verificar si hay resultados para mostrar
-                            if (pagos.length > 0) {
-                            // Iterar sobre los datos y agregarlos a la tabla
-                                pagos.forEach(pago => {
-                                    let row = '<tr class="text-nowrap text-center">';
-                                    row += '<th scope="row" class="align-middle">' + pago.id + '</th>';
-                                    row += '<td class="align-middle">' + pago.fecha + '</td>';
-                                    row += '<td class="align-middle">' + pago.orden_de_trabajo.cotizacion.cliente.nombre + ' ' + pago.orden_de_trabajo.cotizacion.cliente.apellido + '</td>';
-                                    row += '<td class="align-middle">' + pago.orden_de_trabajo.cotizacion.empleado.nombre + ' ' + pago.orden_de_trabajo.cotizacion.empleado.apellido + '</td>';
-                                    row += '<td class="align-middle">' + (pago.estado ? 'Pagado' : 'Pendiente') + '</td>';
-                                    row += '<td class="align-middle">' + pago.concepto + '</td>';
-                                    row += '<td class="align-middle">' + 'Bs. ' + formatearNumero(pago.monto) + '</td>';
-                                    row += '</tr>';
-                                    $('#table-pagos tbody').append(row);
-                                });
-                            } else {
-                                // Mostrar un mensaje si no hay resultados
-                                let row = '<tr class="text-nowrap text-center">';
-                                row += '<td colspan="7" class="align-middle">No hay registros</td>';
-                                row += '</tr>';
-                                $('#table-pagos tbody').append(row);
-                            }
-                        })
-                        .catch(error => {
-                            console.error('Error en la petición fetch', error);
-                        });
-                    }
-                });
-
-                // Manejar el clic en el botón "Generar PDF"
-                $('#btnPdf').on('click', function (event) {
-                    event.preventDefault();
-                    generarPDF();
+                fetch(url, {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRF-TOKEN': "{{ csrf_token() }}",
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(data),
                 })
+                    .then(response => response.json())
+                    .then(data => {
+                        dividerDatos.style.display = 'block';
+                        datosDiv.style.display = 'block';
+                        loadingIndicator.style.display = 'none';
+                        verificarCampos();
 
-                function generarPDF() {
-                    // Obtener valores de los campos o variables necesarios
-                    const admin = $('#id_empleado').val();
-                    const cliente = $('#id_cliente').val();
-                    const estado = $('#estado').val();
-                    const concepto = $('#concepto').val();
-                    const f1 = ($('#fechaDesde').val()) ? convertirFecha($('#fechaDesde').val()) : null;
-                    const f2 = ($('#fechaHasta').val()) ? convertirFecha($('#fechaHasta').val()) : null;
+                        tablePagosBody.innerHTML = '';
 
-                    // Construir la URL con los parámetros
-                    const url = `/dashboard/generar-reporte-pagos/pdf/${admin}/${cliente}/${estado}/${concepto}/${f1}/${f2}`;
+                        if (data.pagos.length > 0) {
+                            data.pagos.forEach(pago => {
+                                const row = `
+                                    <tr class="text-nowrap text-center">
+                                        <th scope="row" class="align-middle">${pago.id}</th>
+                                        <td class="align-middle">${pago.fecha}</td>
+                                        <td class="align-middle">${pago.orden_de_trabajo.cotizacion.cliente.nombre} ${pago.orden_de_trabajo.cotizacion.cliente.apellido}</td>
+                                        <td class="align-middle">${pago.orden_de_trabajo.cotizacion.empleado.nombre} ${pago.orden_de_trabajo.cotizacion.empleado.apellido}</td>
+                                        <td class="align-middle">${pago.estado ? 'Pagado' : 'Pendiente'}</td>
+                                        <td class="align-middle">${pago.concepto}</td>
+                                        <td class="align-middle">Bs. ${formatearNumero(pago.monto)}</td>
+                                    </tr>`;
+                                tablePagosBody.insertAdjacentHTML('beforeend', row);
+                            });
+                        } else {
+                            const noResultsRow = `
+                                <tr class="text-nowrap text-center">
+                                    <td colspan="7" class="align-middle">No hay registros</td>
+                                </tr>`;
+                            tablePagosBody.insertAdjacentHTML('beforeend', noResultsRow);
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error en la petición fetch:', error);
+                    });
+            }
+        });
 
-                    // Redireccionar a la URL construida
-                    window.open(url, '_blank');
-                }
+        // Manejar el clic en el botón "Generar PDF"
+        btnPdf.addEventListener('click', function (event) {
+            event.preventDefault();
+            generarPDF();
+        });
 
+        function generarPDF() {
+            const url = `/dashboard/generar-reporte-pagos/pdf/${administrativo.value || 'null'}/${cliente.value || 'null'}/${estado.value || 'null'}/${concepto.value || 'null'}/${fechaDesde.value ? convertirFecha(fechaDesde.value) : 'null'}/${fechaHasta.value ? convertirFecha(fechaHasta.value) : 'null'}`;
+            window.open(url, '_blank');
+        }
+
+        function validarDatos() {
+            let valid = true;
+
+            if (!fechaDesde.value && !fechaHasta.value && !administrativo.value && !cliente.value && !estado.value && !concepto.value) {
+                mostrarErrores();
+                valid = false;
+            }
+            return valid;
+        }
+
+        function mostrarErrores() {
+            if (!fechaDesde.value) document.getElementById('mensajeFechaDesde').textContent = "El campo fecha desde es requerido.";
+            if (!fechaHasta.value) document.getElementById('mensajeFechaHasta').textContent = "El campo fecha hasta es requerido.";
+            if (!administrativo.value) document.getElementById('mensajeAdministrativo').textContent = "El campo administrativo es requerido.";
+            if (!cliente.value) document.getElementById('mensajeCliente').textContent = "El campo cliente es requerido.";
+            if (!estado.value) document.getElementById('mensajeEstado').textContent = "El campo estado es requerido.";
+            if (!concepto.value) document.getElementById('mensajeConcepto').textContent = "El campo concepto es requerido.";
+        }
+
+        function verificarCampos() {
+            if (fechaDesde.value && fechaHasta.value && administrativo.value && cliente.value && estado.value && concepto.value) {
+                btnPdf.disabled = false;
+            } else {
+                btnPdf.disabled = true;
+            }
+        }
+
+        function ocultarMensaje() {
+            const fields = [fechaDesde, fechaHasta, administrativo, cliente, estado, concepto];
+            fields.forEach(field => {
+                field.addEventListener('change', function () {
+                    const messageId = `mensaje${field.id.charAt(0).toUpperCase() + field.id.slice(1)}`;
+                    document.getElementById(messageId).textContent = '';
+                });
             });
-        </script>
+        }
 
-        <script>
-            function validarDatos() {
+        function convertirFecha(fecha) {
+            const partes = fecha.split('/');
+            return `${partes[2]}-${partes[1]}-${partes[0]}`;
+        }
 
-                let fechaDesde = $('#fechaDesde');
-                let fechaHasta = $('#fechaHasta');
-                let administrativo = $('#id_empleado');
-                let cliente = $('#id_cliente');
-                let estado = $('#estado');
-                let concepto = $('#concepto');
+        function formatearNumero(numero) {
+            numero = parseFloat(numero);
+            if (isNaN(numero)) return '0,00';
+            numero = numero.toFixed(2);
+            const partes = numero.split('.');
+            partes[0] = partes[0].replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+            return partes.join(',');
+        }
 
-                if (!fechaDesde.val() && !fechaHasta.val() && !administrativo.val() && !cliente.val() && !estado.val() && !concepto.val()) {
-                    $("#mensajeFechaDesde").text("El campo fecha desde es requerido.");
-                    $("#mensajeFechaHasta").text("El campo fecha hasta es requerido.");
-                    $("#mensajeAdministrativo").text("El campo administrativo es requerido.");
-                    $("#mensajeCliente").text("El campo cliente es requerido.");
-                    $("#mensajeEstado").text("El campo estado es requerido.");
-                    $("#mensajeConcepto").text("El campo concepto es requerido.");
-                    return false;
-                }
-                if (!fechaDesde.val() && !fechaHasta.val()) {
-                    $("#mensajeFechaDesde").text("El campo fecha desde es requerido.");
-                    $("#mensajeFechaHasta").text("El campo fecha hasta es requerido.");
-                    return false;
-                }
-                if (!fechaDesde.val()) {
-                    $("#mensajeFechaDesde").text("El campo fecha desde es requerido.");
-                    return false;
-                }
-                if (!fechaHasta.val()) {
-                    $("#mensajeFechaHasta").text("El campo fecha hasta es requerido.");
-                    return;
-                }
-                if (!administrativo.val()) {
-                    $("#mensajeAdministrativo").text("El campo administrativo es requerido.");
-                    return false;
-                }
-                if (!cliente.val()) {
-                    $("#mensajeCliente").text("El campo cliente es requerido.");
-                    return false;
-                }
-                if (!estado.val()) {
-                    $("#mensajeEstado").text("El campo estado es requerido.");
-                    return false;
-                }
-                if (!concepto.val()) {
-                    $("#mensajeConcepto").text("El campo concepto es requerido.");
-                    return false;
-                }
-                return true;
-            }
-        </script>
-
-        <script>
-            function verificarCampos() {
-                let fechaDesde = $('#fechaDesde');
-                let fechaHasta = $('#fechaHasta');
-                let administrativo = $('#id_empleado');
-                let cliente = $('#id_cliente');
-                let estado = $('#estado');
-                let concepto = $('#concepto');
-
-                if (fechaDesde.val() && fechaHasta.val() && administrativo.val() && cliente.val() && estado.val() && concepto.val()) {
-                    console.log('Todos los campos tienen valor');
-                    $("#btnPdf").prop("disabled", false);
-                } else {
-                    $("#btnPdf").prop("disabled", true);
-                    console.log('Falta completar campos');
-                }
-            }
-        </script>
-
-        <script>
-            function ocultarMensaje() {
-                let fechaDesde = $('#fechaDesde');
-                let fechaHasta = $('#fechaHasta');
-                let administrativo = $('#id_empleado');
-                let cliente = $('#id_cliente');
-                let estado = $('#estado');
-                let concepto = $('#concepto');
-
-                administrativo.on('change', function() {
-                    if (administrativo.val()) {
-                        $("#mensajeAdministrativo").text("");
-                    }
-                });
-
-                cliente.on('change', function() {
-                    if (cliente.val()) {
-                        $("#mensajeCliente").text("");
-                    }
-                });
-
-                estado.on('change', function() {
-                    if (estado.val()) {
-                        $("#mensajeEstado").text("");
-                    }
-                });
-
-                concepto.on('change', function() {
-                    if (concepto.val()) {
-                        $("#mensajeConcepto").text("");
-                    }
-                });
-
-                fechaDesde.on('change', function() {
-                    if (fechaDesde.val()) {
-                        $("#mensajeFechaDesde").text("");
-                    }
-                });
-
-                fechaHasta.on('change', function() {
-                    if (fechaHasta.val()) {
-                        $("#mensajeFechaHasta").text("");
-                    }
-                });
-            }
-        </script>
-
-        <script>
-            function convertirFecha(fecha) {
-                // Dividir la fecha en día, mes y año
-                let partes = fecha.split('/');
-                // Crear una nueva fecha con el formato "aaaa-mm-dd"
-                let nuevaFecha = partes[2] + '-' + partes[1] + '-' + partes[0];
-                return nuevaFecha;
-            }
-        </script>
-        
-        <script>
-            function formatearNumero(numero) {
-                // Asegurarse de que el argumento sea un número
-                numero = parseFloat(numero);
-
-                // Verificar si es un número válido
-                if (isNaN(numero)) {
-                    return '0,00';
-                }
-
-                // Redondear a dos decimales
-                numero = numero.toFixed(2);
-
-                // Separar los miles y los decimales
-                var partes = numero.toString().split('.');
-                partes[0] = partes[0].replace(/\B(?=(\d{3})+(?!\d))/g, '.');
-
-                // Unir las partes y devolver el resultado
-                return partes.join(',');
-            }
-        </script>
-
-        <script>
-            flatpickr(".flatpickr", {
-                    enableTime: false,
-                    dateFormat: 'd/m/Y',
-                    locale: {
-                        firstDayofWeek: 1,
-                        weekdays: {
-                            shorthand: ["Dom", "Lun", "Mar", "Mié", "Jue", "Vie", "Sáb"],
-                            longhand: [
-                            "Domingo",
-                            "Lunes",
-                            "Martes",
-                            "Miércoles",
-                            "Jueves",
-                            "Viernes",
-                            "Sábado",
-                            ],
-                        },
-                        months: {
-                            shorthand: [
-                            "Ene",
-                            "Feb",
-                            "Mar",
-                            "Abr",
-                            "May",
-                            "Jun",
-                            "Jul",
-                            "Ago",
-                            "Sep",
-                            "Oct",
-                            "Nov",
-                            "Dic",
-                            ],
-                            longhand: [
-                            "Enero",
-                            "Febrero",
-                            "Marzo",
-                            "Abril",
-                            "Mayo",
-                            "Junio",
-                            "Julio",
-                            "Agosto",
-                            "Septiembre",
-                            "Octubre",
-                            "Noviembre",
-                            "Diciembre",
-                            ],
-                        },
-                    }
-                });
-        </script>
-    @endpush
-
+        flatpickr('.flatpickr', {
+            enableTime: false,
+            dateFormat: 'd/m/Y',
+            locale: {
+                firstDayofWeek: 1,
+                weekdays: {
+                    shorthand: ["Dom", "Lun", "Mar", "Mié", "Jue", "Vie", "Sáb"],
+                    longhand: ["Domingo", "Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado"],
+                },
+                months: {
+                    shorthand: ["Ene", "Feb", "Mar", "Abr", "May", "Jun", "Jul", "Ago", "Sep", "Oct", "Nov", "Dic"],
+                    longhand: ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"],
+                },
+            },
+        });
+    });
+</script>
+@endpush
 </x-layouts.app>

@@ -24,8 +24,9 @@
                                         <option value="0">Todos</option>
                                         @foreach ($usuarios as $administrativo)
                                         <option value="{{ $administrativo['id'] }}"
-                                        @if ($administrativo['id'] == old('id_empleado')) selected @endif>
-                                        {{ $administrativo['nombre'] }} {{ $administrativo['apellido'] }}</option>
+                                            @if ($administrativo['id']==old('id_empleado')) selected @endif>
+                                            {{ $administrativo['nombre'] }} {{ $administrativo['apellido'] }}
+                                        </option>
                                         @endforeach
                                     </select>
                                     <span id="mensajeAdministrativo" class="error text-danger"></span>
@@ -40,8 +41,9 @@
                                         <option value="0">Todos</option>
                                         @foreach ($proveedores as $proveedor)
                                         <option value="{{ $proveedor['id'] }}"
-                                        @if ($proveedor['id'] == old('id_proveedor')) selected @endif>
-                                            {{ $proveedor['nombre_empreesa'] }} - {{ $proveedor['nombre_proveedor'] }}</option>
+                                            @if ($proveedor['id']==old('id_proveedor')) selected @endif>
+                                            {{ $proveedor['nombre_empreesa'] }} - {{ $proveedor['nombre_proveedor'] }}
+                                        </option>
                                         @endforeach
                                     </select>
                                     <span id="mensajeCliente" class="error text-danger"></span>
@@ -72,7 +74,7 @@
                                         <option value="0">Todos</option>
                                         @foreach ($productos as $producto)
                                         <option value="{{ $producto['id'] }}"
-                                        @if ($producto['id'] == old('id_producto')) selected @endif>{{
+                                            @if ($producto['id']==old('id_producto')) selected @endif>{{
                                             $producto['nombre'] }}</option>
                                         @endforeach
                                     </select>
@@ -136,501 +138,331 @@
                             {{-- <div class="col-md-3 px-1 pt-2">
                                 <div class="form-group mb-1">
                                     <a href="{{ route('generar.excel') }}" class="btn btn-dark waves-effect m-l-5 w-100 d-flex align-items-center justify-content-center py-2">
-                                        <i class="fas fa-file-pdf mr-2 font-20"></i>
-                                        Generar Excel
-                                    </a>
-                                </div>
-                            </div> --}}
-
+                            <i class="fas fa-file-pdf mr-2 font-20"></i>
+                            Generar Excel
+                            </a>
                         </div>
+                </div> --}}
 
-                        <hr id="dividerDatos" style="display: none; background: rgb(237, 237, 237); height: 1.2px">
+            </div>
 
-                        <div class="row mx-4 mt-4" id="loadingIndicator" style="display: none">
-                            <div class='container'>
-                                <div class='loader'>
-                                    <div class='loader--dot'></div>
-                                    <div class='loader--dot'></div>
-                                    <div class='loader--dot'></div>
-                                    <div class='loader--dot'></div>
-                                    <div class='loader--dot'></div>
-                                    <div class='loader--dot'></div>
-                                    <div class='loader--text'></div>
-                                </div>
-                            </div>
-                        </div>
-                    </form>
+            <hr id="dividerDatos" style="display: none; background: rgb(237, 237, 237); height: 1.2px">
 
-                    <div class="table-responsive" id="datos" style="display: none;">
-                        <table id="table-ordenes" class="table table-bordered table-hover mb-0">
-                            <thead class="bg-dark text-center text-white text-nowrap">
-                                <tr style="cursor: pointer">
-                                    <th scope="col" style="width: 60px;">ID</th>
-                                    <th scope="col">Fecha</th>
-                                    <th scope="col">Fecha Ingreso</th>
-                                    <th scope="col">Fecha Salida</th>
-                                    <th scope="col">Cliente</th>
-                                    <th scope="col">Administrativo</th>
-                                    <th scope="col">Estado</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                            </tbody>
-                        </table>
+            <div class="row mx-4 mt-4" id="loadingIndicator" style="display: none">
+                <div class='container'>
+                    <div class='loader'>
+                        <div class='loader--dot'></div>
+                        <div class='loader--dot'></div>
+                        <div class='loader--dot'></div>
+                        <div class='loader--dot'></div>
+                        <div class='loader--dot'></div>
+                        <div class='loader--dot'></div>
+                        <div class='loader--text'></div>
                     </div>
-
                 </div>
             </div>
+            </form>
+
+            <div class="table-responsive" id="datos" style="display: none;">
+                <table id="table-ordenes" class="table table-bordered table-hover mb-0">
+                    <thead class="bg-dark text-center text-white text-nowrap">
+                        <tr style="cursor: pointer">
+                            <th scope="col" style="width: 60px;">ID</th>
+                            <th scope="col">Fecha</th>
+                            <th scope="col">Fecha Ingreso</th>
+                            <th scope="col">Fecha Salida</th>
+                            <th scope="col">Cliente</th>
+                            <th scope="col">Administrativo</th>
+                            <th scope="col">Estado</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                </table>
+            </div>
+
+        </div>
+        </div>
         </div>
 
     </x-layouts.content>
 
     @push('styles')
-        <style>
-            .container {
-                height: 120px;
-                width: 100%;
+    <style>
+        .container {
+            height: 120px;
+            width: 100%;
+        }
+
+        .loader {
+            height: 20px;
+            width: 250px;
+            position: relative;
+            top: 0;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            margin: auto;
+        }
+
+        .loader--dot {
+            animation-name: loader;
+            animation-timing-function: ease-in-out;
+            animation-duration: 3s;
+            animation-iteration-count: infinite;
+            height: 20px;
+            width: 20px;
+            border-radius: 100%;
+            background-color: black;
+            position: absolute;
+            border: 2px solid white;
+        }
+
+        .loader--dot:first-child {
+            background-color: #8cc759;
+            animation-delay: 0.5s;
+        }
+
+        .loader--dot:nth-child(2) {
+            background-color: #8c6daf;
+            animation-delay: 0.4s;
+        }
+
+        .loader--dot:nth-child(3) {
+            background-color: #ef5d74;
+            animation-delay: 0.3s;
+        }
+
+        .loader--dot:nth-child(4) {
+            background-color: #f9a74b;
+            animation-delay: 0.2s;
+        }
+
+        .loader--dot:nth-child(5) {
+            background-color: #60beeb;
+            animation-delay: 0.1s;
+        }
+
+        .loader--dot:nth-child(6) {
+            background-color: #fbef5a;
+            animation-delay: 0s;
+        }
+
+        .loader--text {
+            position: absolute;
+            top: 200%;
+            left: 0;
+            right: 0;
+            width: 4rem;
+            margin: auto;
+        }
+
+        .loader--text:after {
+            content: "Cargando";
+            font-weight: bold;
+            animation-name: loading-text;
+            animation-duration: 3s;
+            animation-iteration-count: infinite;
+        }
+
+        @keyframes loader {
+            15% {
+                transform: translateX(0);
             }
 
-            .loader {
-                height: 20px;
-                width: 250px;
-                position: relative;
-                top: 0;
-                bottom: 0;
-                left: 0;
-                right: 0;
-                margin: auto;
+            45% {
+                transform: translateX(230px);
             }
-            .loader--dot {
-                animation-name: loader;
-                animation-timing-function: ease-in-out;
-                animation-duration: 3s;
-                animation-iteration-count: infinite;
-                height: 20px;
-                width: 20px;
-                border-radius: 100%;
-                background-color: black;
-                position: absolute;
-                border: 2px solid white;
+
+            65% {
+                transform: translateX(230px);
             }
-            .loader--dot:first-child {
-                background-color: #8cc759;
-                animation-delay: 0.5s;
+
+            95% {
+                transform: translateX(0);
             }
-            .loader--dot:nth-child(2) {
-                background-color: #8c6daf;
-                animation-delay: 0.4s;
-            }
-            .loader--dot:nth-child(3) {
-                background-color: #ef5d74;
-                animation-delay: 0.3s;
-            }
-            .loader--dot:nth-child(4) {
-                background-color: #f9a74b;
-                animation-delay: 0.2s;
-            }
-            .loader--dot:nth-child(5) {
-                background-color: #60beeb;
-                animation-delay: 0.1s;
-            }
-            .loader--dot:nth-child(6) {
-                background-color: #fbef5a;
-                animation-delay: 0s;
-            }
-            .loader--text {
-                position: absolute;
-                top: 200%;
-                left: 0;
-                right: 0;
-                width: 4rem;
-                margin: auto;
-            }
-            .loader--text:after {
+        }
+
+        @keyframes loading-text {
+            0% {
                 content: "Cargando";
-                font-weight: bold;
-                animation-name: loading-text;
-                animation-duration: 3s;
-                animation-iteration-count: infinite;
             }
 
-            @keyframes loader {
-                15% {
-                    transform: translateX(0);
-                }
-                45% {
-                    transform: translateX(230px);
-                }
-                65% {
-                    transform: translateX(230px);
-                }
-                95% {
-                    transform: translateX(0);
-                }
+            25% {
+                content: "Cargando.";
             }
-            @keyframes loading-text {
-                0% {
-                    content: "Cargando";
-                }
-                25% {
-                    content: "Cargando.";
-                }
-                50% {
-                    content: "Cargando..";
-                }
-                75% {
-                    content: "Cargando...";
-                }
+
+            50% {
+                content: "Cargando..";
             }
-        </style>
+
+            75% {
+                content: "Cargando...";
+            }
+        }
+    </style>
     @endpush
 
     @push('js')
-        <script src="{{ asset('assets/plugins/flatpickr/flatpickr.js') }}"></script>
-        <script src="{{ asset('assets/libs/select2/select2.min.js') }}"></script>
+    <script src="{{ asset('assets/plugins/flatpickr/flatpickr.js') }}"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const fechaDesde = document.getElementById('fechaDesde');
+            const fechaHasta = document.getElementById('fechaHasta');
+            const administrativo = document.getElementById('id_empleado');
+            const proveedor = document.getElementById('id_proveedor');
+            const mecanico = document.getElementById('id_mecanico');
+            const servicio = document.getElementById('id_servicio');
+            const producto = document.getElementById('id_producto');
+            const btnConsultar = document.getElementById('btnConsultar');
+            const btnPdf = document.getElementById('btnPdf');
+            const tableOrdenesBody = document.querySelector('#table-ordenes tbody');
+            const loadingIndicator = document.getElementById('loadingIndicator');
+            const datosDiv = document.getElementById('datos');
+            const dividerDatos = document.getElementById('dividerDatos');
 
-        <script>
-            $(document).ready(function() {
-                $('[data-toggle="select2"]').select2({
-                    placeholder: "Seleccionar",
-                    allowClear: true // Agrega un botón para borrar la selección
-                });
+            ocultarMensaje();
 
-                let fechaDesde = $('#fechaDesde');
-                let fechaHasta = $('#fechaHasta');
+            // Manejar el clic en el botón "Consultar"
+            btnConsultar.addEventListener('click', function(event) {
+                event.preventDefault();
 
-                ocultarMensaje();
+                if (validarDatos()) {
+                    datosDiv.style.display = 'none';
+                    dividerDatos.style.display = 'none';
+                    btnPdf.disabled = true;
+                    loadingIndicator.style.display = 'block';
 
-                // Manejar el clic en el botón "Consultar"
-                $('#btnConsultar').on('click', function (event) {
-                    event.preventDefault(); // Evitar el envío del formulario por defecto
+                    const data = {
+                        id_empleado: administrativo.value || null,
+                        id_proveedor: proveedor.value || null,
+                        id_mecanico: mecanico.value || null,
+                        id_servicio: servicio.value || null,
+                        id_producto: producto.value || null,
+                        estado: document.getElementById('estado').value || null,
+                        fechaDesde: fechaDesde.value ? convertirFecha(fechaDesde.value) : null,
+                        fechaHasta: fechaHasta.value ? convertirFecha(fechaHasta.value) : null,
+                    };
 
-                    let success = validarDatos();
+                    const urlApi = "{{ env('URL_SERVER_API') }}";
+                    const url = `${urlApi}/reportes-orden-trabajos`;
 
-                    if (success) {
-                        $("#datos").hide();
-                        $("#dividerDatos").hide();
-                        $("#btnPdf").prop("disabled", true);
-                        $("#loadingIndicator").show();
-
-                        let data = {
-                            "id_empleado": $('#id_empleado').val(),
-                            "id_proveedor": $('#id_proveedor').val(),
-                            "id_mecanico": $('#id_mecanico').val(),
-                            "id_servicio": $('#id_servicio').val(),
-                            "id_producto": $('#id_producto').val(),
-                            "estado": $('#estado').val(),
-                            "fechaDesde": ($('#fechaDesde').val()) ? convertirFecha($('#fechaDesde').val()) : null,
-                            "fechaHasta": ($('#fechaHasta').val()) ? convertirFecha($('#fechaHasta').val()) : null,
-                        };
-                        console.log(data);
-                        console.log('=====================');
-
-                        const urlApi = "{{ env('URL_SERVER_API') }}";
-                        const url = `${urlApi}/reportes-orden-trabajos`;
-
-                        // Realizar la solicitud fetch
-                        fetch(url, {
+                    fetch(url, {
                             method: 'POST',
                             headers: {
-                                "X-CSRF-TOKEN": "{{ csrf_token() }}",
-                                "Content-Type": "application/json",
+                                'X-CSRF-TOKEN': "{{ csrf_token() }}",
+                                'Content-Type': 'application/json',
                             },
-                            body: JSON.stringify(data)
+                            body: JSON.stringify(data),
                         })
                         .then(response => response.json())
                         .then(data => {
-
-                            $("#dividerDatos").show();
-                            $("#datos").show();
-                            $("#loadingIndicator").hide();
+                            dividerDatos.style.display = 'block';
+                            datosDiv.style.display = 'block';
+                            loadingIndicator.style.display = 'none';
                             verificarCampos();
 
-                            // Limpiar la tabla antes de agregar nuevos datos
-                            console.log(data);
-                            let ordenes = data.ordenes;
-                            $('#table-ordenes tbody').empty();
+                            tableOrdenesBody.innerHTML = '';
 
-                            // Verificar si hay resultados para mostrar
-                            if (ordenes.length > 0) {
-                            //     // Iterar sobre los datos y agregarlos a la tabla
-                                ordenes.forEach(orden => {
-                                    let row = '<tr class="text-nowrap text-center">';
-                                    row += '<th scope="row" class="align-middle">' + orden.id + '</th>';
-                                    row += '<td class="align-middle">' + orden.fecha_creacion + '</td>';
-                                    row += '<td class="align-middle">' + orden.fecha_inicio + '</td>';
-                                    row += '<td class="align-middle">' + orden.fecha_fin + '</td>';
-                                    row += '<td class="align-middle">' + orden.cotizacion.proveedor.nombre + ' ' + orden.cotizacion.proveedor.apellido + '</td>';
-                                    row += '<td class="align-middle">' + orden.cotizacion.empleado.nombre + ' ' + orden.cotizacion.empleado.apellido + '</td>';
-                                    row += '<td class="align-middle">' + orden.estado + '</td>';
-                                    row += '</tr>';
-                                    $('#table-ordenes tbody').append(row);
+                            if (data.ordenes.length > 0) {
+                                data.ordenes.forEach(orden => {
+                                    const row = `
+                                    <tr class="text-nowrap text-center">
+                                        <th scope="row" class="align-middle">${orden.id}</th>
+                                        <td class="align-middle">${orden.fecha_creacion}</td>
+                                        <td class="align-middle">${orden.fecha_inicio}</td>
+                                        <td class="align-middle">${orden.fecha_fin}</td>
+                                        <td class="align-middle">${orden.cotizacion.proveedor.nombre} ${orden.cotizacion.proveedor.apellido}</td>
+                                        <td class="align-middle">${orden.cotizacion.empleado.nombre} ${orden.cotizacion.empleado.apellido}</td>
+                                        <td class="align-middle">${orden.estado}</td>
+                                    </tr>`;
+                                    tableOrdenesBody.insertAdjacentHTML('beforeend', row);
                                 });
                             } else {
-                                // Mostrar un mensaje si no hay resultados
-                                let row = '<tr class="text-nowrap text-center">';
-                                row += '<td colspan="7" class="align-middle">No hay registros</td>';
-                                row += '</tr>';
-                                $('#table-ordenes tbody').append(row);
+                                const noResultsRow = `
+                                <tr class="text-nowrap text-center">
+                                    <td colspan="7" class="align-middle">No hay registros</td>
+                                </tr>`;
+                                tableOrdenesBody.insertAdjacentHTML('beforeend', noResultsRow);
                             }
                         })
                         .catch(error => {
-                            console.error('Error en la petición fetch', error);
+                            console.error('Error en la petición fetch:', error);
                         });
-                    }
-                });
-
-                // Manejar el clic en el botón "Generar PDF"
-                $('#btnPdf').on('click', function (event) {
-                    event.preventDefault();
-                    generarPDF();
-                })
-
-                function generarPDF() {
-                    // Obtener valores de los campos o variables necesarios
-                    const admin = $('#id_empleado').val();
-                    const proveedor = $('#id_proveedor').val();
-                    const mecanico = $('#id_mecanico').val();
-                    const estado = $('#estado').val();
-                    const servicio = $('#id_servicio').val();
-                    const producto = $('#id_producto').val();
-                    const f1 = ($('#fechaDesde').val()) ? convertirFecha($('#fechaDesde').val()) : null;
-                    const f2 = ($('#fechaHasta').val()) ? convertirFecha($('#fechaHasta').val()) : null;
-
-                    // Construir la URL con los parámetros
-                    const url = `/dashboard/generar-reporte-ordenes/pdf/${admin}/${proveedor}/${mecanico}/${estado}/${servicio}/${producto}/${f1}/${f2}`;
-
-                    // Redireccionar a la URL construida
-                    // window.location.href = url;
-                    window.open(url, '_blank');
                 }
-
             });
-        </script>
 
-        {{-- <script>
-            function generarPdf() {
+            // Manejar el clic en el botón "Generar PDF"
+            btnPdf.addEventListener('click', function(event) {
+                event.preventDefault();
+                generarPDF();
+            });
 
-                let datos = {
-                    "id_empleado": $('#id_empleado').val(),
-                    "id_proveedor": $('#id_proveedor').val(),
-                    "id_mecanico": $('#id_mecanico').val(),
-                    "id_servicio": $('#id_servicio').val(),
-                    "id_producto": $('#id_producto').val(),
-                    "estado": $('#estado').val(),
-                    "fechaDesde": ($('#fechaDesde').val()) ? convertirFecha($('#fechaDesde').val()) : null,
-                    "fechaHasta": ($('#fechaHasta').val()) ? convertirFecha($('#fechaHasta').val()) : null,
-                };
-
-                $.ajax({
-                    url: "{{ route('reportes.generarOrdenes') }}",
-                    type: 'POST',
-                    contentType: 'application/json', // Indica que estás enviando datos en formato JSON
-                    data: JSON.stringify(datos), // Convierte los datos a formato JSON
-                    // success: function (data) {
-                    //     // Manejar la respuesta
-                    //     console.log(data);
-                    // },
-                    // error: function (error) {
-                    //     console.error('Error en la petición AJAX:', error);
-                    // }
-                });
+            function generarPDF() {
+                const url = `/dashboard/generar-reporte-ordenes/pdf/${administrativo.value || 'null'}/${proveedor.value || 'null'}/${mecanico.value || 'null'}/${document.getElementById('estado').value || 'null'}/${servicio.value || 'null'}/${producto.value || 'null'}/${fechaDesde.value ? convertirFecha(fechaDesde.value) : 'null'}/${fechaHasta.value ? convertirFecha(fechaHasta.value) : 'null'}`;
+                window.open(url, '_blank');
             }
-        </script> --}}
 
-        <script>
             function validarDatos() {
+                let valid = true;
 
-                let fechaDesde = $('#fechaDesde');
-                let fechaHasta = $('#fechaHasta');
-                let administrativo = $('#id_empleado');
-                let proveedor = $('#id_proveedor');
-                let mecanico = $('#id_mecanico');
-                let servicio = $('#id_servicio');
-                let producto = $('#id_producto');
-
-                if (!fechaDesde.val() && !fechaHasta.val() && !administrativo.val() && !proveedor.val() && !mecanico.val() && !servicio.val() && !producto.val()) {
-                    $("#mensajeFechaDesde").text("El campo fecha desde es requerido.");
-                    $("#mensajeFechaHasta").text("El campo fecha hasta es requerido.");
-                    $("#mensajeAdministrativo").text("El campo administrativo es requerido.");
-                    $("#mensajeCliente").text("El campo proveedor es requerido.");
-                    $("#mensajeMecanico").text("El campo mecánico es requerido.");
-                    $("#mensajeServicio").text("El campo servicio es requerido.");
-                    $("#mensajeProducto").text("El campo producto es requerido.");
-                    return false;
+                if (!fechaDesde.value && !fechaHasta.value && !administrativo.value && !proveedor.value && !mecanico.value && !servicio.value && !producto.value) {
+                    mostrarErrores();
+                    valid = false;
                 }
-                if (!fechaDesde.val() && !fechaHasta.val()) {
-                    $("#mensajeFechaDesde").text("El campo fecha desde es requerido.");
-                    $("#mensajeFechaHasta").text("El campo fecha hasta es requerido.");
-                    return false;
-                }
-                if (!fechaDesde.val()) {
-                    $("#mensajeFechaDesde").text("El campo fecha desde es requerido.");
-                    return false;
-                }
-                if (!fechaHasta.val()) {
-                    $("#mensajeFechaHasta").text("El campo fecha hasta es requerido.");
-                    return;
-                }
-                if (!administrativo.val()) {
-                    $("#mensajeAdministrativo").text("El campo administrativo es requerido.");
-                    return false;
-                }
-                if (!proveedor.val()) {
-                    $("#mensajeCliente").text("El campo proveedor es requerido.");
-                    return false;
-                }
-                if (!mecanico.val()) {
-                    $("#mensajeMecanico").text("El campo mecánico es requerido.");
-                    return false;
-                }
-                if (!servicio.val()) {
-                    $("#mensajeServicio").text("El campo servicio es requerido.");
-                    return false;
-                }
-                if (!producto.val()) {
-                    $("#mensajeProducto").text("El campo producto es requerido.");
-                    return false;
-                }
-                return true;
+                return valid;
             }
-        </script>
 
-        <script>
+            function mostrarErrores() {
+                if (!fechaDesde.value) document.getElementById('mensajeFechaDesde').textContent = "El campo fecha desde es requerido.";
+                if (!fechaHasta.value) document.getElementById('mensajeFechaHasta').textContent = "El campo fecha hasta es requerido.";
+                if (!administrativo.value) document.getElementById('mensajeAdministrativo').textContent = "El campo administrativo es requerido.";
+                if (!proveedor.value) document.getElementById('mensajeCliente').textContent = "El campo proveedor es requerido.";
+                if (!mecanico.value) document.getElementById('mensajeMecanico').textContent = "El campo mecánico es requerido.";
+                if (!servicio.value) document.getElementById('mensajeServicio').textContent = "El campo servicio es requerido.";
+                if (!producto.value) document.getElementById('mensajeProducto').textContent = "El campo producto es requerido.";
+            }
+
             function verificarCampos() {
-                let fechaDesde = $('#fechaDesde');
-                let fechaHasta = $('#fechaHasta');
-                let administrativo = $('#id_empleado');
-                let proveedor = $('#id_proveedor');
-                let mecanico = $('#id_mecanico');
-                let servicio = $('#id_servicio');
-                let producto = $('#id_producto');
-
-                if (fechaDesde.val() && fechaHasta.val() && administrativo.val() && proveedor.val() && mecanico.val() && servicio.val() && producto.val()) {
-                    console.log('Todos los campos tienen valor');
-                    $("#btnPdf").prop("disabled", false);
+                if (fechaDesde.value && fechaHasta.value && administrativo.value && proveedor.value && mecanico.value && servicio.value && producto.value) {
+                    btnPdf.disabled = false;
                 } else {
-                    $("#btnPdf").prop("disabled", true);
-                    console.log('Falta completar campos');
+                    btnPdf.disabled = true;
                 }
             }
-        </script>
 
-        <script>
             function ocultarMensaje() {
-                let fechaDesde = $('#fechaDesde');
-                let fechaHasta = $('#fechaHasta');
-                let administrativo = $('#id_empleado');
-                let proveedor = $('#id_proveedor');
-                let mecanico = $('#id_mecanico');
-                let servicio = $('#id_servicio');
-                let producto = $('#id_producto');
-
-                administrativo.on('change', function() {
-                    if (administrativo.val()) {
-                        $("#mensajeAdministrativo").text("");
-                    }
-                });
-
-                proveedor.on('change', function() {
-                    if (proveedor.val()) {
-                        $("#mensajeCliente").text("");
-                    }
-                });
-
-                mecanico.on('change', function() {
-                    if (mecanico.val()) {
-                        $("#mensajeMecanico").text("");
-                    }
-                });
-
-                servicio.on('change', function() {
-                    if (servicio.val()) {
-                        $("#mensajeServicio").text("");
-                    }
-                });
-
-                producto.on('change', function() {
-                    if (producto.val()) {
-                        $("#mensajeProducto").text("");
-                    }
-                });
-
-                fechaDesde.on('change', function() {
-                    if (fechaDesde.val()) {
-                        $("#mensajeFechaDesde").text("");
-                    }
-                });
-
-                fechaHasta.on('change', function() {
-                    if (fechaHasta.val()) {
-                        $("#mensajeFechaHasta").text("");
-                    }
+                const fields = [fechaDesde, fechaHasta, administrativo, proveedor, mecanico, servicio, producto];
+                fields.forEach(field => {
+                    field.addEventListener('change', function() {
+                        const messageId = `mensaje${field.id.charAt(0).toUpperCase() + field.id.slice(1)}`;
+                        document.getElementById(messageId).textContent = '';
+                    });
                 });
             }
-        </script>
 
-        <script>
             function convertirFecha(fecha) {
-                // Dividir la fecha en día, mes y año
-                let partes = fecha.split('/');
-                // Crear una nueva fecha con el formato "aaaa-mm-dd"
-                let nuevaFecha = partes[2] + '-' + partes[1] + '-' + partes[0];
-                return nuevaFecha;
+                const partes = fecha.split('/');
+                return `${partes[2]}-${partes[1]}-${partes[0]}`;
             }
-        </script>
 
-        <script>
-            flatpickr(".flatpickr", {
-                    enableTime: false,
-                    dateFormat: 'd/m/Y',
-                    locale: {
-                        firstDayofWeek: 1,
-                        weekdays: {
-                            shorthand: ["Dom", "Lun", "Mar", "Mié", "Jue", "Vie", "Sáb"],
-                            longhand: [
-                            "Domingo",
-                            "Lunes",
-                            "Martes",
-                            "Miércoles",
-                            "Jueves",
-                            "Viernes",
-                            "Sábado",
-                            ],
-                        },
-                        months: {
-                            shorthand: [
-                            "Ene",
-                            "Feb",
-                            "Mar",
-                            "Abr",
-                            "May",
-                            "Jun",
-                            "Jul",
-                            "Ago",
-                            "Sep",
-                            "Oct",
-                            "Nov",
-                            "Dic",
-                            ],
-                            longhand: [
-                            "Enero",
-                            "Febrero",
-                            "Marzo",
-                            "Abril",
-                            "Mayo",
-                            "Junio",
-                            "Julio",
-                            "Agosto",
-                            "Septiembre",
-                            "Octubre",
-                            "Noviembre",
-                            "Diciembre",
-                            ],
-                        },
-                    }
-                });
-        </script>
+            flatpickr('.flatpickr', {
+                enableTime: false,
+                dateFormat: 'd/m/Y',
+                locale: {
+                    firstDayofWeek: 1,
+                    weekdays: {
+                        shorthand: ["Dom", "Lun", "Mar", "Mié", "Jue", "Vie", "Sáb"],
+                        longhand: ["Domingo", "Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado"],
+                    },
+                    months: {
+                        shorthand: ["Ene", "Feb", "Mar", "Abr", "May", "Jun", "Jul", "Ago", "Sep", "Oct", "Nov", "Dic"],
+                        longhand: ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"],
+                    },
+                },
+            });
+        });
+    </script>
     @endpush
 
 </x-layouts.app>
