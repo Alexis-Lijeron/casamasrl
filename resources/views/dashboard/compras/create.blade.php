@@ -28,7 +28,7 @@
                       @endforeach
                     </select>
                   </div>
-                  
+
                   <!-- Selección de Producto -->
                   <div class="form-group col-lg-4">
                     <label for="producto_id">Producto</label>
@@ -36,8 +36,8 @@
                       <option value="">Seleccione un producto</option>
                       {{-- @foreach ($productos as $producto)
                       <option value="{{ $producto->id }}" data-nombre="{{ $producto->nombre }}"
-                        data-precio="{{ $producto->precio }}">
-                        {{ $producto->nombre }}
+                      data-precio="{{ $producto->precio }}">
+                      {{ $producto->nombre }}
                       </option>
                       @endforeach --}}
                     </select>
@@ -141,7 +141,7 @@
               </div>
             </div>
           </form>
-          
+
         </div>
       </div>
     </div>
@@ -150,150 +150,133 @@
   @push('js')
   <script>
     function confirmDelete(id) {
-              Swal.fire({
-                  title: '¿Está seguro de cancelar la venta?',
-                  text: "¡No podrás revertir esto!",
-                  icon: 'warning',
-                  showCancelButton: true,
-                  confirmButtonColor: '#556ee6',
-                  cancelButtonColor: '#f46a6a',
-                  confirmButtonText: 'Sí, eliminarlo',
-                  cancelButtonText: 'Cancelar'
-              }).then((result) => {
-                  if (result.isConfirmed) {
-                      var formId = 'formDeleteVenta_' + id;
-                      var form = document.getElementById(formId);
-                      form.submit(); // Envía el formulario si el usuario confirma
-                  }
+      Swal.fire({
+        title: '¿Está seguro de cancelar la venta?',
+        text: "¡No podrás revertir esto!",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#556ee6',
+        cancelButtonColor: '#f46a6a',
+        confirmButtonText: 'Sí, eliminarlo',
+        cancelButtonText: 'Cancelar'
+      }).then((result) => {
+        if (result.isConfirmed) {
+          const form = document.getElementById(`formDeleteVenta_${id}`);
+          form.submit(); // Envía el formulario si el usuario confirma
+        }
+      });
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+      const productos = []; // Array para almacenar productos seleccionados
+      const productoSelect = document.getElementById('producto_id');
+      const almacenSelect = document.getElementById('almacen_id');
+      const cantidadInput = document.getElementById('cantidad');
+      const precioInput = document.getElementById('precio_compra');
+      const productosTableBody = document.getElementById('productos-table-body');
+      const productosInput = document.getElementById('productos-input');
+      const totalInput = document.getElementById('total');
+      const mensajeVacio = document.getElementById('mensaje-vacio');
+
+      almacenSelect.addEventListener('change', function() {
+        const almacenId = this.value;
+
+        productoSelect.innerHTML = '<option value="">Cargando...</option>';
+        productoSelect.disabled = true;
+
+        // Verificar que el almacén seleccionado no esté vacío
+        if (almacenId && almacenId.trim() !== "") {
+          const url = "{{ route('compras.obtenerProductosPorAlmacen', ':almacenId') }}".replace(':almacenId', almacenId);
+          fetch(url)
+            .then(response => response.json())
+            .then(productos => {
+              productoSelect.innerHTML = '<option value="">Seleccione un producto</option>';
+              productos.forEach(producto => {
+                const option = document.createElement('option');
+                option.value = producto.producto_id;
+                option.textContent = producto.producto_nombre;
+
+                // Asignar atributos data al option
+                option.setAttribute('data-producto-almacen-id', producto.id);
+                option.setAttribute('data-precio', producto.precio);
+
+                productoSelect.appendChild(option);
               });
-          }
-  </script>
+              productoSelect.disabled = false;
+            })
+            .catch(error => {
+              console.error('Error al cargar los productos:', error);
+              productoSelect.innerHTML = '<option value="">Error al cargar productos</option>';
+            });
+        } else {
+          productoSelect.innerHTML = '<option value="">Seleccione un producto</option>';
+        }
+      });
 
-  <script>
-    document.addEventListener('DOMContentLoaded', function () {
-        const productos = []; // Array para almacenar productos seleccionados
-        const productoSelect = document.getElementById('producto_id');
-        const almacenSelect = document.getElementById('almacen_id');
-        const cantidadInput = document.getElementById('cantidad');
-        const precioInput = document.getElementById('precio_compra');
-        const productosTableBody = document.getElementById('productos-table-body');
-        const productosInput = document.getElementById('productos-input');
-        const totalInput = document.getElementById('total');
-        const mensajeVacio = document.getElementById('mensaje-vacio');
-        
-        $('#almacen_id').on('change', function () {
-            const selectedValue = $(this).val();
-            const selectedOption = $(this).find(`option[value="${selectedValue}"]`);
-            const almacenId = selectedValue;
-            
-            productoSelect.innerHTML = '<option value="">Cargando...</option>';
-            productoSelect.disabled = true;
-            
-            // Verificar que el almacen seleccionado no esté vacío
-            if (almacenId && almacenId.trim() !== "") {
-              const url = "{{ route('compras.obtenerProductosPorAlmacen', ':almacenId') }}".replace(':almacenId', almacenId);
-              fetch(url)
-                .then(response => response.json())
-                .then(productos => {
-                    productoSelect.innerHTML = '<option value="">Seleccione un producto</option>';
-                    productos.forEach(producto => {
-                        const option = document.createElement('option');
-                        option.value = producto.producto_id;
-                        option.textContent = producto.producto_nombre;
-                        
-                        // asignar los atributos data al option
-                        option.dataset.productoAlmacenId = producto.id;
-                        
-                        productoSelect.appendChild(option);
-                    });
-                    productoSelect.disabled = false;
-                })
-                .catch(error => {
-                    console.error('Error al cargar los productos:', error);
-                    productoSelect.innerHTML = '<option value="">Error al cargar productos</option>';
-                });
-            } else {
-                productoSelect.innerHTML = '<option value="">Seleccione un producto</option>';
-            }
-            
+      productoSelect.addEventListener('change', function() {
+        const selectedOption = productoSelect.options[productoSelect.selectedIndex];
+        precioInput.value = selectedOption.getAttribute('data-precio') || 0;
+      });
+
+      document.getElementById('agregar-producto').addEventListener('click', function() {
+        const productoId = productoSelect.value;
+        const almacenNombre = almacenSelect.options[almacenSelect.selectedIndex].text;
+        const productoNombre = productoSelect.options[productoSelect.selectedIndex]?.text;
+        const productoAlmacenId = productoSelect.options[productoSelect.selectedIndex]?.getAttribute('data-producto-almacen-id');
+        const cantidad = parseInt(cantidadInput.value, 10);
+        const precioCompra = parseFloat(precioInput.value);
+
+        if (!productoId) {
+          mostrarAlerta('Oops!', 'Seleccione un producto válido.', 'info');
+          return;
+        }
+
+        if (cantidad <= 0) {
+          mostrarAlerta('Oops!', 'La cantidad debe ser mayor a 0.', 'info');
+          return;
+        }
+
+        if (precioCompra <= 0) {
+          mostrarAlerta('Oops!', 'El precio de compra debe ser mayor a 0.', 'info');
+          return;
+        }
+
+        if (productos.some(producto => producto.productoId === productoId && producto.almacenNombre === almacenNombre)) {
+          mostrarAlerta('Oops!', 'El producto ya está agregado en este almacén.', 'info');
+          return;
+        }
+
+        const subtotal = cantidad * precioCompra;
+        productos.push({
+          productoId,
+          productoNombre,
+          almacenNombre,
+          cantidad,
+          precioCompra,
+          subtotal,
+          productoAlmacenId
         });
-        
-        $('#producto_id').on('change', function () {
-            const selectedValue = $(this).val();
-            const selectedOption = $(this).find(`option[value="${selectedValue}"]`);
-            precioInput.value = selectedOption.data('precio') || 0;
-        });
+        renderTable();
+        updateTotal();
 
-        // Actualizar precio unitario al seleccionar un producto
-        // productoSelect.addEventListener('change', function () {
-        //     const selectedOption = productoSelect.options[productoSelect.selectedIndex];
-        //     const precio = selectedOption.getAttribute('data-precio') || 0;
-        //     precioInput.value = precio;
-        //     console.log("precio", precio);
-        // });
+        cantidadInput.value = 1;
+        precioInput.value = '';
+        productoSelect.value = '';
+      });
 
-        // Agregar producto al array y mostrar en la tabla
-        document.getElementById('agregar-producto').addEventListener('click', function () {
-            const productoId = productoSelect.value;
-            const almacenNombre = almacenSelect.options[almacenSelect.selectedIndex].text;
-            const productoNombre = productoSelect.options[productoSelect.selectedIndex].text;
-            const productoAlmacenId = productoSelect.options[productoSelect.selectedIndex].dataset.productoAlmacenId;
-            
-            const cantidad = parseInt(cantidadInput.value, 10);
-            const precioCompra = parseFloat(precioInput.value);
-            
-            if (!productoId) {
-                mostrarAlerta('Oops!', 'Seleccione un producto válido.', 'info');
-                return;
-            }
-            
-            if (cantidad <= 0) {
-                mostrarAlerta('Oops!', 'La cantidad debe ser mayor a 0.', 'info');
-                return;
-            }
-            
-            if (precioCompra <= 0) {
-                mostrarAlerta('Oops!', 'El precio de compra debe ser mayor a 0.', 'info');
-                return;
-            }
-            
-            // Verificar si el producto ya está agregado al mismo almacén
-            if (productos.some(producto => producto.productoId === productoId && producto.almacenNombre === almacenNombre)) {
-                mostrarAlerta('Oops!', 'El producto ya está agregado en este almacén.', 'info');
-                return;
-            }
-
-            const subtotal = cantidad * precioCompra;
-
-            // Agregar al array de productos
-            productos.push({ productoId, productoNombre, almacenNombre, cantidad, precioCompra, subtotal, productoAlmacenId });
-
-            // Actualizar tabla
-            renderTable();
-            updateTotal();
-
-            // Limpiar los campos
-            cantidadInput.value = 1;
-            precioInput.value = '';
-            
-            // Actualizar Select2
-            $(productoSelect).val('').trigger('change');
-        });
-
-        // Renderizar la tabla con los productos actuales
-        function renderTable() {
-            productosTableBody.innerHTML = '';
-            productos.forEach((producto, index) => {
-                const row = document.createElement('tr');
-                row.innerHTML = `
+      function renderTable() {
+        productosTableBody.innerHTML = '';
+        productos.forEach((producto, index) => {
+          const row = document.createElement('tr');
+          row.innerHTML = `
                     <td class="align-middle text-center">${producto.productoNombre}</td>
                     <td class="align-middle text-center">${producto.almacenNombre}</td>
                     <td>
-                      <div class="d-flex align-items-center justify-content-center">
-                          <button type="button" class="btn btn-sm btn-outline-danger me-2" onclick="disminuirCantidad(${index})">-</button>
-                          <span class="mx-3">${producto.cantidad}</span>
-                          <button type="button" class="btn btn-sm btn-outline-success ms-2" onclick="aumentarCantidad(${index})">+</button>
-                      </div>
+                        <div class="d-flex align-items-center justify-content-center">
+                            <button type="button" class="btn btn-sm btn-outline-danger me-2" onclick="disminuirCantidad(${index})">-</button>
+                            <span class="mx-3">${producto.cantidad}</span>
+                            <button type="button" class="btn btn-sm btn-outline-success ms-2" onclick="aumentarCantidad(${index})">+</button>
+                        </div>
                     </td>
                     <td class="align-middle text-center">${producto.precioCompra.toFixed(2)}</td>
                     <td class="align-middle text-center">${producto.subtotal.toFixed(2)}</td>
@@ -301,60 +284,54 @@
                         <button type="button" class="btn btn-danger btn-sm" onclick="eliminarProducto(${index})"><i class="fas fa-trash-alt"></i></button>
                     </td>
                 `;
-                productosTableBody.appendChild(row);
-            });
-              
-            if (productos.length === 0) {
-                productosTableBody.appendChild(mensajeVacio);
-            }
+          productosTableBody.appendChild(row);
+        });
 
-            // Actualizar el input oculto para enviar los datos al backend
-            productosInput.value = JSON.stringify(productos);
+        if (productos.length === 0) {
+          productosTableBody.appendChild(mensajeVacio);
         }
 
-        // Función para aumentar la cantidad
-        window.aumentarCantidad = function (index) {
-            productos[index].cantidad++;
-            productos[index].subtotal = productos[index].cantidad * productos[index].precioCompra;
-            renderTable();
-            updateTotal();
-        };
+        productosInput.value = JSON.stringify(productos);
+      }
 
-        // Función para disminuir la cantidad
-        window.disminuirCantidad = function (index) {
-            if (productos[index].cantidad > 1) {
-                productos[index].cantidad--;
-                productos[index].subtotal = productos[index].cantidad * productos[index].precioCompra;
-                renderTable();
-                updateTotal();
-            }
-        };
+      window.aumentarCantidad = function(index) {
+        productos[index].cantidad++;
+        productos[index].subtotal = productos[index].cantidad * productos[index].precioCompra;
+        renderTable();
+        updateTotal();
+      };
 
-        // Función para eliminar un producto
-        window.eliminarProducto = function (index) {
-            productos.splice(index, 1);
-            renderTable();
-            updateTotal();
-        };
-        
-        function updateTotal() {
-            const total = productos.reduce((sum, producto) => sum + producto.subtotal, 0);
-            totalInput.value = total.toFixed(2);
+      window.disminuirCantidad = function(index) {
+        if (productos[index].cantidad > 1) {
+          productos[index].cantidad--;
+          productos[index].subtotal = productos[index].cantidad * productos[index].precioCompra;
+          renderTable();
+          updateTotal();
         }
-        
-        function mostrarAlerta(titulo, mensaje, tipo, tiempo = 3000) {
-            Swal.fire({
-                title: titulo,
-                text: mensaje,
-                icon: tipo,
-                timer: tiempo
-            });
-        }
-        
+      };
+
+      window.eliminarProducto = function(index) {
+        productos.splice(index, 1);
+        renderTable();
+        updateTotal();
+      };
+
+      function updateTotal() {
+        const total = productos.reduce((sum, producto) => sum + producto.subtotal, 0);
+        totalInput.value = total.toFixed(2);
+      }
+
+      function mostrarAlerta(titulo, mensaje, tipo, tiempo = 3000) {
+        Swal.fire({
+          title: titulo,
+          text: mensaje,
+          icon: tipo,
+          timer: tiempo
+        });
+      }
     });
   </script>
-
-
   @endpush
+
 
 </x-layouts.app>

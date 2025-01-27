@@ -11,7 +11,7 @@
 
           <form class="px-4 pt-2 pb-2" action="{{ route('ventas.update', $venta->id) }}" method="POST">
             @csrf
-            @method('PUT') 
+            @method('PUT')
 
             <div class="row">
               <div class="col-lg-8">
@@ -111,7 +111,7 @@
                   <input type="number" style="background: white;" name="total" id="total" class="form-control"
                     step="0.01" value="{{ $venta->monto_total }}" readonly>
                   @error('total')
-                    <span class="error text-danger">* {{ $message }}</span>
+                  <span class="error text-danger">* {{ $message }}</span>
                   @enderror
                 </div>
 
@@ -134,120 +134,124 @@
     </div>
     </div>
   </x-layouts.content>
-
   @push('js')
   <script>
-    document.addEventListener('DOMContentLoaded', function () {
-        const productos = []; // Array para almacenar productos seleccionados
-        const productoSelect = document.getElementById('producto_id');
-        const cantidadInput = document.getElementById('cantidad');
-        const precioInput = document.getElementById('precio_venta');
-        const productosTableBody = document.getElementById('productos-table-body');
-        const productosInput = document.getElementById('productos-input');
-        const totalInput = document.getElementById('total');
-        const mensajeVacio = document.getElementById('mensaje-vacio');
-      
-        const productosAsociados = @json($productosAsociados);
-        
-        // Cargar los datos en la variable productos
-        productosAsociados.forEach(producto => {
-            const productoId = producto.id;
-            const productoNombre = producto.nombre;
-            const cantidad = producto.cantidad;
-            const precioUnitario = parseFloat(producto.precio_venta);
-            const subtotal = parseFloat(producto.subtotal);
+    document.addEventListener('DOMContentLoaded', function() {
+      const productos = []; // Array para almacenar productos seleccionados
+      const productoSelect = document.getElementById('producto_id');
+      const cantidadInput = document.getElementById('cantidad');
+      const precioInput = document.getElementById('precio_venta');
+      const productosTableBody = document.getElementById('productos-table-body');
+      const productosInput = document.getElementById('productos-input');
+      const totalInput = document.getElementById('total');
+      const mensajeVacio = document.getElementById('mensaje-vacio');
+      const stockBadge = document.getElementById('stock-badge');
 
-            // Agregar objeto al array productos
-            productos.push({ productoId, productoNombre, cantidad, precioUnitario, subtotal });
+      const productosAsociados = @json($productosAsociados);
+
+      // Cargar los datos en la variable productos
+      productosAsociados.forEach(producto => {
+        const productoId = producto.id;
+        const productoNombre = producto.nombre;
+        const cantidad = producto.cantidad;
+        const precioUnitario = parseFloat(producto.precio_venta);
+        const subtotal = parseFloat(producto.subtotal);
+
+        productos.push({
+          productoId,
+          productoNombre,
+          cantidad,
+          precioUnitario,
+          subtotal
         });
-        
-        // Renderizar la tabla con los productos actuales
-        renderTable();
+      });
 
-        // Actualizar precio unitario al seleccionar un producto
-        $('#producto_id').on('change', function () {
-          const selectedValue = $(this).val();
-          const selectedOption = $(this).find(`option[value="${selectedValue}"]`);
-          const precio = selectedOption.data('precio') || 0;
-          precioInput.value = precio;
-          
-          // Actualizar el texto del badge
-          if (selectedValue) {
-            const stock = selectedOption.data('stock');
-            const stockMinimo = selectedOption.data('stock-minimo');
-            
-            $('#stock-badge').show(); // mostrar el badge
-            $('#stock-badge').text(stock + ' en stock'); // actualizar el texto del badge
-            
-            // Cambiar el color del badge según el stock
-            if (stock >= stockMinimo) {
-                $('#stock-badge').removeClass('badge-danger').addClass('badge-success');
-            } else {
-                $('#stock-badge').removeClass('badge-success').addClass('badge-danger');
-            }
+      // Renderizar la tabla con los productos actuales
+      renderTable();
+
+      productoSelect.addEventListener('change', function() {
+        const selectedOption = productoSelect.options[productoSelect.selectedIndex];
+        const precio = selectedOption.dataset.precio || 0;
+        precioInput.value = precio;
+
+        if (productoSelect.value) {
+          const stock = selectedOption.dataset.stock;
+          const stockMinimo = selectedOption.dataset.stockMinimo;
+
+          stockBadge.style.display = 'inline-block'; // Mostrar el badge
+          stockBadge.textContent = `${stock} en stock`;
+
+          // Cambiar el color del badge según el stock
+          if (stock >= stockMinimo) {
+            stockBadge.classList.remove('badge-danger');
+            stockBadge.classList.add('badge-success');
           } else {
-            $('#stock-badge').hide(); // ocultar el badge
+            stockBadge.classList.remove('badge-success');
+            stockBadge.classList.add('badge-danger');
           }
+        } else {
+          stockBadge.style.display = 'none'; // Ocultar el badge
+        }
+      });
+
+      document.getElementById('agregar-producto').addEventListener('click', function() {
+        const productoId = productoSelect.value;
+        const productoNombre = productoSelect.options[productoSelect.selectedIndex]?.text;
+        const cantidad = parseInt(cantidadInput.value, 10);
+        const precioUnitario = parseFloat(precioInput.value);
+        const stock = parseInt(productoSelect.options[productoSelect.selectedIndex]?.dataset.stock, 10) || 0;
+
+        if (!productoId) {
+          mostrarAlerta('Oops!', 'Seleccione un producto válido.', 'info');
+          return;
+        }
+
+        if (cantidad <= 0) {
+          mostrarAlerta('Oops!', 'La cantidad debe ser mayor a 0.', 'info');
+          return;
+        }
+
+        if (cantidad > stock) {
+          mostrarAlerta('Oops!', 'La cantidad supera el stock disponible.', 'info');
+          return;
+        }
+
+        if (productos.some(producto => producto.productoId === productoId)) {
+          mostrarAlerta('Oops!', 'El producto ya está agregado.', 'info');
+          return;
+        }
+
+        const subtotal = cantidad * precioUnitario;
+
+        productos.push({
+          productoId,
+          productoNombre,
+          cantidad,
+          precioUnitario,
+          subtotal
         });
 
-        // Agregar producto al array y mostrar en la tabla
-        document.getElementById('agregar-producto').addEventListener('click', function () {
-            const productoId = productoSelect.value;
-            const productoNombre = productoSelect.options[productoSelect.selectedIndex].text;
-            const cantidad = parseInt(cantidadInput.value, 10);
-            const precioUnitario = parseFloat(precioInput.value);
-            const stock = parseInt(productoSelect.options[productoSelect.selectedIndex].getAttribute('data-stock'), 10) || 0;
+        renderTable();
+        updateTotal();
 
-            if (!productoId) {
-                mostrarAlerta('Oops!', 'Seleccione un producto válido.', 'info');
-                return;
-            }
-            
-            if (cantidad <= 0) {
-                mostrarAlerta('Oops!', 'La cantidad debe ser mayor a 0.', 'info');
-                return;
-            }
-            
-            if (cantidad > stock) {
-                mostrarAlerta('Oops!', 'La cantidad supera el stock disponible.', 'info');
-                return;
-            }
-            
-            if (productos.some(producto => producto.productoId === productoId)) {
-                mostrarAlerta('Oops!', 'El producto ya está agregado.', 'info');
-                return;
-            }
+        cantidadInput.value = 1;
+        precioInput.value = '';
+        productoSelect.value = '';
+        stockBadge.style.display = 'none'; // Ocultar el badge
+      });
 
-            const subtotal = cantidad * precioUnitario;
-
-            // Agregar al array de productos
-            productos.push({ productoId, productoNombre, cantidad, precioUnitario, subtotal });
-
-            // Actualizar tabla
-            renderTable();
-            updateTotal();
-
-            // Limpiar los campos
-            cantidadInput.value = 1;
-            precioInput.value = '';
-            
-            // Actualizar Select2
-            $(productoSelect).val('').trigger('change');
-        });
-
-        // Renderizar la tabla con los productos actuales
-        function renderTable() {
-            productosTableBody.innerHTML = '';
-            productos.forEach((producto, index) => {
-                const row = document.createElement('tr');
-                row.innerHTML = `
+      function renderTable() {
+        productosTableBody.innerHTML = '';
+        productos.forEach((producto, index) => {
+          const row = document.createElement('tr');
+          row.innerHTML = `
                     <td class="align-middle text-center">${producto.productoNombre}</td>
                     <td>
-                      <div class="d-flex align-items-center justify-content-center">
-                          <button type="button" class="btn btn-sm btn-outline-danger me-2" onclick="disminuirCantidad(${index})">-</button>
-                          <span class="mx-3">${producto.cantidad}</span>
-                          <button type="button" class="btn btn-sm btn-outline-success ms-2" onclick="aumentarCantidad(${index})">+</button>
-                      </div>
+                        <div class="d-flex align-items-center justify-content-center">
+                            <button type="button" class="btn btn-sm btn-outline-danger me-2" onclick="disminuirCantidad(${index})">-</button>
+                            <span class="mx-3">${producto.cantidad}</span>
+                            <button type="button" class="btn btn-sm btn-outline-success ms-2" onclick="aumentarCantidad(${index})">+</button>
+                        </div>
                     </td>
                     <td class="align-middle text-center">${producto.precioUnitario.toFixed(2)}</td>
                     <td class="align-middle text-center">${producto.subtotal.toFixed(2)}</td>
@@ -255,56 +259,51 @@
                         <button type="button" class="btn btn-danger btn-sm" onclick="eliminarProducto(${index})"><i class="fas fa-trash-alt"></i></button>
                     </td>
                 `;
-                productosTableBody.appendChild(row);
-            });
-              
-            if (productos.length === 0) {
-                productosTableBody.appendChild(mensajeVacio);
-            }
+          productosTableBody.appendChild(row);
+        });
 
-            // Actualizar el input oculto para enviar los datos al backend
-            productosInput.value = JSON.stringify(productos);
+        if (productos.length === 0) {
+          productosTableBody.appendChild(mensajeVacio);
         }
 
-        // Función para aumentar la cantidad
-        window.aumentarCantidad = function (index) {
-            productos[index].cantidad++;
-            productos[index].subtotal = productos[index].cantidad * productos[index].precioUnitario;
-            renderTable();
-            updateTotal();
-        };
+        productosInput.value = JSON.stringify(productos);
+      }
 
-        // Función para disminuir la cantidad
-        window.disminuirCantidad = function (index) {
-            if (productos[index].cantidad > 1) {
-                productos[index].cantidad--;
-                productos[index].subtotal = productos[index].cantidad * productos[index].precioUnitario;
-                renderTable();
-                updateTotal();
-            }
-        };
+      window.aumentarCantidad = function(index) {
+        productos[index].cantidad++;
+        productos[index].subtotal = productos[index].cantidad * productos[index].precioUnitario;
+        renderTable();
+        updateTotal();
+      };
 
-        // Función para eliminar un producto
-        window.eliminarProducto = function (index) {
-            productos.splice(index, 1);
-            renderTable();
-            updateTotal();
-        };
-        
-        function updateTotal() {
-            const total = productos.reduce((sum, producto) => sum + producto.subtotal, 0);
-            totalInput.value = total.toFixed(2);
+      window.disminuirCantidad = function(index) {
+        if (productos[index].cantidad > 1) {
+          productos[index].cantidad--;
+          productos[index].subtotal = productos[index].cantidad * productos[index].precioUnitario;
+          renderTable();
+          updateTotal();
         }
-        
-        function mostrarAlerta(titulo, mensaje, tipo, tiempo = 3000) {
-            Swal.fire({
-                title: titulo,
-                text: mensaje,
-                icon: tipo,
-                timer: tiempo
-            });
-        }
-        
+      };
+
+      window.eliminarProducto = function(index) {
+        productos.splice(index, 1);
+        renderTable();
+        updateTotal();
+      };
+
+      function updateTotal() {
+        const total = productos.reduce((sum, producto) => sum + producto.subtotal, 0);
+        totalInput.value = total.toFixed(2);
+      }
+
+      function mostrarAlerta(titulo, mensaje, tipo, tiempo = 3000) {
+        Swal.fire({
+          title: titulo,
+          text: mensaje,
+          icon: tipo,
+          timer: tiempo
+        });
+      }
     });
   </script>
   @endpush

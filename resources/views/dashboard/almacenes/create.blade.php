@@ -33,7 +33,7 @@
                                     <span class="error text-danger">* {{ $message }}</span>
                                     @enderror
                                 </div>
-                                
+
                                 <div class="form-group m-b-0">
                                     <a href="{{ route('almacenes.index') }}" class="btn btn-danger waves-effect m-l-5">
                                         Cancelar
@@ -92,7 +92,7 @@
                             </div>
                         </div>
 
-                        
+
                     </form>
 
                 </div>
@@ -103,71 +103,86 @@
 
     @push('js')
     <script>
-        document.addEventListener('DOMContentLoaded', function () {
+        document.addEventListener('DOMContentLoaded', function() {
             const productos = []; // Array para almacenar productos seleccionados
             const productoSelect = document.getElementById('producto_id');
             const productosTableBody = document.getElementById('productos-table-body');
             const productosInput = document.getElementById('productos-input');
             const mensajeVacio = document.getElementById('mensaje-vacio');
-    
-            $('#producto_id').on('change', function () {
-                const selectedValue = $(this).val();
-                const selectedOption = $(this).find(`option[value="${selectedValue}"]`);
+
+            // Manejo de cambios en el select
+            productoSelect.addEventListener('change', function() {
+                const selectedValue = this.value;
+                const selectedOption = this.options[this.selectedIndex];
             });
-  
+
             // Agregar producto al array y mostrar en la tabla
-            document.getElementById('agregar-producto').addEventListener('click', function () {
+            document.getElementById('agregar-producto').addEventListener('click', function() {
                 const productoId = productoSelect.value;
-                const productoNombre = productoSelect.options[productoSelect.selectedIndex].text;
-    
+                const productoNombre = productoSelect.options[productoSelect.selectedIndex]?.text;
+
                 if (!productoId) {
                     mostrarAlerta('Oops!', 'Seleccione un producto.', 'info');
                     return;
                 }
-                
+
                 if (productos.some(producto => producto.productoId === productoId)) {
                     mostrarAlerta('Oops!', 'El producto ya está agregado.', 'info');
                     return;
                 }
-    
+
                 // Agregar al array de productos
-                productos.push({ productoId, productoNombre });
-    
+                productos.push({
+                    productoId,
+                    productoNombre
+                });
+
                 // Actualizar tabla
                 renderTable();
-    
+
                 // Limpiar los campos
-                $(productoSelect).val('').trigger('change');
+                productoSelect.value = '';
             });
-    
+
             // Renderizar la tabla con los productos actuales
             function renderTable() {
                 productosTableBody.innerHTML = '';
                 productos.forEach((producto, index) => {
                     const row = document.createElement('tr');
                     row.innerHTML = `
-                        <td class="align-middle text-center">${producto.productoNombre}</td>
-                        <td class="align-middle text-center">
-                            <button type="button" class="btn btn-danger btn-sm" onclick="eliminarProducto(${index})"><i class="fas fa-trash-alt"></i></button>
-                        </td>
-                    `;
+                    <td class="align-middle text-center">${producto.productoNombre}</td>
+                    <td class="align-middle text-center">
+                        <button type="button" class="btn btn-danger btn-sm" data-index="${index}">
+                            <i class="fas fa-trash-alt"></i>
+                        </button>
+                    </td>
+                `;
                     productosTableBody.appendChild(row);
                 });
-                    
+
                 if (productos.length === 0) {
                     productosTableBody.appendChild(mensajeVacio);
                 }
-    
+
                 // Actualizar el input oculto para enviar los datos al backend
                 productosInput.value = JSON.stringify(productos);
+
+                // Asignar eventos a los botones de eliminar
+                const deleteButtons = productosTableBody.querySelectorAll('.btn-danger');
+                deleteButtons.forEach(button => {
+                    button.addEventListener('click', function() {
+                        const index = this.dataset.index;
+                        eliminarProducto(index);
+                    });
+                });
             }
-    
+
             // Función para eliminar un producto
-            window.eliminarProducto = function (index) {
+            function eliminarProducto(index) {
                 productos.splice(index, 1);
                 renderTable();
-            };
-            
+            }
+
             function mostrarAlerta(titulo, mensaje, tipo, tiempo = 3000) {
                 Swal.fire({
                     title: titulo,
@@ -176,7 +191,6 @@
                     timer: tiempo
                 });
             }
-            
         });
     </script>
     @endpush

@@ -18,12 +18,12 @@
                                 <div class="form-group">
                                     <label for="nombre" class="control-label">Nombre</label>
                                     <input type="text" class="form-control" id="nombre" name="nombre"
-                                        placeholder="Introduzca el nombre del almacen" value="{{ old('nombre', $almacen['nombre']) }}" >
+                                        placeholder="Introduzca el nombre del almacen" value="{{ old('nombre', $almacen['nombre']) }}">
                                     @error('nombre')
                                     <span class="error text-danger">* {{ $message }}</span>
                                     @enderror
                                 </div>
-                                
+
                                 <div class="form-group">
                                     <label for="descripcion" class="control-label">Descripción</label>
                                     <textarea class="form-control" id="descripcion" name="descripcion"
@@ -33,7 +33,7 @@
                                     <span class="error text-danger">* {{ $message }}</span>
                                     @enderror
                                 </div>
-                                
+
                                 <div class="form-group m-b-0">
                                     <a href="{{ route('almacenes.index') }}" class="btn btn-danger waves-effect m-l-5">
                                         Cancelar
@@ -43,7 +43,7 @@
                                     </button>
                                 </div>
                             </div>
-                            
+
                             <div class="col-md-6 bg-light rounded p-3">
                                 <div class="form-row align-items-end">
                                     <div class="form-group col-md-9">
@@ -91,7 +91,7 @@
                                 </div>
                             </div>
                         </div>
-                        
+
                     </form>
 
                 </div>
@@ -99,88 +99,106 @@
         </div>
 
     </x-layouts.content>
-    
+
     @push('js')
     <script>
-        document.addEventListener('DOMContentLoaded', function () {
+        document.addEventListener('DOMContentLoaded', function() {
             const productos = []; // Array para almacenar productos seleccionados
             const productoSelect = document.getElementById('producto_id');
             const productosTableBody = document.getElementById('productos-table-body');
             const productosInput = document.getElementById('productos-input');
             const mensajeVacio = document.getElementById('mensaje-vacio');
-            
-            const productosAsociados = @json($almacen->productos);
-        
+
+            const productosAsociados = @json($almacen -> productos);
+
             // Cargar los datos en la variable productos
             productosAsociados.forEach(producto => {
                 const productoId = producto.id;
                 const productoNombre = producto.nombre;
 
                 // Agregar objeto al array productos
-                productos.push({ productoId, productoNombre });
+                productos.push({
+                    productoId,
+                    productoNombre
+                });
             });
-            
+
             // Renderizar la tabla con los productos actuales
             renderTable();
-    
-            $('#producto_id').on('change', function () {
-                const selectedValue = $(this).val();
-                const selectedOption = $(this).find(`option[value="${selectedValue}"]`);
+
+            // Manejo de cambios en el select
+            productoSelect.addEventListener('change', function() {
+                const selectedValue = this.value;
+                const selectedOption = this.options[this.selectedIndex];
             });
-  
+
             // Agregar producto al array y mostrar en la tabla
-            document.getElementById('agregar-producto').addEventListener('click', function () {
+            document.getElementById('agregar-producto').addEventListener('click', function() {
                 const productoId = productoSelect.value;
-                const productoNombre = productoSelect.options[productoSelect.selectedIndex].text;
-    
+                const productoNombre = productoSelect.options[productoSelect.selectedIndex]?.text;
+
                 if (!productoId) {
                     mostrarAlerta('Oops!', 'Seleccione un producto.', 'info');
                     return;
                 }
-                
+
                 if (productos.some(producto => producto.productoId === productoId)) {
                     mostrarAlerta('Oops!', 'El producto ya está agregado.', 'info');
                     return;
                 }
-    
+
                 // Agregar al array de productos
-                productos.push({ productoId, productoNombre });
-    
+                productos.push({
+                    productoId,
+                    productoNombre
+                });
+
                 // Actualizar tabla
                 renderTable();
-    
+
                 // Limpiar los campos
-                $(productoSelect).val('').trigger('change');
+                productoSelect.value = '';
             });
-    
+
             // Renderizar la tabla con los productos actuales
             function renderTable() {
                 productosTableBody.innerHTML = '';
                 productos.forEach((producto, index) => {
                     const row = document.createElement('tr');
                     row.innerHTML = `
-                        <td class="align-middle text-center">${producto.productoNombre}</td>
-                        <td class="align-middle text-center">
-                            <button type="button" class="btn btn-danger btn-sm" onclick="eliminarProducto(${index})"><i class="fas fa-trash-alt"></i></button>
-                        </td>
-                    `;
+                    <td class="align-middle text-center">${producto.productoNombre}</td>
+                    <td class="align-middle text-center">
+                        <button type="button" class="btn btn-danger btn-sm" data-index="${index}">
+                            <i class="fas fa-trash-alt"></i>
+                        </button>
+                    </td>
+                `;
                     productosTableBody.appendChild(row);
                 });
-                    
+
                 if (productos.length === 0) {
                     productosTableBody.appendChild(mensajeVacio);
                 }
-    
+
                 // Actualizar el input oculto para enviar los datos al backend
                 productosInput.value = JSON.stringify(productos);
+
+                // Asignar eventos a los botones de eliminar
+                const deleteButtons = productosTableBody.querySelectorAll('.btn-danger');
+                deleteButtons.forEach(button => {
+                    button.addEventListener('click', function() {
+                        const index = this.dataset.index;
+                        eliminarProducto(index);
+                    });
+                });
             }
-    
+
             // Función para eliminar un producto
-            window.eliminarProducto = function (index) {
+            function eliminarProducto(index) {
                 productos.splice(index, 1);
                 renderTable();
-            };
-            
+            }
+
             function mostrarAlerta(titulo, mensaje, tipo, tiempo = 3000) {
                 Swal.fire({
                     title: titulo,
@@ -189,7 +207,6 @@
                     timer: tiempo
                 });
             }
-            
         });
     </script>
     @endpush
