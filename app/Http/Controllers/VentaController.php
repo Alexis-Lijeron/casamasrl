@@ -7,6 +7,7 @@ use App\Http\Requests\StoreVentaRequest;
 use App\Http\Requests\UpdateVentaRequest;
 use App\Models\AjusteInventario;
 use App\Models\Cliente;
+use App\Models\Pago;
 use App\Models\Producto;
 use App\Models\ProductoAlmacen;
 use Illuminate\Support\Facades\DB;
@@ -103,9 +104,18 @@ class VentaController extends Controller
             // Actualizar el total de la venta
             $venta->monto_total = $totalVenta;
             $venta->save();
-            
+
             // Ajustar el inventario
             $this->ajusteInventario($venta);
+
+            // Generar el pago
+            Pago::create([
+                'monto' => $totalVenta,
+                'fecha_pago' => now(),
+                'estado' => false,
+                'descripcion' => 'Pago de venta',
+                'venta_id' => $venta->id,
+            ]);
 
             DB::commit();
             session()->flash('guardado', 'Venta procesada correctamente');
@@ -258,9 +268,14 @@ class VentaController extends Controller
             $venta->fecha_venta = now();
             $venta->monto_total = $totalVenta;
             $venta->save();
-            
+
             // Ajustar el inventario
             $this->ajusteInventario($venta);
+
+            // Actualizar el pago
+            $pago = Pago::where('venta_id', $venta->id)->first();
+            $pago->monto = $totalVenta;
+            $pago->save();
 
             DB::commit();
             session()->flash('actualizado', 'Venta actualizada correctamente');

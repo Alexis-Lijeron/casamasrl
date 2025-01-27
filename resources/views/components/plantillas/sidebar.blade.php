@@ -55,6 +55,7 @@
                 <li><a href="{{ route('categorias.index') }}">Categorías</a></li>
                 <li><a href="{{ route('marcas.index') }}">Marcas</a></li>
                 <li><a href="{{ route('almacenes.index') }}">Almacenes</a></li>
+                <li><a href="{{ route('ajustes.index') }}">Ajustes de Inventario</a></li>
             </ul>
         </li>
 
@@ -116,19 +117,19 @@
         <ul class="dropdown-menu">
             @php
             $themeOptions = [
-                ['key' => 'default', 'icon' => 'circle', 'label' => 'Predeterminado'],
-                ['key' => 'children', 'icon' => 'child', 'label' => 'Niños'],
-                ['key' => 'youth', 'icon' => 'gamepad', 'label' => 'Jóvenes'],
-                ['key' => 'adults', 'icon' => 'briefcase', 'label' => 'Adultos'],
-                ['key' => 'night', 'icon' => 'moon', 'label' => 'Modo Noche']
+            ['key' => 'default', 'icon' => 'circle', 'label' => 'Predeterminado'],
+            ['key' => 'children', 'icon' => 'child', 'label' => 'Niños'],
+            ['key' => 'youth', 'icon' => 'gamepad', 'label' => 'Jóvenes'],
+            ['key' => 'adults', 'icon' => 'briefcase', 'label' => 'Adultos'],
+            ['key' => 'night', 'icon' => 'moon', 'label' => 'Modo Noche']
             ];
             @endphp
             @foreach($themeOptions as $theme)
-                <li>
-                    <a class="dropdown-item" href="#" data-theme="{{ $theme['key'] }}">
-                        <i class="fas fa-{{ $theme['icon'] }}"></i> {{ $theme['label'] }}
-                    </a>
-                </li>
+            <li>
+                <a class="dropdown-item" href="#" data-theme="{{ $theme['key'] }}">
+                    <i class="fas fa-{{ $theme['icon'] }}"></i> {{ $theme['label'] }}
+                </a>
+            </li>
             @endforeach
         </ul>
     </div>

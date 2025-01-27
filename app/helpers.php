@@ -134,3 +134,19 @@ if (!function_exists('obtenerStockDisponibleAlmacen')) {
         return $stock;
     }
 }
+
+// if (!function_exists('estadoPago')) {
+//     function estadoPago()
+//     {
+//         $totalPagos = $this->pagos()->count();
+//         $pagosCompletados = $this->pagos()->where('estado', true)->count();
+    
+//         if ($pagosCompletados === 0) {
+//             return 'Pendiente';
+//         } elseif ($pagosCompletados < $totalPagos) {
+//             return 'Parcialmente Pagado';
+//         } else {
+//             return 'Pagado';
+//         }
+//     }
+// }

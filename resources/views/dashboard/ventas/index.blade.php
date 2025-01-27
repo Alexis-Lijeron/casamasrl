@@ -28,18 +28,33 @@
                                 @foreach ($ventas as $venta)
                                 <tr class="text-nowrap text-center">
                                     <th scope="row" class="align-middle">{{ $venta['id'] }}</th>
-                                    <td class="align-middle">{{ $venta['cliente']['nombre'] }} {{ $venta['cliente']['apellido'] }}
+                                    <td class="align-middle">{{ $venta['cliente']['nombre'] }} {{
+                                        $venta['cliente']['apellido'] }}
                                     </td>
-                                    <td class="align-middle">{{ $venta['usuario']['nombre'] }} {{ $venta['usuario']['apellido'] }}
+                                    <td class="align-middle">{{ $venta['usuario']['nombre'] }} {{
+                                        $venta['usuario']['apellido'] }}
                                     <td class="align-middle">Bs. {{ formatearNumero($venta['monto_total']) }}</td>
                                     <td class="align-middle">{{ formatearFecha($venta['fecha_venta']) }}</td>
                                     <td class="align-middle">
-                                        @if ($venta['pago'] && $venta['pago']['estado'])
+                                        @php
+                                        $estadoPago = $venta->estadoPago();
+                                        @endphp
+
+                                        @if ($estadoPago === 'Pagado')
                                         <span class="text-success py-1 px-2 rounded-lg d-inline-block"
-                                            style="background-color: #d4edda;">Pagado</span>
-                                        @else
+                                            style="background-color: #d4edda;">
+                                            Pagado
+                                        </span>
+                                        @elseif ($estadoPago === 'Parcialmente Pagado')
                                         <span class="text-warning py-1 px-2 rounded-lg d-inline-block"
-                                            style="background-color: #ffeeba;">Pendiente</span>
+                                            style="background-color: #ffeeba;">
+                                            Parcialmente Pagado
+                                        </span>
+                                        @else
+                                        <span class="text-danger py-1 px-2 rounded-lg d-inline-block"
+                                            style="background-color: #f8d7da;">
+                                            Pendiente
+                                        </span>
                                         @endif
                                     </td>
                                     <td class="align-middle text-nowrap">
@@ -55,7 +70,7 @@
                                                 <i class="fas fa-edit"></i>
                                             </a>
                                             {{-- @endif --}}
-                                            
+
                                             <form id="formDeleteVenta_{{ $venta['id'] }}"
                                                 action="{{route('ventas.delete', $venta['id']) }}" method="post">
                                                 @csrf
@@ -65,7 +80,7 @@
                                                     <i class="fas fa-trash-alt"></i>
                                                 </button>
                                             </form>
-                                            
+
                                         </div>
                                     </td>
                                 </tr>
@@ -81,24 +96,23 @@
     @push('js')
     <script>
         function confirmDelete(id) {
-              Swal.fire({
-                  title: '¿Estás seguro?',
-                  text: "¡No podrás revertir esto!",
-                  icon: 'warning',
-                  showCancelButton: true,
-                  confirmButtonColor: '#556ee6',
-                  cancelButtonColor: '#f46a6a',
-                  confirmButtonText: 'Sí, eliminarlo',
-                  cancelButtonText: 'Cancelar'
-              }).then((result) => {
-                  if (result.isConfirmed) {
-                      var formId = 'formDeleteVenta_' + id;
-                      var form = document.getElementById(formId);
-                      form.submit(); // Envía el formulario si el usuario confirma
-                  }
-              });
-          }
-          
+            Swal.fire({
+                title: '¿Estás seguro?',
+                text: "¡No podrás revertir esto!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#556ee6',
+                cancelButtonColor: '#f46a6a',
+                confirmButtonText: 'Sí, eliminarlo',
+                cancelButtonText: 'Cancelar'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    var formId = 'formDeleteVenta_' + id;
+                    var form = document.getElementById(formId);
+                    form.submit(); // Envía el formulario si el usuario confirma
+                }
+            });
+        }
     </script>
     @endpush
 

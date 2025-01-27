@@ -20,9 +20,8 @@ use App\Http\Controllers\VentaController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\PageController;
 use App\Http\Controllers\SearchController;
+use App\Http\Controllers\AjusteInventarioController;
 
-Route::get('/mi-pagina', [PageController::class, 'show'])->name('mi-pagina');
-// Ruta para el landing page
 Route::get('/', function () {
     return view('welcome');
 });
@@ -148,7 +147,7 @@ Route::controller(CompraController::class)->group(function () {
     Route::post('/compras/confirmarCompra/{id}', 'confirmarCompra')->name('compras.confirmarCompra');
 });
 
-Route::controller(PagoController::class)->group(function() {
+Route::controller(PagoController::class)->group(function () {
     Route::get('/pagos', 'index')->name('pagos.index');
     Route::get('/pagos/create', 'create')->name('pagos.create');
     Route::get('/pagos/create/{id}', 'createPago')->name('pagos.createPago');
@@ -167,6 +166,16 @@ Route::controller(VentaController::class)->group(function () {
     Route::post('/ventas/delete/{id}', 'destroy')->name('ventas.delete');
 });
 
+Route::controller(AjusteInventarioController::class)->group(function () {
+    Route::get('/ajustes-inventario', 'index')->name('ajustes.index');
+    Route::get('/ajustes-inventario/create', 'create')->name('ajustes.create');
+    Route::get('/ajustes-inventario/edit/{id}', 'edit')->name('ajustes.edit');
+    Route::get('/ajustes-inventario/show/{id}', 'show')->name('ajustes.show');
+    Route::post('/ajustes-inventario', 'store')->name('ajustes.store');
+    Route::put('/ajustes-inventario/update/{id}', 'update')->name('ajustes.update');
+    Route::post('/ajustes-inventario/delete/{id}', 'destroy')->name('ajustes.delete');
+});
+
 Route::controller(DevolucionController::class)->group(function () {
     Route::get('/devoluciones', 'index')->name('devoluciones.index');
     Route::get('/devoluciones/create', 'create')->name('devoluciones.create');
@@ -177,11 +186,10 @@ Route::controller(DevolucionController::class)->group(function () {
     Route::post('/devoluciones/delete/{id}', 'destroy')->name('devoluciones.delete');
 });
 
-Route::controller(ReporteController::class)->group(function() {
+Route::controller(ReporteController::class)->group(function () {
     Route::get('/reportes-compras', 'reporteCompras')->name('reportes.compras');
     Route::get('/reportes-ventas', 'reporteVentas')->name('reportes.ventas');
     Route::get('/reportes-pagos', 'reportePagos')->name('reportes.pagos');
 });
 
 Route::get('/search', [SearchController::class, 'search'])->name('search');
-
