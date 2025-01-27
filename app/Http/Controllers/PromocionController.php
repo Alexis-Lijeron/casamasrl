@@ -7,12 +7,20 @@ use App\Models\Producto;
 use Illuminate\Http\Request;
 use App\Events\PromocionCreated;
 use App\Events\PromocionUpdated;
+use App\Services\PromocionService;
 
 class PromocionController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
+    protected $promocionService;
+
+    public function __construct(PromocionService $promocionService)
+    {
+        $this->promocionService = $promocionService;
+    }
+
     public function index()
     {
         $promociones = Promocion::with('productos')->get();
@@ -44,16 +52,16 @@ class PromocionController extends Controller
 
         $promocion = Promocion::create($request->all());
 
-        foreach($request->productos as $productoId) {
-            $producto = Producto::find($productoId);
-            $precioConDescuento = $producto->precio_venta * (1 - ($request->descuento / 100));
+        $productosConDescuento = $this->promocionService->aplicarDescuentoAProductos(
+            $promocion,
+            $request->productos
+        );
 
-            $promocion->productos()->attach($productoId, [
-                'precio_con_descuento' => $precioConDescuento
-            ]);
+        $promocion->productos()->attach($productosConDescuento);
+
+        if (class_exists('App\Events\PromocionCreated')) {
+            event(new PromocionCreated($promocion));
         }
-
-        event(new PromocionCreated($promocion));
 
         return redirect()->route('promociones.index')
             ->with('success', 'Promoción creada exitosamente');
