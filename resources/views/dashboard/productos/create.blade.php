@@ -31,7 +31,7 @@
                                     <select class="form-control" data-toggle="select2" name="categoria_id" id="categoria_id">
                                         <option value="">Seleccionar</option>
                                         @foreach ($categorias as $categoria)
-                                        <option value="{{ $categoria['id'] }}" 
+                                        <option value="{{ $categoria['id'] }}"
                                         @if($categoria['id'] == old('categoria_id')) selected @endif>
                                             {{ $categoria['nombre'] }}
                                         </option>
@@ -51,7 +51,7 @@
                                     <select class="form-control" data-toggle="select2" name="marca_id" id="marca_id">
                                         <option value="">Seleccionar</option>
                                         @foreach ($marcas as $marca)
-                                        <option value="{{ $marca['id'] }}" 
+                                        <option value="{{ $marca['id'] }}"
                                         @if($marca['id'] == old('marca_id')) selected @endif>
                                             {{ $marca['nombre'] }}
                                         </option>
@@ -117,7 +117,7 @@
                                 </div>
                             </div>
                         </div>
-                        
+
                         <div class="form-group text-right m-b-0">
                             <a href="{{ route('productos.index') }}" class="btn btn-danger waves-effect m-l-5">
                                 Cancelar
@@ -139,15 +139,15 @@
         function mostrarPrevisualizacion(event) {
             const input = event.target;
             const preview = document.getElementById('preview-imagen');
-    
+
             if (input.files && input.files[0]) {
                 const reader = new FileReader();
-    
+
                 reader.onload = function (e) {
                     preview.src = e.target.result; // Establece la imagen cargada como src
                     preview.style.display = 'block'; // Muestra la imagen
                 };
-    
+
                 reader.readAsDataURL(input.files[0]); // Lee el archivo seleccionado
             } else {
                 preview.src = '';

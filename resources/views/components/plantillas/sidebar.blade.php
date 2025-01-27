@@ -53,6 +53,7 @@
             <ul class="nav-second-level">
                 <li><a href="{{ route('productos.index') }}">Productos</a></li>
                 <li><a href="{{ route('categorias.index') }}">Categorías</a></li>
+                <li><a href="{{ route('promociones.index') }}">Promociones</a></li>
                 <li><a href="{{ route('marcas.index') }}">Marcas</a></li>
                 <li><a href="{{ route('almacenes.index') }}">Almacenes</a></li>
                 <li><a href="{{ route('ajustes.index') }}">Ajustes de Inventario</a></li>

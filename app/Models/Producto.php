@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 class Producto extends Model
 {
     use HasFactory;
-    
+
     protected $table = 'productos';
     protected $fillable = [
         'nombre',
@@ -19,7 +19,7 @@ class Producto extends Model
         'categoria_id',
         'marca_id'
     ];
-    
+
     // Relación muchos a muchos con la tabla almacenes
     public function almacenes()
     {
@@ -27,17 +27,37 @@ class Producto extends Model
             ->withPivot('stock', 'fecha_vencimiento')
             ->withTimestamps();
     }
-    
+
     // Relación uno a muchos (inversa) con la tabla categorias
     public function categoria()
     {
         return $this->belongsTo(Categoria::class, 'categoria_id');
     }
-    
+
     // Relación uno a muchos (inversa) con la tabla marcas
     public function marca()
     {
         return $this->belongsTo(Marca::class, 'marca_id');
     }
-    
+
+    public function promociones()
+{
+    return $this->belongsToMany(Promocion::class, 'producto_promocion')
+                ->withPivot('precio_con_descuento')
+                ->withTimestamps();
+}
+
+public function getPrecioActualAttribute()
+{
+    $promocionActiva = $this->promociones()
+        ->where('fecha_inicio', '<=', now())
+        ->where('fecha_fin', '>=', now())
+        ->where('estado', 'activo')
+        ->first();
+
+    return $promocionActiva
+        ? $promocionActiva->pivot->precio_con_descuento
+        : $this->precio_venta;
+}
+
 }
