@@ -19,6 +19,7 @@ use App\Http\Controllers\UsuarioController;
 use App\Http\Controllers\VentaController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\PageController;
+use App\Http\Controllers\SearchController;
 
 Route::get('/mi-pagina', [PageController::class, 'show'])->name('mi-pagina');
 // Ruta para el landing page
@@ -181,4 +182,6 @@ Route::controller(ReporteController::class)->group(function() {
     Route::get('/reportes-ventas', 'reporteVentas')->name('reportes.ventas');
     Route::get('/reportes-pagos', 'reportePagos')->name('reportes.pagos');
 });
+
+Route::get('/search', [SearchController::class, 'search'])->name('search');
 

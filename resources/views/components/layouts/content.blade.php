@@ -4,6 +4,11 @@
     <main class="flex-grow-1 p-4">
         <div class="container">
             <!-- start page title -->
+            <div class="search-container">
+                <input type="text" id="search-input" class="form-control" placeholder="Buscar...">
+                <div id="search-results" class="list-group position-absolute w-100" style="z-index: 1000; display: none;"></div>
+            </div>
+
             <div class="row">
                 <div class="col-12">
                     <div class="page-title-box">
@@ -28,3 +33,45 @@
         </div>
     </main>
 </div>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const searchInput = document.getElementById('search-input');
+        const resultsContainer = document.getElementById('search-results');
+
+        searchInput.addEventListener('input', function () {
+            let query = this.value.trim();
+
+            if (query.length === 0) {
+                resultsContainer.style.display = 'none';
+                resultsContainer.innerHTML = '';
+                return;
+            }
+
+            fetch(`/search?query=${query}`)
+                .then(response => response.json())
+                .then(data => {
+                    resultsContainer.innerHTML = '';
+                    if (data.length === 0) {
+                        resultsContainer.innerHTML = '<div class="list-group-item">No se encontraron resultados</div>';
+                    } else {
+                        data.forEach(item => {
+                            let element = document.createElement('a');
+                            element.href = item.url;
+                            element.classList.add('list-group-item', 'list-group-item-action');
+                            element.textContent = item.title;
+                            resultsContainer.appendChild(element);
+                        });
+                    }
+                    resultsContainer.style.display = 'block';
+                })
+                .catch(error => console.error('Error en la búsqueda:', error));
+        });
+
+        // Ocultar los resultados si el usuario hace clic fuera
+        document.addEventListener('click', function (event) {
+            if (!searchInput.contains(event.target) && !resultsContainer.contains(event.target)) {
+                resultsContainer.style.display = 'none';
+            }
+        });
+    });
+    </script>
