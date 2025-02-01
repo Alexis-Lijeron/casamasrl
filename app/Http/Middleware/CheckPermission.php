@@ -15,7 +15,7 @@ class CheckPermission
         }
 
         if (!auth()->user()->hasPermission($permission)) {
-            abort(403, 'Unauthorized action.');
+            abort(403, 'NO ESTAS AUTORIZADO PARA ACCEDER A ESTA PAGINA');
         }
 
         return $next($request);
