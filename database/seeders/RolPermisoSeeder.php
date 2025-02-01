@@ -11,10 +11,23 @@ class RolPermisoSeeder extends Seeder
 {
     public function run(): void
     {
-        $admin = Rol::where('nombre', 'Administrador')->first();
-        $permisos = Permiso::all();
+        $admin = Rol::where('slug', 'rol.admin')->firstOrFail();
+        $vendedor = Rol::where('slug', 'rol.vendedor')->firstOrFail();
 
-        // Asignar todos los permisos al rol Administrador
-        $admin->permisos()->sync($permisos->pluck('id')->toArray());
+        // Asignar todos los permisos al administrador
+        $admin->permisos()->sync(Permiso::all());
+
+        // Asignar permisos específicos al vendedor
+        $vendedor->permisos()->sync(
+            Permiso::whereIn('slug', [
+                'menu.ventas',
+                'menu.clientes',
+                'menu.productos',
+                'ventas.crear',
+                'ventas.listar',
+                'clientes.listar',
+                'productos.listar'
+            ])->pluck('id')
+        );
     }
 }

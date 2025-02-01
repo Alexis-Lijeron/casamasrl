@@ -15,6 +15,7 @@ class DatabaseSeeder extends Seeder
             PermisoSeeder::class,
             RolPermisoSeeder::class,
             UsuarioSeeder::class,
+            UsuarioRolSeeder::class,
             ClienteSeeder::class,
             ProveedorSeeder::class,
             CategoriaSeeder::class,
@@ -27,7 +28,7 @@ class DatabaseSeeder extends Seeder
             PagoSeeder::class,
             VentaSeeder::class,
             DetalleVentaSeeder::class,
-            
+
         ]);
     }
 }

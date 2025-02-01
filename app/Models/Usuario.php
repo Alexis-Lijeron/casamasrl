@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 class Usuario extends Authenticatable
 {
@@ -17,8 +18,7 @@ class Usuario extends Authenticatable
         'apellido',
         'email',
         'password',
-        'telefono',
-        'rol_id'
+        'telefono'
     ];
 
     protected $hidden = [
@@ -42,10 +42,22 @@ class Usuario extends Authenticatable
     {
         return $this->hasMany(AjusteInventario::class, 'usuario_id');
     }
-
+    
     // Relación muchos a uno con la tabla rol
-    public function rol()
+    public function roles(): BelongsToMany
     {
-        return $this->belongsTo(Rol::class, 'rol_id');
+        return $this->belongsToMany(Rol::class, 'rol_usuario');
+    }
+
+    public function hasRole($role): bool
+    {
+        return $this->roles()->where('slug', $role)->exists();
+    }
+
+    public function hasPermission($permission): bool
+    {
+        return $this->roles()->whereHas('permisos', function ($query) use ($permission) {
+            $query->where('slug', $permission);
+        })->exists();
     }
 }
