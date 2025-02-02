@@ -27,6 +27,7 @@
                             <th scope="col">Fecha y Hora</th>
                             <th scope="col">Monto</th>
                             <th scope="col">Estado</th>
+                            <th scope="col">Método de Pago</th>
                             <th>Acciones</th>
                         </tr>
                     </thead>
@@ -60,6 +61,9 @@
                                 <span class="text-warning py-1 px-2 rounded-lg d-inline-block"
                                     style="background-color: #ffeeba; width: 90px">Pendiente</span>
                                 @endif
+                            </td>
+                            <td>
+                                {{ $pago['metodoPago']['nombre'] ?? 'Sin Asignar' }} <!-- Mostrar el método de pago -->
                             </td>
                             <td class="align-middle text-nowrap">
                                 <a href="{{ route('pagos.createPago', $pago['id']) }}" title="Pagar" class="btn btn-sm btn-outline-success">

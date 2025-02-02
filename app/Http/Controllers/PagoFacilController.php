@@ -97,6 +97,7 @@ class PagoFacilController extends Controller
 
             // Actualiza el estado a 'Pagado'
             $pago->estado = 1; // Asume que 1 significa "Pagado"
+            $pago->metodo_pago_id = 2; // 2 corresponde a "QR"
             $pago->save();
 
             return response()->json([
