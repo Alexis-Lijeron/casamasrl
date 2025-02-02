@@ -40,7 +40,11 @@
                                             </td>
                                         <td class="align-middle">{{ $usuario['email'] }}</td>
                                         <td class="align-middle">{{ $usuario['telefono'] }}</td>
-                                        <td class="align-middle">{{ $usuario['rol']['nombre'] }}</td>
+                                        <td class="align-middle">
+                                            @foreach($usuario->roles as $rol)
+                                                {{ $rol->nombre }}@if(!$loop->last), @endif
+                                            @endforeach
+                                        </td>
                                         <td class="align-middle text-nowrap" style="width: 150px">
                                             <div class="d-flex justify-content-center">
                                                 <a href="{{ route('usuarios.show', $usuario['id']) }}" title="Ver" class="btn btn-sm btn-warning">

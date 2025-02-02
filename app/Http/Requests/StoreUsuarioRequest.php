@@ -11,18 +11,26 @@ class StoreUsuarioRequest extends FormRequest
         return true;
     }
 
-    public function rules(): array
+    public function rules()
     {
         return [
-            'nombre' => ['required', 'string', 'max:50'],
-            'apellido' => ['required', 'string', 'max:50'],
-            'email' => ['required', 'string', 'email', 'max:100', 'unique:usuarios'],
-            // 'password' => ['required', 'string', 'min:8'],
-            'telefono' => ['required', 'string', 'max:20', 'unique:usuarios'],
-            'rol_id' => ['required', 'exists:roles,id']
+            'nombre' => 'required|string|max:255',
+            'apellido' => 'required|string|max:255',
+            'email' => 'required|email|unique:usuarios,email',
+            'telefono' => 'required|string|max:20',
+            'password' => [
+                'required',
+                'string',
+                'min:8',
+                'regex:/[a-z]/',
+                'regex:/[A-Z]/',
+                'regex:/[@$!%*?&\d]/',
+            ],
+            'roles' => 'required|array|min:1',
+            'roles.*' => 'exists:roles,id',
         ];
     }
-    
+
     public function messages(): array
     {
         return [
@@ -37,9 +45,9 @@ class StoreUsuarioRequest extends FormRequest
             'email.email' => 'El email debe ser una dirección de correo válida',
             'email.max' => 'El email no debe exceder los 255 caracteres',
             'email.unique' => 'El email ya está en uso',
-            // 'password.required' => 'La contraseña es requerida',
-            // 'password.string' => 'La contraseña debe ser una cadena de caracteres',
-            // 'password.min' => 'La contraseña debe tener al menos 8 caracteres',
+            'password.required' => 'La contraseña es requerida',
+            'password.string' => 'La contraseña debe ser una cadena de caracteres',
+            'password.min' => 'La contraseña debe tener al menos 8 caracteres',
             'telefono.required' => 'El teléfono es requerido',
             'telefono.string' => 'El teléfono debe ser una cadena de caracteres',
             'telefono.max' => 'El teléfono no debe exceder los 20 caracteres',
