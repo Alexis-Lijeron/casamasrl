@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Services\PagoFacilService;
+use App\Models\Pago;
 
 class PagoFacilController extends Controller
 {
@@ -83,5 +84,31 @@ class PagoFacilController extends Controller
         }
 
         return response()->json($result);
+    }
+    public function actualizarEstadoPago(Request $request)
+    {
+        $validatedData = $request->validate([
+            'idPago' => 'required|integer',
+        ]);
+
+        try {
+            // Busca el pago en la base de datos
+            $pago = Pago::findOrFail($validatedData['idPago']);
+
+            // Actualiza el estado a 'Pagado'
+            $pago->estado = 1; // Asume que 1 significa "Pagado"
+            $pago->save();
+
+            return response()->json([
+                'error' => 0,
+                'message' => 'El estado del pago se ha actualizado correctamente.',
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'error' => 1,
+                'message' => 'Error al actualizar el estado del pago.',
+                'details' => $e->getMessage(),
+            ], 500);
+        }
     }
 }

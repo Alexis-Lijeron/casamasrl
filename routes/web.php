@@ -248,3 +248,4 @@ Route::post('/pagoFacil/authenticate', [PagoFacilController::class, 'authenticat
 Route::post('/pagoFacil/generarQR', [PagoFacilController::class, 'generateQR']);
 Route::post('/pagos/generarQR', [PagoFacilController::class, 'generateQR'])->name('pagos.generarQR');
 Route::post('/pagos/consultarTransaccion', [PagoFacilController::class, 'consultarTransaccion'])->name('pagos.consultarTransaccion');
+Route::post('/pagos/actualizarEstado', [PagoFacilController::class, 'actualizarEstadoPago'])->name('pagos.actualizarEstado');

@@ -8,9 +8,10 @@ use Illuminate\Database\Eloquent\Model;
 class Pago extends Model
 {
     use HasFactory;
-    
+
     protected $table = 'pagos';
     protected $fillable = [
+        'id',   
         'monto',
         'fecha_pago',
         'venta_id',
@@ -18,13 +19,13 @@ class Pago extends Model
         'estado',
         'descripcion'
     ];
-    
+
     // Relación uno a muchos (inversa) con la tabla nota_ventas
     public function notaVenta()
     {
         return $this->belongsTo(NotaVenta::class, 'venta_id');
     }
-    
+
     // Relación uno a muchos (inversa) con la tabla metodos_pagos
     public function metodoPago()
     {

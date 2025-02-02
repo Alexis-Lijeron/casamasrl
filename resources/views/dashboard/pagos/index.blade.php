@@ -105,7 +105,7 @@
                     <img id="qrImage" src="" alt="QR Code" class="img-fluid">
                 </div>
                 <button id="verifyTransactionButton" class="btn btn-info" type="button"
-                    onclick="verificarTransaccion(this)" data-transaccion-id="">
+                    onclick="verificarTransaccion(this)" data-id-pago="{{ $pago['id'] }}" data-transacdata-transaccion-id="">
                     Verificar Estado de Transacción
                 </button>
 
@@ -205,10 +205,21 @@
                 })
                 .then(response => response.json())
                 .then(data => {
-                    console.log("Respuesta del servidor:", data);
+                    console.log("Estado de la transacción:", data);
 
                     if (data.error === 0) {
-                        Swal.fire("Estado de Transacción", `Estado: ${data.values.messageEstado}`, "success");
+                        const estado = data.values?.messageEstado || "Estado desconocido";
+
+                        Swal.fire({
+                            icon: "success",
+                            title: "Estado de Transacción",
+                            text: `Estado: ${estado}`,
+                        }).then(() => {
+                            if (estado.includes("COMPLETADO")) {
+                                // Si está completado, actualiza el estado del pago
+                                actualizarEstadoPago(button.getAttribute("data-id-pago"));
+                            }
+                        });
                     } else {
                         Swal.fire("Error", data.messageSistema || "No se pudo verificar la transacción.", "error");
                     }
@@ -219,12 +230,9 @@
                 });
         }
 
-        function consultarEstado(transaccionId) {
-            const url = "{{ route('pagos.consultarTransaccion') }}";
-
-            const data = {
-                transaccionDePago: transaccionId, // El número único de la transacción
-            };
+        // Función para actualizar el estado del pago
+        function actualizarEstadoPago(idPago) {
+            const url = "{{ route('pagos.actualizarEstado') }}";
 
             fetch(url, {
                     method: "POST",
@@ -232,21 +240,24 @@
                         "Content-Type": "application/json",
                         "X-CSRF-TOKEN": "{{ csrf_token() }}",
                     },
-                    body: JSON.stringify(data),
+                    body: JSON.stringify({
+                        idPago: idPago
+                    }),
                 })
                 .then(response => response.json())
                 .then(data => {
-                    console.log("Estado de la transacción:", data);
+                    if (data.error === 0) {
+                        Swal.fire("Éxito", "El estado del pago ha sido actualizado.", "success");
 
-                    if (data.error) {
-                        Swal.fire("Error", "No se pudo consultar el estado de la transacción: " + data.message, "error");
+                        // Recargar la tabla o la página para reflejar los cambios
+                        location.reload();
                     } else {
-                        Swal.fire("Estado de Transacción", `Estado: ${data.messageEstado}`, "success");
+                        Swal.fire("Error", "No se pudo actualizar el estado del pago: " + data.message, "error");
                     }
                 })
                 .catch(error => {
-                    console.error("Error al consultar el estado de la transacción:", error);
-                    Swal.fire("Error", "Hubo un problema al consultar la transacción.", "error");
+                    console.error("Error al actualizar el estado del pago:", error);
+                    Swal.fire("Error", "Hubo un problema al actualizar el estado del pago.", "error");
                 });
         }
     </script>
