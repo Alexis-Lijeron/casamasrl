@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Rol;
 use App\Http\Requests\StoreRolRequest;
 use App\Http\Requests\UpdateRolRequest;
+use Illuminate\Support\Str;
 
 class RolController extends Controller
 {
@@ -21,12 +22,17 @@ class RolController extends Controller
 
     public function store(StoreRolRequest $request)
     {
-        $rol = Rol::create($request->all());
-        
+        $rol = Rol::create([
+            'nombre' => $request->nombre,
+            'slug' => Str::slug($request->nombre), // Genera el slug automáticamente
+            'description' => $request->description
+        ]);
+
         if (!$rol) {
             session()->flash('error', 'Ha ocurrido un error. Por favor, intenta nuevamente.');
             return redirect()->back();
         }
+
         session()->flash('guardado', '¡Guardado! El rol ha sido guardado exitosamente.');
         return redirect()->route('roles.index');
     }
@@ -53,7 +59,13 @@ class RolController extends Controller
             session()->flash('error', 'Ha ocurrido un error. Por favor, intenta nuevamente.');
             return redirect()->back();
         }
-        $rol->update($request->all());
+
+        $rol->update([
+            'nombre' => $request->nombre,
+            'slug' => Str::slug($request->nombre), // Regenera el slug si el nombre cambia
+            'description' => $request->description
+        ]);
+
         session()->flash('actualizado', '¡Actualizado! El rol ha sido actualizado exitosamente.');
         return redirect()->route('roles.index');
     }
