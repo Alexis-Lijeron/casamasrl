@@ -18,3 +18,7 @@ Route::get('/productos/{producto}/precio-actual', function (Producto $producto) 
         'tiene_promocion' => $precioActual !== $producto->precio_venta
     ]);
 });
+
+use App\Http\Controllers\PagoFacilController;
+
+Route::get('/pago-facil/auth', [PagoFacilController::class, 'authenticate']);
