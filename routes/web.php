@@ -72,6 +72,7 @@ Route::middleware(['auth'])->group(function () {
             Route::get('/usuarios', 'index')->name('usuarios.index');
             Route::get('/usuarios/create', 'create')->middleware('permission:usuarios.crear')->name('usuarios.create');
             Route::get('/usuarios/show/{id}', 'show')->name('usuarios.show');
+            Route::get('/usuarios/edit/{id}', 'edit')->middleware('permission:usuarios.editar')->name('usuarios.edit');
             Route::post('/usuarios', 'store')->middleware('permission:usuarios.crear')->name('usuarios.store');
             Route::post('/usuarios/update/{id}', 'update')->middleware('permission:usuarios.editar')->name('usuarios.update');
             Route::post('/usuarios/delete/{id}', 'destroy')->middleware('permission:usuarios.eliminar')->name('usuarios.delete');
