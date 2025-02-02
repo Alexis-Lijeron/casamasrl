@@ -2,7 +2,7 @@
 
     <x-layouts.content title="Reportes" subtitle="Enviar correo" name="Reportes">
 
-        <div class="row">
+        <div class="row mb-5">
             <div class="col-12">
 
                 <div class="card-box">
@@ -56,53 +56,45 @@
         </div>
 
     </x-layouts.content>
+
     @push('js')
-    <script src="https://cdn.tiny.cloud/1/zlwkclgpr7krkcbvdkn2ui32m7hopg7xnck0xcki3lheojaa/tinymce/7/tinymce.min.js" referrerpolicy="origin"></script>
+    <script src="https://cdn.tiny.cloud/1/zlwkclgpr7krkcbvdkn2ui32m7hopg7xnck0xcki3lheojaa/tinymce/7/tinymce.min.js"
+        referrerpolicy="origin"></script>
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            // Inicializar TinyMCE en el selector
-            tinymce.init({
-                selector: '#message'
-            });
-
-            // Obtener los datos de compras
-            const data = @json($data);
-
-            // Crear la tabla HTML como cadena
-            let tableHtml = '<table border="1" style="border-collapse: collapse;">';
-            tableHtml += '<thead><tr><th>ID</th><th>Fecha</th><th>Usuario</th><th>Proveedor</th><th>Producto</th><th>Categoría</th><th>Monto</th></tr></thead>';
-            tableHtml += '<tbody>';
-
-            // Recorrer los datos y construir las filas de la tabla
-            data.forEach(compra => {
-                tableHtml += `
-                <tr>
-                    <td class="align-middle">${compra.id}</td>
-                    <td class="align-middle">${compra.fecha_compra}</td>
-                    <td class="align-middle">${compra.usuario.nombre} ${compra.usuario.apellido}</td>
-                    <td class="align-middle">${compra.proveedor.nombre_empresa} ${compra.proveedor.nombre_encargado}</td>
-                    <td class="align-middle">
-                        <ul>
-                            ${compra.productos_almacen.map(producto => `<li>${producto.producto.nombre}</li>`).join('')}
-                        </ul>
-                    </td>
-                    <td class="align-middle">
-                        <ul>
-                            ${compra.productos_almacen.map(producto => `<li>${producto.producto.categoria.nombre}</li>`).join('')}
-                        </ul>
-                    </td>
-                    <td class="align-middle">Bs. ${compra.monto_total}</td>
-                </tr>`;
-            });
-
-            tableHtml += '</tbody></table>';
-
-            // Asignar la tabla HTML al campo <textarea> para que TinyMCE la pueda renderizar
-            const messageTextarea = document.getElementById('message');
-            if (messageTextarea) {
-                messageTextarea.value = tableHtml;
-            }
+        tinymce.init({
+            selector: '#message'
         });
+    </script>
+    <script>
+        const data = @json($data);
+
+        // Crear la tabla HTML como cadena
+        let tableHtml = '<table border="1" style="border-collapse: collapse;">';
+        tableHtml += '<thead><tr><th>ID</th><th>Fecha</th><th>Usuario</th><th>Proveedor</th><th>Producto</th><th>Categoría</th><th>Monto</th></tr></thead>';
+        tableHtml += '<tbody>';
+        data.forEach(compra => {
+            tableHtml += `<tr>
+              <td class="align-middle">${compra.id}</td>
+              <td class="align-middle">${compra.fecha_compra}</td>
+              <td class="align-middle">${compra.usuario.nombre} ${compra.usuario.apellido}</td>
+              <td class="align-middle">${compra.proveedor.nombre_empresa} ${compra.proveedor.nombre_encargado}</td>
+              <td class="align-middle">
+                  <ul>
+                      ${compra.productos_almacen.map(producto => `<li>${producto.producto.nombre}</li>`).join('')}
+                  </ul>
+              </td>
+              <td class="align-middle">
+                  <ul>
+                      ${compra.productos_almacen.map(producto => `<li>${producto.producto.categoria.nombre}</li>`).join('')}
+                  </ul>
+              </td>
+              <td class="align-middle">Bs. ${compra.monto_total}</td>
+          </tr>`;
+        });
+        tableHtml += '</tbody></table>';
+
+        // Asignar la tabla HTML al campo <textarea>
+        document.getElementById('message').value = tableHtml;
     </script>
     @endpush
 

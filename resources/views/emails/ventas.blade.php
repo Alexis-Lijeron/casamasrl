@@ -2,7 +2,7 @@
 
     <x-layouts.content title="Reportes" subtitle="Enviar correo" name="Reportes">
 
-        <div class="row">
+        <div class="row mb-5">
             <div class="col-12">
 
                 <div class="card-box">
@@ -58,70 +58,44 @@
     </x-layouts.content>
 
     @push('js')
-    <script src="https://cdn.tiny.cloud/1/zlwkclgpr7krkcbvdkn2ui32m7hopg7xnck0xcki3lheojaa/tinymce/7/tinymce.min.js" referrerpolicy="origin"></script>
+    <script src="https://cdn.tiny.cloud/1/zlwkclgpr7krkcbvdkn2ui32m7hopg7xnck0xcki3lheojaa/tinymce/7/tinymce.min.js"
+        referrerpolicy="origin"></script>
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            // Inicializar TinyMCE
-            tinymce.init({
-                selector: '#message'
-            });
-
-            // Obtener los datos desde el backend
-            const data = @json($data);
-
-            // Crear la tabla HTML como cadena
-            let tableHtml = `
-            <table border="1" style="border-collapse: collapse;">
-                <thead>
-                    <tr>
-                        <th>ID</th>
-                        <th>Fecha</th>
-                        <th>Usuario</th>
-                        <th>Cliente</th>
-                        <th>Producto</th>
-                        <th>Categoría</th>
-                        <th>Monto</th>
-                    </tr>
-                </thead>
-                <tbody>
-        `;
-
-            // Generar las filas de la tabla con los datos
-            data.forEach(venta => {
-                tableHtml += `
-                <tr>
-                    <td class="align-middle">${venta.id}</td>
-                    <td class="align-middle">${venta.fecha_venta}</td>
-                    <td class="align-middle">${venta.usuario.nombre} ${venta.usuario.apellido}</td>
-                    <td class="align-middle">${venta.cliente.nombre} ${venta.cliente.apellido}</td>
-                    <td class="align-middle">
-                        <ul>
-                            ${venta.productos_almacen.map(producto => `<li>${producto.producto.nombre}</li>`).join('')}
-                        </ul>
-                    </td>
-                    <td class="align-middle">
-                        <ul>
-                            ${venta.productos_almacen.map(producto => `<li>${producto.producto.categoria.nombre}</li>`).join('')}
-                        </ul>
-                    </td>
-                    <td class="align-middle">Bs. ${venta.monto_total}</td>
-                </tr>
-            `;
-            });
-
-            tableHtml += `
-                </tbody>
-            </table>
-        `;
-
-            // Asignar la tabla HTML al campo <textarea>
-            const messageField = document.getElementById('message');
-            if (messageField) {
-                messageField.value = tableHtml;
-            }
+        tinymce.init({
+            selector: '#message'
         });
     </script>
-    @endpush
+    <script>
+        const data = @json($data);
 
+        // Crear la tabla HTML como cadena
+        let tableHtml = '<table border="1" style="border-collapse: collapse;">';
+        tableHtml += '<thead><tr><th>ID</th><th>Fecha</th><th>Usuario</th><th>Cliente</th><th>Producto</th><th>Categoría</th><th>Monto</th></tr></thead>';
+        tableHtml += '<tbody>';
+        data.forEach(venta => {
+            tableHtml += `<tr>
+                <td class="align-middle">${venta.id}</td>
+                <td class="align-middle">${venta.fecha_venta}</td>
+                <td class="align-middle">${venta.usuario.nombre} ${venta.usuario.apellido}</td>
+                <td class="align-middle">${venta.cliente.nombre} ${venta.cliente.apellido}</td>
+                <td class="align-middle">
+                    <ul>
+                        ${venta.productos_almacen.map(producto => `<li>${producto.producto.nombre}</li>`).join('')}
+                    </ul>
+                </td>
+                <td class="align-middle">
+                    <ul>
+                        ${venta.productos_almacen.map(producto => `<li>${producto.producto.categoria.nombre}</li>`).join('')}
+                    </ul>
+                </td>
+                <td class="align-middle">Bs. ${venta.monto_total}</td>
+            </tr>`;
+        });
+        tableHtml += '</tbody></table>';
+
+        // Asignar la tabla HTML al campo <textarea>
+        document.getElementById('message').value = tableHtml;
+    </script>
+    @endpush
 
 </x-layouts.app>
