@@ -6,6 +6,8 @@ use App\Models\NotaCompra;
 use App\Http\Requests\StoreCompraRequest;
 use App\Http\Requests\UpdateCompraRequest;
 use App\Models\AjusteInventario;
+use App\Models\DetalleCompra;
+use App\Models\Devolucion;
 use App\Models\Pago;
 use App\Models\Producto;
 use App\Models\ProductoAlmacen;
@@ -114,9 +116,33 @@ class CompraController extends Controller
                 'almacenId' => $productoAlmacen->almacen->id,
             ];
         });
-        
-        // dd($productosAsociados);
-        return view('dashboard.compras.show', compact('productosAsociados', 'compra'));
+
+
+        // Obtener las devoluciones asociadas a la compra y sus detalles
+        $devoluciones = $compra->devoluciones->map(function ($devolucion) use ($compra) {
+            return [
+                'fecha_devolucion' => $devolucion->fecha_devolucion,
+                'motivo' => $devolucion->motivo,
+                'productos' => $devolucion->productosAlmacen->map(function ($productoAlmacen) use ($compra) {
+                    // Obtener el precio de compra desde la tabla intermedia detalle_compra
+                    $precioCompra = $compra->productosAlmacen
+                        ->where('id', $productoAlmacen->id)
+                        ->first()
+                        ->pivot
+                        ->precio_compra;
+
+                    return [
+                        'nombre' => $productoAlmacen->producto->nombre,
+                        'cantidad_devuelta' => $productoAlmacen->pivot->cantidad,
+                        'precio_compra' => $precioCompra,
+                    ];
+                }),
+            ];
+        });
+
+        // dd($devoluciones);
+
+        return view('dashboard.compras.show', compact('productosAsociados', 'compra', 'devoluciones'));
     }
 
     public function edit(string $id)
@@ -176,7 +202,7 @@ class CompraController extends Controller
             //     'monto' => $request->total,
             //     'fecha_pago' => now(),
             // ]);
-            
+
             // Eliminar los productos anteriores de la relación de la compra 
             $compra->productosAlmacen()->detach();
 
@@ -231,19 +257,19 @@ class CompraController extends Controller
             // Crear un nuevo registro en la tabla inventario
             $productos = $compra->productosAlmacen;
 
-            $ajusteInventario = AjusteInventario::create([
-                'tipo' => 'Ingreso',
-                'fecha' => now(),
-                'descripcion' => 'Compra de productos',
-                'usuario_id' => getUsuario()->id,
-            ]);
-            
+            // $ajusteInventario = AjusteInventario::create([
+            //     'tipo' => 'Ingreso',
+            //     'fecha' => now(),
+            //     'descripcion' => 'Compra de productos',
+            //     'usuario_id' => getUsuario()->id,
+            // ]);
+
             foreach ($productos as $producto) {
                 // Guardar los productos en la tabla de detalle_ajustes
-                $ajusteInventario->productosAlmacen()->attach($producto->id, [
-                    'cantidad' => $producto->pivot->cantidad,
-                ]);
-                
+                // $ajusteInventario->productosAlmacen()->attach($producto->id, [
+                //     'cantidad' => $producto->pivot->cantidad,
+                // ]);
+
                 // Actualizar el stock en la tabla producto_almacen
                 $producto->update([
                     'stock' => $producto->stock + $producto->pivot->cantidad,

@@ -23,7 +23,7 @@ class VentaController extends Controller
     public function create()
     {
         $clientes = Cliente::all();
-        $productos = Producto::with('promociones')->get();
+        $productos = Producto::all();
         return view('dashboard.ventas.create', compact('clientes', 'productos'));
     }
 
@@ -106,7 +106,7 @@ class VentaController extends Controller
             $venta->save();
 
             // Ajustar el inventario
-            $this->ajusteInventario($venta);
+            // $this->ajusteInventario($venta);
 
             // Generar el pago
             Pago::create([
@@ -270,7 +270,7 @@ class VentaController extends Controller
             $venta->save();
 
             // Ajustar el inventario
-            $this->ajusteInventario($venta);
+            // $this->ajusteInventario($venta);
 
             // Actualizar el pago
             $pago = Pago::where('venta_id', $venta->id)->first();

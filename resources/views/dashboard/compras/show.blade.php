@@ -1,6 +1,6 @@
 <x-layouts.app>
   <x-layouts.content title="Compras" subtitle="Detalles de compra" name="Compras">
-    <div class="row">
+    <div class="row mb-5">
       <div class="col-12">
         <div class="card-box">
 
@@ -32,9 +32,8 @@
           </div>
 
           <div class="row px-4 mt-3">
-            {{-- <div class="colmd-12"> --}}
-              <div class="form-group col-md-12">
-                {{-- <h3 class="mb-3">Productos Agregados</h3> --}}
+            <div class="col-md-12">
+              <div class="form-group">
                 <table class="table table-bordered table-responsive-lg">
                   <thead class="bg-dark text-white ">
                     <tr>
@@ -43,7 +42,7 @@
                       <th class="text-center">Cantidad</th>
                       <th class="text-center">Precio Unitario</th>
                       <th class="text-center">Subtotal</th>
-
+                      <th class="text-center">Devolución</th>
                     </tr>
                   </thead>
                   <tbody id="productos-table-body">
@@ -54,18 +53,29 @@
                       <td class="align-middle text-center">{{ $producto['cantidad'] }} &nbsp;&nbsp;
                         @if (obtenerStockDisponibleAlmacen($producto['id'], $producto['almacenId']) <= 0)
                           <span class="badge badge-danger">
-                            {{ obtenerStockDisponibleAlmacen($producto['id'], $producto['almacenId']) }}
+                          {{ obtenerStockDisponibleAlmacen($producto['id'], $producto['almacenId']) }}
                           </span>
-                        @else
+                          @else
                           <span class="badge badge-success">
                             {{ obtenerStockDisponibleAlmacen($producto['id'], $producto['almacenId']) }}
                           </span>
-                        @endif
+                          @endif
                       </td>
                       <td class="align-middle text-center">Bs. {{ formatearNumero($producto['precio_compra']) }}</td>
                       <td class="align-middle text-center">Bs. {{ formatearNumero($producto['subtotal']) }}</td>
                       <td class="align-middle text-center">
-
+                        <form id="formDevolucionCompra_{{ $compra->id }}"
+                          action="{{ route('devoluciones.store', $compra->id) }}" method="POST">
+                          @csrf
+                          <button type="button" class="btn btn-sm btn-success mx-1"
+                            onclick="mostrarModalDevolucion({{ $compra->id }}, {{ $producto['precio_compra'] }}, {{ $producto['productoAlmacenId'] }}, {{ $producto['cantidad'] }}, {{ obtenerStockDisponibleAlmacen($producto['id'], $producto['almacenId']) }})">
+                            <i class="fas fa-truck-loading"></i>
+                          </button>
+                          <input type="hidden" name="cantidad" id="cantidad_{{ $compra->id }}">
+                          <input type="hidden" name="motivo" id="motivo_{{ $compra->id }}">
+                          <input type="hidden" name="monto_total" id="monto_{{ $compra->id }}">
+                          <input type="hidden" name="producto_almacen_id" id="producto_almacen_id_{{ $compra->id }}">
+                        </form>
                       </td>
                     </tr>
                     @endforeach
@@ -80,6 +90,49 @@
                 </table>
               </div>
 
+              <!-- Mostrar devoluciones asociadas a la compra -->
+              <div class="form-group">
+                <h3 class="mb-3 text-center">Devoluciones realizadas</h3>
+                <table class="table table-bordered table-responsive-lg ">
+                  <thead class="bg-primary text-white">
+                    <tr>
+                      <th class="text-center">#</th>
+                      <th class="text-center">Fecha</th>
+                      <th class="text-center">Producto</th>
+                      <th class="text-center">Cantidad</th>
+                      <th class="text-center">Precio</th>
+                      <th class="text-center">Subtotal</th>
+                      <th class="text-center">Motivo</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    @if (count($devoluciones) > 0)
+                    @php
+                    $contador = 1; // Inicializar el contador
+                    @endphp
+                    @foreach ($devoluciones as $devolucion)
+                    @foreach ($devolucion['productos'] as $producto)
+                    <tr>
+                      <td class="align-middle text-center">{{ $contador++ }}</td>
+                      <td class="align-middle text-center">{{ formatearFecha($devolucion['fecha_devolucion']) }}</td>
+                      <td class="align-middle text-center">{{ $producto['nombre'] }}</td>
+                      <td class="align-middle text-center">{{ $producto['cantidad_devuelta'] }}</td>
+                      <td class="align-middle text-center">Bs. {{ formatearNumero($producto['precio_compra']) }}</td>
+                      <td class="align-middle text-center">Bs. {{ formatearNumero($producto['precio_compra'] *
+                            $producto['cantidad_devuelta']) }}</td>
+                      <td class="align-middle text-center">{{ $devolucion['motivo'] }}</td>
+                    </tr>
+                    @endforeach
+                    @endforeach
+                    @else
+                    <tr>
+                      <td colspan="7" class="align-middle text-center">No se han realizado devoluciones</td>
+                    </tr>
+                    @endif
+                  </tbody>
+                </table>
+              </div>
+
             </div>
           </div>
 
@@ -87,5 +140,75 @@
       </div>
     </div>
   </x-layouts.content>
+
+  @push('js')
+  <script>
+    function mostrarModalDevolucion(id, precioCompra, productoAlmacenId, cantidadProducto, cantidadDisponible) {
+      Swal.fire({
+        title: 'Devolver Compra',
+        html: `
+                  <div class="form-group text-left">
+                      <label for="cantidad">Cantidad:</label>
+                      <input type="number" id="cantidadInput" class="form-control" min="1" required>
+                  </div>
+                  <div class="form-group text-left">
+                      <label for="motivo">Motivo:</label>
+                      <textarea id="motivoInput" class="form-control" rows="3" required></textarea>
+                  </div>
+              `,
+        showCancelButton: true,
+        confirmButtonColor: '#556ee6',
+        cancelButtonColor: '#f46a6a',
+        confirmButtonText: 'Confirmar',
+        cancelButtonText: 'Cancelar',
+        preConfirm: () => {
+          const cantidad = Swal.getPopup().querySelector('#cantidadInput').value;
+          const motivo = Swal.getPopup().querySelector('#motivoInput').value;
+
+          if (!cantidad || !motivo) {
+            Swal.showValidationMessage('Por favor, complete ambos campos.');
+            return false;
+          }
+
+          return {
+            cantidad,
+            motivo
+          };
+        }
+      }).then((result) => {
+        if (result.isConfirmed) {
+          // Verificar que la cantidad a devolver no sea mayor a la cantidad comprada
+          if (result.value.cantidad > cantidadProducto) {
+            Swal.fire({
+              icon: 'error',
+              title: 'Error',
+              text: 'La cantidad a devolver no puede ser mayor a la cantidad comprada.'
+            });
+            return;
+          }
+
+          if (result.value.cantidad > cantidadDisponible) {
+            Swal.fire({
+              icon: 'error',
+              title: 'Error',
+              text: 'La cantidad a devolver no puede ser mayor al stock disponible en el almacén.'
+            });
+            return;
+          }
+
+          // Rellenar los campos ocultos del formulario
+          document.getElementById(`cantidad_${id}`).value = result.value.cantidad;
+          document.getElementById(`motivo_${id}`).value = result.value.motivo;
+          document.getElementById(`monto_${id}`).value = precioCompra * result.value.cantidad;
+          document.getElementById(`producto_almacen_id_${id}`).value = productoAlmacenId;
+
+          // Enviar el formulario
+          document.getElementById(`formDevolucionCompra_${id}`).submit();
+        }
+      });
+    }
+  </script>
+  @endpush
+
 
 </x-layouts.app>
