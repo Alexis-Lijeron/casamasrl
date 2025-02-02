@@ -24,4 +24,64 @@ class PagoFacilController extends Controller
 
         return response()->json(['access_token' => $accessToken]);
     }
+
+    public function generateQR(Request $request)
+    {
+        try {
+            // Intentamos validar la solicitud
+            $validatedData = $request->validate([
+                'tcCommerceID' => 'required|string',
+                'tcNroPago' => 'required|string',
+                'tcNombreUsuario' => 'required|string',
+                'tnCiNit' => 'required|integer',
+                'tnTelefono' => 'required|integer',
+                'tcCorreo' => 'required|email',
+                'tcCodigoClienteEmpresa' => 'required|string',
+                'tnMontoClienteEmpresa' => 'required|numeric',
+                'tnMoneda' => 'required|integer',
+                'tcUrlCallBack' => 'required|url',
+                'tcUrlReturn' => 'required|url',
+                'taPedidoDetalle' => 'required|array',
+            ]);
+
+            $response = $this->pagoFacilService->generateQR($validatedData);
+
+            return response()->json($response);
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            // 🔹 Retornamos los errores específicos de validación
+            return response()->json([
+                'error' => 1,
+                'message' => 'Error en la validación de datos',
+                'details' => $e->errors()  // Muestra los errores exactos
+            ], 422);
+        } catch (\Exception $e) {
+            return response()->json([
+                'error' => 1,
+                'message' => 'Error interno en el servidor',
+                'details' => $e->getMessage()
+            ], 500);
+        }
+    }
+    // 🔹 Método para consultar el estado de una transacción
+    public function consultarTransaccion(Request $request)
+    {
+        $validatedData = $request->validate([
+            'transaccionDePago' => 'required|string',
+        ]);
+
+        // Debug: Log para verificar el valor recibido
+        \Log::info('Transaccion recibida: ' . $validatedData['transaccionDePago']);
+
+        $result = $this->pagoFacilService->consultarTransaccion($validatedData['transaccionDePago']);
+
+        if (!isset($result['values'])) {
+            return response()->json([
+                'error' => 1,
+                'message' => 'No se encontraron datos de la transacción.',
+                'messageSistema' => $result['message'] ?? 'Respuesta inválida del servidor de PagoFácil',
+            ], 500);
+        }
+
+        return response()->json($result);
+    }
 }

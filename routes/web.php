@@ -130,14 +130,14 @@ Route::middleware(['auth'])->group(function () {
         });
     });
 
-        Route::controller(MetodoPagoController::class)->group(function () {
-            Route::get('/metodos-pago', 'index')->name('metodos-pago.index');
-            Route::get('/metodos-pago/create', 'create')->name('metodos-pago.create');
-            Route::get('/metodos-pago/edit/{id}', 'edit')->name('metodos-pago.edit');
-            Route::post('/metodos-pago', 'store')->name('metodos-pago.store');
-            Route::post('/metodos-pago/update/{id}', 'update')->name('metodos-pago.update');
-            Route::post('/metodos-pago/delete/{id}', 'destroy')->name('metodos-pago.delete');
-        });
+    Route::controller(MetodoPagoController::class)->group(function () {
+        Route::get('/metodos-pago', 'index')->name('metodos-pago.index');
+        Route::get('/metodos-pago/create', 'create')->name('metodos-pago.create');
+        Route::get('/metodos-pago/edit/{id}', 'edit')->name('metodos-pago.edit');
+        Route::post('/metodos-pago', 'store')->name('metodos-pago.store');
+        Route::post('/metodos-pago/update/{id}', 'update')->name('metodos-pago.update');
+        Route::post('/metodos-pago/delete/{id}', 'destroy')->name('metodos-pago.delete');
+    });
 
     // Gestión de Proveedores
     Route::middleware(['permission:proveedores.listar'])->group(function () {
@@ -179,14 +179,14 @@ Route::middleware(['auth'])->group(function () {
         });
     });
 
-        Route::controller(PagoController::class)->group(function () {
-            Route::get('/pagos', 'index')->name('pagos.index');
-            Route::get('/pagos/create', 'create')->name('pagos.create');
-            Route::get('/pagos/create/{id}', 'createPago')->name('pagos.createPago');
-            Route::get('/pagos/createfactura/{id}', 'createFactura')->name('pagos.createFactura');
-            Route::post('/pagos/store', 'store')->name('pagos.store');
-            Route::post('/pagos/update/{id}', 'update')->name('pagos.update');
-        });
+    Route::controller(PagoController::class)->group(function () {
+        Route::get('/pagos', 'index')->name('pagos.index');
+        Route::get('/pagos/create', 'create')->name('pagos.create');
+        Route::get('/pagos/create/{id}', 'createPago')->name('pagos.createPago');
+        Route::get('/pagos/createfactura/{id}', 'createFactura')->name('pagos.createFactura');
+        Route::post('/pagos/store', 'store')->name('pagos.store');
+        Route::post('/pagos/update/{id}', 'update')->name('pagos.update');
+    });
 
     // Gestión de Ventas
     Route::middleware(['permission:ventas.listar'])->group(function () {
@@ -201,15 +201,15 @@ Route::middleware(['auth'])->group(function () {
         });
     });
 
-        Route::controller(AjusteInventarioController::class)->group(function () {
-            Route::get('/ajustes-inventario', 'index')->name('ajustes.index');
-            Route::get('/ajustes-inventario/create', 'create')->name('ajustes.create');
-            Route::get('/ajustes-inventario/edit/{id}', 'edit')->name('ajustes.edit');
-            Route::get('/ajustes-inventario/show/{id}', 'show')->name('ajustes.show');
-            Route::post('/ajustes-inventario', 'store')->name('ajustes.store');
-            Route::put('/ajustes-inventario/update/{id}', 'update')->name('ajustes.update');
-            Route::post('/ajustes-inventario/delete/{id}', 'destroy')->name('ajustes.delete');
-        });
+    Route::controller(AjusteInventarioController::class)->group(function () {
+        Route::get('/ajustes-inventario', 'index')->name('ajustes.index');
+        Route::get('/ajustes-inventario/create', 'create')->name('ajustes.create');
+        Route::get('/ajustes-inventario/edit/{id}', 'edit')->name('ajustes.edit');
+        Route::get('/ajustes-inventario/show/{id}', 'show')->name('ajustes.show');
+        Route::post('/ajustes-inventario', 'store')->name('ajustes.store');
+        Route::put('/ajustes-inventario/update/{id}', 'update')->name('ajustes.update');
+        Route::post('/ajustes-inventario/delete/{id}', 'destroy')->name('ajustes.delete');
+    });
 
     // Gestión de Reportes
     Route::middleware(['permission:reportes.consultar'])->group(function () {
@@ -221,23 +221,30 @@ Route::middleware(['auth'])->group(function () {
             Route::post('/reportes-compras-resultados', 'mostrarComprasResultados')->name('reportes.mostrarComprasResultados');
         });
     });
-        // Route::get('/send-email', [EmailController::class, 'showForm'])->name('show.email.form');
-        // Route::post('/send-email', [EmailController::class, 'sendEmail'])->name('send.email');
-        Route::controller(EmailController::class)->group(function () {
-            Route::post('/reporte/ventas', 'reporteVentas')->name('reportes.email.ventas');
-            Route::post('/reporte/enviar-reporte-ventas', 'enviarReporteVentas')->name('reportes.enviar.ventas');
-            Route::post('/reporte/compras', 'reporteCompras')->name('reportes.email.compras');
-            Route::post('/reporte/enviar-reporte-compras', 'enviarReporteCompras')->name('reportes.enviar.compras');
-        });
-        Route::get('/search', [SearchController::class, 'search'])->name('search');
+    // Route::get('/send-email', [EmailController::class, 'showForm'])->name('show.email.form');
+    // Route::post('/send-email', [EmailController::class, 'sendEmail'])->name('send.email');
+    Route::controller(EmailController::class)->group(function () {
+        Route::post('/reporte/ventas', 'reporteVentas')->name('reportes.email.ventas');
+        Route::post('/reporte/enviar-reporte-ventas', 'enviarReporteVentas')->name('reportes.enviar.ventas');
+        Route::post('/reporte/compras', 'reporteCompras')->name('reportes.email.compras');
+        Route::post('/reporte/enviar-reporte-compras', 'enviarReporteCompras')->name('reportes.enviar.compras');
+    });
+    Route::get('/search', [SearchController::class, 'search'])->name('search');
 
-        Route::controller(PromocionController::class)->group(function () {
-            Route::get('/promociones', 'index')->name('promociones.index');
-            Route::get('/promociones/create', 'create')->name('promociones.create');
-            Route::get('/promociones/edit/{promocion}', 'edit')->name('promociones.edit');
-            Route::get('/promociones/show/{promocion}', 'show')->name('promociones.show');
-            Route::post('/promociones', 'store')->name('promociones.store');
-            Route::put('/promociones/update/{promocion}', 'update')->name('promociones.update');
-            Route::post('/promociones/delete/{promocion}', 'destroy')->name('promociones.delete');
-        });
+    Route::controller(PromocionController::class)->group(function () {
+        Route::get('/promociones', 'index')->name('promociones.index');
+        Route::get('/promociones/create', 'create')->name('promociones.create');
+        Route::get('/promociones/edit/{promocion}', 'edit')->name('promociones.edit');
+        Route::get('/promociones/show/{promocion}', 'show')->name('promociones.show');
+        Route::post('/promociones', 'store')->name('promociones.store');
+        Route::put('/promociones/update/{promocion}', 'update')->name('promociones.update');
+        Route::post('/promociones/delete/{promocion}', 'destroy')->name('promociones.delete');
+    });
 });
+
+use App\Http\Controllers\PagoFacilController;
+
+Route::post('/pagoFacil/authenticate', [PagoFacilController::class, 'authenticate']);
+Route::post('/pagoFacil/generarQR', [PagoFacilController::class, 'generateQR']);
+Route::post('/pagos/generarQR', [PagoFacilController::class, 'generateQR'])->name('pagos.generarQR');
+Route::post('/pagos/consultarTransaccion', [PagoFacilController::class, 'consultarTransaccion'])->name('pagos.consultarTransaccion');

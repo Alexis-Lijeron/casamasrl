@@ -65,7 +65,11 @@
                                 <a href="{{ route('pagos.createPago', $pago['id']) }}" title="Pagar" class="btn btn-sm btn-outline-success">
                                     <i class="fas fa-dollar-sign"></i>
                                 </a>
-
+                                <!-- Botón para pago QR -->
+                                <button class="btn btn-sm btn-outline-primary" title="Pagar con QR"
+                                    onclick="generarQR({{ $pago['id'] }}, '{{ $pago['notaVenta']['cliente']['nombre'] }}', {{ $pago['monto'] }})">
+                                    <i class="fas fa-qrcode"></i>
+                                </button>
                                 {{-- <a href="{{ route('pagos.createFactura' ,$pago['id'])}}" class="btn btn-sm btn-outline-danger"
                                 @if (!$pago['estado'])
                                 title="No tiene factura"
@@ -88,73 +92,163 @@
         </div>
 
     </x-layouts.content>
+    <!-- Modal para mostrar el código QR -->
+    <div class="modal fade" id="qrModal" tabindex="-1" aria-labelledby="qrModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="qrModalLabel">Código QR para Pago</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body text-center">
+                    <p>Escanea el código QR para realizar el pago:</p>
+                    <img id="qrImage" src="" alt="QR Code" class="img-fluid">
+                </div>
+                <button id="verifyTransactionButton" class="btn btn-info" type="button"
+                    onclick="verificarTransaccion(this)" data-transaccion-id="">
+                    Verificar Estado de Transacción
+                </button>
 
-    {{-- @push('js')
-        <script>
-            function confirmDelete(id) {
-                Swal.fire({
-                    title: '¿Estás seguro?',
-                    text: "¡No podrás revertir esto!",
-                    icon: 'warning',
-                    showCancelButton: true,
-                    confirmButtonColor: '#556ee6',
-                    cancelButtonColor: '#f46a6a',
-                    confirmButtonText: 'Sí, eliminarlo',
-                    cancelButtonText: 'Cancelar'
-                }).then((result) => {
-                    if (result.isConfirmed) {
-                        var formId = 'formDeleteOrden_' + id;
-                        var form = document.getElementById(formId);
-                        form.submit(); // Envía el formulario si el usuario confirma
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    @push('js')
+    <script>
+        function generarQR(idPago, nombreUsuario, monto) {
+            const url = "{{ route('pagos.generarQR') }}";
+
+            const data = {
+                tcCommerceID: "{{ env('PAGOFACIL_COMMERCE_ID') }}",
+                tcNroPago: String(Date.now()),
+                tcNombreUsuario: nombreUsuario,
+                tnCiNit: parseInt(9999999),
+                tnTelefono: parseInt(70000000),
+                tcCorreo: "micorreo@mail.com",
+                tcCodigoClienteEmpresa: "9",
+                tnMontoClienteEmpresa: parseFloat(monto).toFixed(2),
+                tnMoneda: 2,
+                tcUrlCallBack: "https://tudominio.com/callback",
+                tcUrlReturn: "https://tudominio.com/return",
+                taPedidoDetalle: [{
+                    Serial: 1,
+                    Producto: "Pago de servicio",
+                    Cantidad: 1,
+                    Precio: parseFloat(monto).toFixed(2),
+                    Descuento: 0,
+                    Total: parseFloat(monto).toFixed(2)
+                }]
+            };
+
+            fetch(url, {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "X-CSRF-TOKEN": "{{ csrf_token() }}",
+                    },
+                    body: JSON.stringify(data),
+                })
+                .then(response => response.json())
+                .then(data => {
+                    console.log("Respuesta del servidor:", data);
+
+                    if (data.error === 0) {
+                        // Extraer la primera parte del `values` como el ID de la transacción
+                        const values = data.values.split(";");
+                        const transaccionId = values[0]; // Primer valor antes del punto y coma
+
+                        // Mostrar el QR
+                        const qrData = JSON.parse(values[1]);
+                        const qrImageBase64 = "data:image/png;base64," + qrData.qrImage;
+                        document.getElementById("qrImage").src = qrImageBase64;
+
+                        // Guardar el ID en el botón de verificación
+                        document.getElementById("verifyTransactionButton").setAttribute("data-transaccion-id", transaccionId);
+
+                        // Mostrar el modal
+                        var myModal = new bootstrap.Modal(document.getElementById("qrModal"));
+                        myModal.show();
+                    } else {
+                        Swal.fire("Error", "No se pudo generar el QR: " + data.messageSistema, "error");
                     }
+                })
+                .catch(error => {
+                    console.error("Error al generar QR:", error);
+                    Swal.fire("Error", "Hubo un problema al generar el QR.", "error");
                 });
+        }
+
+        function verificarTransaccion(button) {
+            const transaccionId = button.getAttribute("data-transaccion-id");
+
+            // Validar que el ID de la transacción esté presente
+            if (!transaccionId) {
+                Swal.fire("Error", "No se encontró un ID de transacción válido.", "error");
+                return;
             }
-        </script>
 
-        <script>
-            function actualizarEstado(ordenId) {
-                var nuevoEstado = $("#estado_" + ordenId).val();
-                const urlApi = "{{ env('URL_SERVER_API') }}";
-    const url = `${urlApi}/orden-trabajos/${ordenId}`;
-    console.log(nuevoEstado);
+            const url = "{{ route('pagos.consultarTransaccion') }}";
 
-    fetch(url, {
-    method: "POST",
-    headers: {
-    "Content-Type": "application/json",
-    "X-CSRF-TOKEN": "{{ csrf_token() }}",
-    },
-    body: JSON.stringify({
-    estado: nuevoEstado,
-    }),
-    })
-    .then(response => {
-    if (response.ok) {
-    return response.json();
-    } else {
-    throw new Error('Error al actualizar el estado de la orden de trabajo.');
-    }
-    })
-    .then(data => {
-    console.log(data);
-    Swal.fire({
-    icon: 'success',
-    title: '¡Estado Actualizado!',
-    text: 'El estado de la orden de trabajo ha sido actualizado correctamente.',
-    timer: 1500
-    });
-    })
-    .catch(error => {
-    console.error('Error:', error);
-    Swal.fire({
-    icon: 'error',
-    title: 'Oops...',
-    text: 'Error al actualizar el estado de la orden de trabajo.',
-    timer: 1500
-    });
-    });
-    }
+            // Realizar la consulta al backend
+            fetch(url, {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "X-CSRF-TOKEN": "{{ csrf_token() }}",
+                    },
+                    body: JSON.stringify({
+                        transaccionDePago: transaccionId
+                    }),
+                })
+                .then(response => response.json())
+                .then(data => {
+                    console.log("Respuesta del servidor:", data);
+
+                    if (data.error === 0) {
+                        Swal.fire("Estado de Transacción", `Estado: ${data.values.messageEstado}`, "success");
+                    } else {
+                        Swal.fire("Error", data.messageSistema || "No se pudo verificar la transacción.", "error");
+                    }
+                })
+                .catch(error => {
+                    console.error("Error al verificar la transacción:", error);
+                    Swal.fire("Error", "Hubo un problema al verificar la transacción.", "error");
+                });
+        }
+
+        function consultarEstado(transaccionId) {
+            const url = "{{ route('pagos.consultarTransaccion') }}";
+
+            const data = {
+                transaccionDePago: transaccionId, // El número único de la transacción
+            };
+
+            fetch(url, {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "X-CSRF-TOKEN": "{{ csrf_token() }}",
+                    },
+                    body: JSON.stringify(data),
+                })
+                .then(response => response.json())
+                .then(data => {
+                    console.log("Estado de la transacción:", data);
+
+                    if (data.error) {
+                        Swal.fire("Error", "No se pudo consultar el estado de la transacción: " + data.message, "error");
+                    } else {
+                        Swal.fire("Estado de Transacción", `Estado: ${data.messageEstado}`, "success");
+                    }
+                })
+                .catch(error => {
+                    console.error("Error al consultar el estado de la transacción:", error);
+                    Swal.fire("Error", "Hubo un problema al consultar la transacción.", "error");
+                });
+        }
     </script>
-    @endpush --}}
-
+    @endpush
 </x-layouts.app>
