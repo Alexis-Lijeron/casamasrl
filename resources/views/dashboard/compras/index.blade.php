@@ -4,10 +4,12 @@
             <div class="col-12">
                 <div class="mb-2 d-flex justify-content-between">
                     <div class="form-group">
+                        @if(auth()->user()->hasPermission('compras.crear'))
                         <a href="{{ route('compras.create') }}" class="btn btn-primary waves-effect waves-light">
                             <i class="fas fa-plus-circle"></i>&nbsp;
                             Nueva Compra
                         </a>
+                        @endif
                     </div>
                 </div>
                 <div class="card-box">
@@ -65,7 +67,7 @@
                                                 <i class="fas fa-edit"></i>
                                             </a>
                                             @endif
-                                            
+
                                             <form id="formDeleteCompra_{{ $compra['id'] }}"
                                                 action="{{route('compras.delete', $compra['id']) }}" method="post">
                                                 @csrf
@@ -75,7 +77,7 @@
                                                     <i class="fas fa-trash-alt"></i>
                                                 </button>
                                             </form>
-                                            
+
                                             {{-- @if (!$compra['estado']) --}}
                                             <form id="formConfirmarCompra_{{ $compra['id'] }}"
                                             action="{{route('compras.confirmarCompra', $compra['id']) }}" method="post">
@@ -119,7 +121,7 @@
                   }
               });
           }
-          
+
           function confirmEntrega(id) {
               Swal.fire({
                     title: '¿Confirmar entrega?',

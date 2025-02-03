@@ -4,10 +4,12 @@
             <div class="col-12">
                 <div class="mb-2 d-flex justify-content-between">
                     <div class="form-group">
+                        @if(auth()->user()->hasPermission('ventas.crear'))
                         <a href="{{ route('ventas.create') }}" class="btn btn-primary waves-effect waves-light">
                             <i class="fas fa-plus-circle"></i>&nbsp;
                             Nueva Venta
                         </a>
+                        @endif
                     </div>
                 </div>
                 <div class="card-box">
