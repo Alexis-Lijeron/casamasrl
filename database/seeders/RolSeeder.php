@@ -20,6 +20,16 @@ class RolSeeder extends Seeder
                 'nombre' => 'Vendedor',
                 'slug' => 'rol.vendedor',
                 'description' => 'Rol con acceso a funciones de ventas'
+            ],
+            [
+                'nombre' => 'Encargado',
+                'slug' => 'rol.encargado',
+                'description' => 'Rol con acceso amplio, excluyendo gestión de usuarios, roles y permisos'
+            ],
+            [
+                'nombre' => 'Comprador',
+                'slug' => 'rol.comprador',
+                'description' => 'Rol enfocado en inventario, proveedores, productos y compras'
             ]
         ];
 
