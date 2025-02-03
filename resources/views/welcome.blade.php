@@ -3,7 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ config('app.name', 'Lácteos') }}</title>
+    <title>{{ config('CASAMA SRL', 'CASAMA SRL') }}</title>
+    <link rel="shortcut icon" href="{{ asset('/images/lego.jpg') }}" type="image/x-icon" />
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/flowbite/2.2.1/flowbite.min.css" rel="stylesheet" />
 </head>
