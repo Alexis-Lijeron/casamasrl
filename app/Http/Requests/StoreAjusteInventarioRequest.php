@@ -16,7 +16,7 @@ class StoreAjusteInventarioRequest extends FormRequest
         return [
             'fecha' => ['required', 'date'],
             'tipo' => ['required', 'string'],
-            'descripcion' => ['nullable', 'string'],
+            'descripcion' => ['required', 'string'],
             'productos' => ['required', 'json', function ($attribute, $value, $fail) {
                 $productos = json_decode($value, true);
                 if (!is_array($productos) || count($productos) === 0) {

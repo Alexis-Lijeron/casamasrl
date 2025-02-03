@@ -62,6 +62,12 @@ class AlmacenController extends Controller
     public function edit(string $id)
     {
         $almacen = Almacen::find($id);
+
+        if (!$almacen) {
+            session()->flash('error', 'Almacén no encontrado.');
+            return redirect()->back();
+        }
+
         $productos = Producto::all();
         return view('dashboard.almacenes.edit', compact('almacen', 'productos'));
     }
@@ -73,7 +79,7 @@ class AlmacenController extends Controller
             $almacen = Almacen::find($id);
 
             if (!$almacen) {
-                session()->flash('error', 'Ha ocurrido un error. Por favor, intenta nuevamente.');
+                session()->flash('error', 'Almacén no encontrado.');
                 return redirect()->back();
             }
 
@@ -111,7 +117,7 @@ class AlmacenController extends Controller
         $almacen = Almacen::find($id);
 
         if (!$almacen) {
-            session()->flash('error', 'Ha ocurrido un error. Por favor, intenta nuevamente.');
+            session()->flash('error', 'Almacén no encontrado.');
             return redirect()->back();
         }
 
