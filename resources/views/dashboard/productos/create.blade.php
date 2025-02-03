@@ -19,7 +19,7 @@
                                 <div class="form-group">
                                     <label for="nombre" class="control-label">Nombre</label>
                                     <input type="text" class="form-control" id="nombre" name="nombre"
-                                        placeholder="Ej: Paracetamol" value="{{ old('nombre') }}">
+                                        placeholder="Ej: Leche entera" value="{{ old('nombre') }}">
                                     @error('nombre')
                                     <span class="error text-danger">* {{ $message }}</span>
                                     @enderror
