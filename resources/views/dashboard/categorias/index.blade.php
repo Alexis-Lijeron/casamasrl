@@ -7,10 +7,12 @@
 
                 <div class="mb-2 d-flex justify-content-between">
                     <div class="form-group">
+                        @if(auth()->user()->hasPermission('categorias.crear'))
                         <a href="{{ route('categorias.create') }}" class="btn btn-primary waves-effect waves-light">
                             <i class="fas fa-plus-circle"></i>&nbsp;
                             Nueva Categoria
                         </a>
+                        @endif
                     </div>
                 </div>
 
@@ -30,13 +32,15 @@
                                 <tr class="text-nowrap text-center">
                                     <th scope="row" class="align-middle">{{$categoria['id']}}</th>
                                     <td class="align-middle">{{$categoria['nombre']}}</td>
-                                    <td class="align-middle"> 
+                                    <td class="align-middle">
                                         {{$categoria['descripcion'] ?? '-- Sin descripción --'}}
                                     </td>
                                     <td class="align-middle text-nowrap" style="width: 150px;">
                                         <div class="d-flex justify-content-center">
+                                            @if(auth()->user()->hasPermission('categorias.editar'))
                                             <a href="{{ route('categorias.edit', $categoria['id']) }}" title="Editar"
-                                            class="btn btn-sm btn-primary mr-1"><i class="fas fa-edit"></i></a>
+                                            class="btn btn-sm btn-primary mr-1"><i class="fas fa-edit"></i></a>@endif
+                                            @if(auth()->user()->hasPermission('categorias.eliminar'))
                                             <form id="formDeleteCategoria_{{ $categoria['id'] }}"
                                             action="{{route('categorias.delete', $categoria['id']) }}" method="post">
                                                 @csrf
@@ -45,10 +49,11 @@
                                                     <i class="fas fa-trash-alt"></i>
                                                 </button>
                                             </form>
+                                            @endif
                                         </div>
                                     </td>
                                 </tr>
-                                @endforeach 
+                                @endforeach
                             </tbody>
                         </table>
                     </div>
@@ -57,7 +62,7 @@
         </div>
 
     </x-layouts.content>
-    
+
     @push('js')
         <script>
             function confirmDelete(id) {
@@ -79,6 +84,6 @@
                 });
             }
         </script>
-    @endpush 
-    
+    @endpush
+
 </x-layouts.app>

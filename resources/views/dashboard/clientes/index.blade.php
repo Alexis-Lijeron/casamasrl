@@ -7,10 +7,12 @@
 
                 <div class="mb-2 d-flex justify-content-between">
                     <div class="form-group">
+                        @if(auth()->user()->hasPermission('clientes.crear'))
                         <a href="{{ route('clientes.create') }}" class="btn btn-primary waves-effect waves-light">
                             <i class="fas fa-plus-circle"></i>&nbsp;
                             Nuevo Cliente
                         </a>
+                        @endif
                     </div>
                 </div>
 
@@ -42,9 +44,12 @@
                                             <a href="{{ route('clientes.show', $cliente['id']) }}" title="Ver" class="btn btn-sm btn-warning">
                                                 <i class="fas fa-eye"></i>
                                             </a>
+                                            @if(auth()->user()->hasPermission('clientes.editar'))
                                             <a href="{{ route('clientes.edit', $cliente['id']) }}" title="Editar"  class="btn btn-sm btn-primary mx-1">
                                                 <i class="fas fa-edit"></i>
                                             </a>
+                                            @endif
+                                            @if(auth()->user()->hasPermission('clientes.eliminar'))
                                             <form id="formDeleteCliente_{{ $cliente['id'] }}" action="{{route('clientes.delete', $cliente['id']) }}" method="post">
                                                 @csrf
                                                 <button type="button" title="Eliminar"
@@ -52,6 +57,7 @@
                                                     <i class="fas fa-trash-alt"></i>
                                                 </button>
                                             </form>
+                                            @endif
                                         </div>
                                     </td>
                                 </tr>

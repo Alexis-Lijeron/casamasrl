@@ -6,10 +6,12 @@
             <div class="col-12">
                 <div class="mb-2 d-flex justify-content-between">
                     <div class="form-group">
+                        @if(auth()->user()->hasPermission('marcas.crear'))
                         <a href="{{ route('marcas.create') }}" class="btn btn-primary waves-effect waves-light">
                             <i class="fas fa-plus-circle"></i>&nbsp;
                             Nueva Marca
                         </a>
+                        @endif
                     </div>
                 </div>
 
@@ -30,8 +32,10 @@
                                     <td class="align-middle">{{ $marca['nombre'] }}</td>
                                     <td class="align-middle text-nowrap">
                                         <div class="d-flex justify-content-center">
+                                            @if(auth()->user()->hasPermission('marcas.editar'))
                                             <a href="{{ route('marcas.edit', $marca['id']) }}" title="Editar"
-                                            class="btn btn-sm btn-primary mx-1"><i class="fas fa-edit"></i></a>
+                                            class="btn btn-sm btn-primary mx-1"><i class="fas fa-edit"></i></a>@endif
+                                            @if(auth()->user()->hasPermission('marcas.eliminar'))
                                             <form id="formDeleteMarca_{{ $marca['id'] }}"
                                             action="{{route('marcas.delete', $marca['id']) }}" method="post">
                                                 @csrf
@@ -40,6 +44,7 @@
                                                     <i class="fas fa-trash-alt"></i>
                                                 </button>
                                             </form>
+                                            @endif
                                         </div>
                                     </td>
                                 </tr>

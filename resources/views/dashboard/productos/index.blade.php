@@ -7,10 +7,12 @@
 
                 <div class="mb-2 d-flex justify-content-between">
                     <div class="form-group">
+                        @if(auth()->user()->hasPermission('productos.crear'))
                         <a href="{{ route('productos.create') }}" class="btn btn-primary waves-effect waves-light">
                             <i class="fas fa-plus-circle"></i>&nbsp;
                             Nuevo Producto
                         </a>
+                        @endif
                     </div>
                 </div>
 
@@ -58,9 +60,12 @@
                                             <a href="{{ route('productos.show', $producto['id']) }}" title="Ver" class="btn btn-sm btn-warning">
                                                 <i class="fas fa-eye"></i>
                                             </a>
+                                            @if(auth()->user()->hasPermission('productos.editar'))
                                             <a href="{{ route('productos.edit', $producto['id']) }}" title="Editar"  class="btn btn-sm btn-primary mx-1">
                                                 <i class="fas fa-edit"></i>
                                             </a>
+                                            @endif
+                                            @if(auth()->user()->hasPermission('productos.eliminar'))
                                             <form id="formDeleteProducto_{{ $producto['id'] }}" action="{{route('productos.delete', $producto['id']) }}" method="post">
                                                 @csrf
                                                 <button type="button" title="Eliminar"
@@ -68,6 +73,7 @@
                                                     <i class="fas fa-trash-alt"></i>
                                                 </button>
                                             </form>
+                                            @endif
                                         </div>
                                     </td>
                                 </tr>

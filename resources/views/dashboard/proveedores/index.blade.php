@@ -6,14 +6,14 @@
             <div class="col-12">
 
                 <div class="mb-2 d-flex justify-content-between">
-
+                    @if(auth()->user()->hasPermission('proveedores.crear'))
                     <div class="form-group">
                         <a href="{{ route('proveedor.create') }}" class="btn btn-primary waves-effect waves-light">
                             <i class="fas fa-plus-circle"></i>&nbsp;
                             Nuevo proveedor
                         </a>
                     </div>
-
+                    @endif
                 </div>
 
                 <div class="card-box">
@@ -42,8 +42,11 @@
                                     <td class="align-middle">{{ $proveedor['email'] }}</td>
                                     <td class="align-middle text-nowrap">
                                         <div class="d-flex justify-content-center">
+                                            @if(auth()->user()->hasPermission('proveedores.editar'))
                                             <a href="{{ route('proveedor.edit', $proveedor['id']) }}" title="Editar"
                                             class="btn btn-sm btn-primary mr-1"><i class="fas fa-edit"></i></a>
+                                            @endif
+                                            @if(auth()->user()->hasPermission('proveedores.eliminar'))
                                             <form id="formDeleteProveedor_{{ $proveedor['id'] }}"
                                             action="{{route('proveedor.delete', $proveedor['id']) }}" method="post">
                                                 @csrf
@@ -52,6 +55,7 @@
                                                     <i class="fas fa-trash-alt"></i>
                                                 </button>
                                             </form>
+                                            @endif
                                         </div>
                                     </td>
                                 </tr>
