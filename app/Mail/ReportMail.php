@@ -45,6 +45,13 @@ class ReportMail extends Mailable
                     'content' => json_decode($this->data['content'])
                 ]
             );
+        } else if ($type === 'pagos') {
+            return new Content(
+                view: 'emails.reportMailPago',
+                with: [
+                    'content' => json_decode($this->data['content'])
+                ]
+            );
         } else {
             return new Content(
                 view: 'emails.reportMail',

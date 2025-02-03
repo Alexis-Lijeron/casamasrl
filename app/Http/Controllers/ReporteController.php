@@ -5,8 +5,10 @@ namespace App\Http\Controllers;
 use App\Http\Requests\ReporteVentaRequest;
 use App\Models\Categoria;
 use App\Models\Cliente;
+use App\Models\MetodoPago;
 use App\Models\NotaCompra;
 use App\Models\NotaVenta;
+use App\Models\Pago;
 use App\Models\Producto;
 use App\Models\Proveedor;
 use App\Models\Usuario;
@@ -14,7 +16,7 @@ use Illuminate\Http\Request;
 
 class ReporteController extends Controller
 {
-    function reporteVentas()
+    public function reporteVentas()
     {
         $usuarios = Usuario::all();
         $clientes = Cliente::all();
@@ -23,7 +25,7 @@ class ReporteController extends Controller
         return view('dashboard.reportes.ventas', compact('usuarios', 'clientes', 'productos', 'categorias'));
     }
 
-    function reporteCompras()
+    public function reporteCompras()
     {
         $usuarios = Usuario::all();
         $proveedores = Proveedor::all();
@@ -32,14 +34,15 @@ class ReporteController extends Controller
         return view('dashboard.reportes.compras', compact('usuarios', 'proveedores', 'productos', 'categorias'));
     }
 
-    function reportePagos()
+    public function reportePagos()
     {
         $usuarios = Usuario::all();
         $clientes = Cliente::all();
-        return view('dashboard.reportes.pagos', compact('usuarios', 'clientes'));
+        $metodos = MetodoPago::all();
+        return view('dashboard.reportes.pagos', compact('usuarios', 'clientes', 'metodos'));
     }
 
-    function mostrarVentasResultados(ReporteVentaRequest $request)
+    public function mostrarVentasResultados(ReporteVentaRequest $request)
     {
         // Recibir los parámetros de filtrado
         $usuario_id = $request->input('usuario');
@@ -82,7 +85,7 @@ class ReporteController extends Controller
 
 
 
-    function mostrarComprasResultados(ReporteVentaRequest $request)
+    public function mostrarComprasResultados(ReporteVentaRequest $request)
     {
         // Recibir los parámetros de filtrado
         $usuario_id = $request->input('usuario');
@@ -121,5 +124,51 @@ class ReporteController extends Controller
 
         $compras = $query->with('productosAlmacen.producto.categoria', 'proveedor', 'usuario')->get();
         return response()->json($compras);
+    }
+
+    public function mostrarPagosResultados(ReporteVentaRequest $request)
+    {
+        // Recibir los parámetros de filtrado
+        $usuario_id = $request->input('usuario');
+        $cliente_id = $request->input('cliente');
+        $estado = $request->input('estado');
+        $metodo_id = $request->input('metodo_pago');
+        $fecha_desde = $request->input('fecha_desde');
+        $fecha_hasta = $request->input('fecha_hasta');
+
+        // Consulta de pagos (nota_ventas) con los filtros aplicados
+        $query = Pago::query();
+
+        // Filtrar por usuario
+        if ($usuario_id && $usuario_id != 0) {
+            $query->whereHas('notaVenta.usuario', function ($q) use ($usuario_id) {
+                $q->where('id', $usuario_id);
+            });
+        }
+
+        // Filtrar por cliente
+        if ($cliente_id && $cliente_id != 0) {
+            $query->whereHas('notaVenta.cliente', function ($q) use ($cliente_id) {
+                $q->where('id', $cliente_id);
+            });
+        }
+
+        // Filtrar por estado de pago
+        if ($estado && $estado != 0) {
+            $query->where('estado', $estado);
+        }
+
+        // Filtrar por método de pago
+        if ($metodo_id && $metodo_id != 0) {
+            $query->where('metodo_pago_id', $metodo_id);
+        }
+
+        // Filtrar por rango de fechas
+        if ($fecha_desde && $fecha_hasta) {
+            $query->whereBetween('fecha_pago', [$fecha_desde, $fecha_hasta]);
+        }
+
+        $pagos = $query->with('notaVenta.cliente', 'metodoPago', 'notaVenta.usuario')->get();
+        return response()->json($pagos);
     }
 }

@@ -2,6 +2,7 @@
     <x-layouts.content title="Ajustes de Inventario" subtitle="" name="Ajustes de Inventario">
         <div class="row mb-5">
             <div class="col-12">
+
                 <div class="mb-2 d-flex justify-content-between">
                     <div class="form-group">
                         <a href="{{ route('ajustes.create') }}" class="btn btn-primary waves-effect waves-light">
@@ -29,29 +30,31 @@
                                 @foreach ($ajustes as $ajuste)
                                 <tr class="text-nowrap text-center">
                                     <th scope="row" class="align-middle">{{ $ajuste['id'] }}</th>
-                                    <td class="align-middle">{{ $ajuste['usuario']['nombre'] }} {{ $ajuste['usuario']['apellido'] }}
+                                    <td class="align-middle">{{ $ajuste['usuario']['nombre'] }} {{
+                                        $ajuste['usuario']['apellido'] }}
                                     <td class="align-middle">{{ $ajuste['tipo'] }}</td>
-                                    {{-- <td class="align-middle">Bs. {{ formatearNumero($ajuste['monto_total']) }}</td> --}}
-                                    <td class="align-middle">{{ formatearFecha($ajuste['fecha']) }}</td>
+                                    <td class="align-middle">{{ $ajuste['descripcion'] ?? '-- Sin descripción --' }}
+                                    </td>
                                     <td class="align-middle">
                                         @foreach ($ajuste->productosAlmacen as $producto)
-                                        <li>{{ $producto->producto->nombre }} - <span class="badge badge-secondary">{{ $producto->pivot->cantidad }}</span></li>
+                                        <li>{{ $producto->producto->nombre }} - <span class="badge badge-secondary">{{
+                                                $producto->pivot->cantidad }}</span></li>
                                         @endforeach
                                     </td>
-                                    <td class="align-middle">{{ $ajuste['descripcion'] }}</td>
+                                    <td class="align-middle">{{ formatearFecha($ajuste['fecha']) }}</td>
                                     <td class="align-middle text-nowrap">
                                         <div class="d-flex justify-content-center">
-                                            <a href="{{ route('ajustes.show', $ajuste['id']) }}" title="Ver detalles"
-                                                class="btn btn-sm btn-warning mx-1">
-                                                <i class="fas fa-eye"></i>
+                                            {{-- <a href="{{ route('ajustes.show', $ajuste['id']) }}" title="Ver detalles"
+                                            class="btn btn-sm btn-warning mx-1">
+                                            <i class="fas fa-eye"></i>
+                                            </a> --}}
+
+                                            <a href="{{ route('ajustes.edit', $ajuste['id']) }}" title="Editar"
+                                                class="btn btn-sm btn-primary mx-1">
+                                                <i class="fas fa-edit"></i>
                                             </a>
 
-                                            {{-- <a href="{{ route('ajustes.edit', $ajuste['id']) }}" title="Editar"
-                                            class="btn btn-sm btn-primary mx-1">
-                                            <i class="fas fa-edit"></i>
-                                            </a>
-
-                                            <form id="formDeleteCompra_{{ $ajuste['id'] }}"
+                                            <form id="formDeleteAjuste_{{ $ajuste['id'] }}"
                                                 action="{{route('ajustes.delete', $ajuste['id']) }}" method="post">
                                                 @csrf
                                                 <button type="button" title="Eliminar"
@@ -59,7 +62,8 @@
                                                     class="btn btn-sm btn-danger mx-1">
                                                     <i class="fas fa-trash-alt"></i>
                                                 </button>
-                                            </form> --}}
+                                            </form>
+
                                         </div>
                                     </td>
                                 </tr>
@@ -86,7 +90,7 @@
                 cancelButtonText: 'Cancelar'
             }).then((result) => {
                 if (result.isConfirmed) {
-                    var formId = 'formDeleteCompra_' + id;
+                    var formId = 'formDeleteAjuste_' + id;
                     var form = document.getElementById(formId);
                     form.submit(); // Envía el formulario si el usuario confirma
                 }

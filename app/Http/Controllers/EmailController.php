@@ -22,6 +22,12 @@ class EmailController extends Controller
         return view('emails.compras', compact('data'));
     }
 
+    public function reportePagos(Request $request)
+    {
+        $data = json_decode($request->message, true);
+        return view('emails.pagos', compact('data'));
+    }
+
     public function enviarReporteVentas(EmailReporteRequest $request)
     {
         $emails = $request->to;
@@ -100,5 +106,38 @@ class EmailController extends Controller
 
         session()->flash('enviado', 'Reporte enviado correctamente');
         return redirect()->route('reportes.compras');
+    }
+
+    public function enviarReportePagos(EmailReporteRequest $request)
+    {
+        $emails = $request->to;
+        $subject = $request->subject;
+        $content = $request->content;
+
+        $data = [
+            'subject' => $subject,
+            'content' => $content,
+            'type' => 'pagos'
+        ];
+
+        $toAddresses = explode(',', $emails);
+        $toAddresses = array_map('trim', $toAddresses);
+
+        $enviado = false;
+
+        foreach ($toAddresses as $to) {
+            $result = Mail::to($to)->send(new ReportMail($data));
+            if ($result) {
+                $enviado = true;
+            }
+        }
+
+        if (!$enviado) {
+            session()->flash('error', 'No se pudo enviar el reporte');
+            return redirect()->back();
+        }
+
+        session()->flash('enviado', 'Reporte enviado correctamente');
+        return redirect()->route('reportes.pagos');
     }
 }
