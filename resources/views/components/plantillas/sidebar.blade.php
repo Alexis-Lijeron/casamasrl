@@ -6,8 +6,7 @@
 
     <!-- User Profile Section -->
     <div class="text-center mb-4">
-        <h5 class="menu-title">Bienvenido,</h5>
-        <h4 class="menu-title">{{ auth()->user()->nombre_usuario }}</h4>
+        <h5 class="menu-title">Hola {{ auth()->user()->nombre}}!</h5>
     </div>
 
     <!-- Navigation Menu -->
