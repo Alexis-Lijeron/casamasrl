@@ -7,10 +7,12 @@
 
                 <div class="mb-2 d-flex justify-content-between">
                     <div class="form-group">
+                        @if(auth()->user()->hasPermission('almacenes.crear'))
                         <a href="{{ route('almacenes.create') }}" class="btn btn-primary waves-effect waves-light">
                             <i class="fas fa-plus-circle"></i>&nbsp;
                             Nuevo Almacen
                         </a>
+                        @endif
                     </div>
                 </div>
 
@@ -49,8 +51,11 @@
                                     </td>
                                     <td class="align-middle text-nowrap" style="width: 150px;">
                                         <div class="d-flex justify-content-center">
+                                            @if(auth()->user()->hasPermission('almacenes.editar'))
                                             <a href="{{ route('almacenes.edit', $almacen['id']) }}" title="Editar"
                                                 class="btn btn-sm btn-primary mr-1"><i class="fas fa-edit"></i></a>
+                                            @endif
+                                            @if(auth()->user()->hasPermission('almacenes.eliminar'))
                                             <form id="formDeleteAlmacen_{{ $almacen['id'] }}"
                                                 action="{{route('almacenes.delete', $almacen['id']) }}" method="post">
                                                 @csrf
@@ -60,6 +65,7 @@
                                                     <i class="fas fa-trash-alt"></i>
                                                 </button>
                                             </form>
+                                            @endif
                                         </div>
                                     </td>
                                 </tr>
