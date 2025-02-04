@@ -169,7 +169,7 @@ class ProveedorSeeder extends Seeder
                 'nombre_encargado' => 'Andrea Pacheco',
                 'direccion'        => 'Av. Blanco Galindo 567, Cochabamba, Bolivia',
                 'telefono'         => '47391234',
-                'email'            => 'ventas@lacteoscochabamba.com.bo',
+                'email'            => 'contacto@lacteoscochabamba.com.bo',
             ],
             [
                 'nombre_empresa'   => 'Lácteos y Quesos del Sur',
