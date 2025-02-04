@@ -14,7 +14,7 @@ return new class extends Migration
             $table->string('apellido');
             $table->string('email')->nullable()->unique();
             $table->string('telefono')->nullable()->unique();
-            $table->char('genero', 1);
+            $table->char('genero', 20);
             $table->timestamps();
         });
     }
