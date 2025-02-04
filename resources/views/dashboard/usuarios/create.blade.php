@@ -15,7 +15,7 @@
                                     <label for="nombre" class="control-label">Nombre</label>
                                     <input type="text" class="form-control" id="nombre" name="nombre" placeholder="Jhon" value="{{ old('nombre') }}">
                                     @error('nombre')
-                                        <span class="error text-danger">* {{ $message }}</span>
+                                    <span class="error text-danger">* {{ $message }}</span>
                                     @enderror
                                 </div>
                             </div>
@@ -24,7 +24,7 @@
                                     <label for="apellido" class="control-label">Apellido</label>
                                     <input type="text" class="form-control" id="apellido" name="apellido" placeholder="Doe" value="{{ old('apellido') }}">
                                     @error('apellido')
-                                        <span class="error text-danger">* {{ $message }}</span>
+                                    <span class="error text-danger">* {{ $message }}</span>
                                     @enderror
                                 </div>
                             </div>
@@ -35,7 +35,7 @@
                                     <label for="email" class="control-label">Email</label>
                                     <input type="email" id="email" name="email" class="form-control" placeholder="jhondoe@gmail.com" value="{{ old('email') }}">
                                     @error('email')
-                                        <span class="error text-danger">* {{ $message }}</span>
+                                    <span class="error text-danger">* {{ $message }}</span>
                                     @enderror
                                 </div>
                             </div>
@@ -44,7 +44,7 @@
                                     <label for="telefono" class="control-label">Teléfono</label>
                                     <input type="text" class="form-control" id="telefono" name="telefono" placeholder="77445318" value="{{ old('telefono') }}">
                                     @error('telefono')
-                                        <span class="error text-danger">* {{ $message }}</span>
+                                    <span class="error text-danger">* {{ $message }}</span>
                                     @enderror
                                 </div>
                             </div>
@@ -57,9 +57,14 @@
                                     <small class="form-text text-muted">
                                         La contraseña debe tener al menos 8 caracteres, una letra mayúscula, una letra minúscula y un carácter especial o número.
                                     </small>
-                                    @error('password')
-                                        <span class="error text-danger">* {{ $message }}</span>
-                                    @enderror
+                                    @if($errors->has('password'))
+                                    <ul class="text-danger">
+                                        @foreach($errors->get('password') as $error)
+                                        <li>* {{ $error }}</li>
+                                        @endforeach
+                                    </ul>
+                                    @endif
+
                                 </div>
                             </div>
                             <div class="col-md-6">
@@ -67,13 +72,13 @@
                                     <label for="roles" class="control-label">Roles</label>
                                     <select class="form-control select2" id="roles" name="roles[]" multiple>
                                         @foreach ($roles as $rol)
-                                            <option value="{{ $rol->id }}" {{ in_array($rol->id, old('roles', [])) ? 'selected' : '' }}>
-                                                {{ $rol->nombre }}
-                                            </option>
+                                        <option value="{{ $rol->id }}" {{ in_array($rol->id, old('roles', [])) ? 'selected' : '' }}>
+                                            {{ $rol->nombre }}
+                                        </option>
                                         @endforeach
                                     </select>
                                     @error('roles')
-                                        <span class="error text-danger">* {{ $message }}</span>
+                                    <span class="error text-danger">* {{ $message }}</span>
                                     @enderror
                                 </div>
                             </div>
@@ -95,9 +100,9 @@
     <script>
         $(document).ready(function() {
             $('.select2').select2({
-            placeholder: "Seleccione un rol",
-            allowClear: true
-        });
+                placeholder: "Seleccione un rol",
+                allowClear: true
+            });
         });
     </script>
     @endpush

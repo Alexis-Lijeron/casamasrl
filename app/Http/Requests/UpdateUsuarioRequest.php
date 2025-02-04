@@ -29,9 +29,17 @@ class UpdateUsuarioRequest extends FormRequest
                 'nullable',
                 'string',
                 'min:8',
-                'regex:/[a-z]/',
-                'regex:/[A-Z]/',
-                'regex:/[@$!%*?&\d]/',
+                function ($attribute, $value, $fail) {
+                    if ($value && !preg_match('/[a-z]/', $value)) {
+                        $fail('La contraseña debe incluir al menos una letra minúscula.');
+                    }
+                    if ($value && !preg_match('/[A-Z]/', $value)) {
+                        $fail('La contraseña debe incluir al menos una letra mayúscula.');
+                    }
+                    if ($value && !preg_match('/[\d@$!%*?&]/', $value)) {
+                        $fail('La contraseña debe incluir al menos un número o un carácter especial.');
+                    }
+                },
             ],
             'telefono' => [
                 'required',

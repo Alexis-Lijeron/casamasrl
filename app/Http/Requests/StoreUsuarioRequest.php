@@ -22,9 +22,17 @@ class StoreUsuarioRequest extends FormRequest
                 'required',
                 'string',
                 'min:8',
-                'regex:/[a-z]/',
-                'regex:/[A-Z]/',
-                'regex:/[@$!%*?&\d]/',
+                function ($attribute, $value, $fail) {
+                    if (!preg_match('/[a-z]/', $value)) {
+                        $fail('La contraseña debe incluir al menos una letra minúscula.');
+                    }
+                    if (!preg_match('/[A-Z]/', $value)) {
+                        $fail('La contraseña debe incluir al menos una letra mayúscula.');
+                    }
+                    if (!preg_match('/[\d@$!%*?&]/', $value)) {
+                        $fail('La contraseña debe incluir al menos un número o un carácter especial.');
+                    }
+                },
             ],
             'roles' => 'required|array|min:1',
             'roles.*' => 'exists:roles,id',
