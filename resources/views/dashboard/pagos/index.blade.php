@@ -108,10 +108,15 @@
                     <p>Escanea el código QR para realizar el pago:</p>
                     <img id="qrImage" src="" alt="QR Code" class="img-fluid">
                 </div>
-                <button id="verifyTransactionButton" class="btn btn-info" type="button"
-                    onclick="verificarTransaccion(this)" data-id-pago="{{ $pago['id'] }}" data-transacdata-transaccion-id="">
-                    Verificar Estado de Transacción
-                </button>
+                <td class="align-middle text-nowrap">
+                    <button id="verifyTransactionButton" class="btn btn-info" type="button"
+                        onclick="verificarTransaccion(this)"
+                        data-id-pago="{{ $pago['id'] }}"
+                        data-transaccion-id="{{ $pago['transaccion_id'] }}">
+                        Verificar Estado de Transacción
+                    </button>
+                </td>
+
 
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
@@ -188,7 +193,6 @@
         function verificarTransaccion(button) {
             const transaccionId = button.getAttribute("data-transaccion-id");
 
-            // Validar que el ID de la transacción esté presente
             if (!transaccionId) {
                 Swal.fire("Error", "No se encontró un ID de transacción válido.", "error");
                 return;
@@ -196,7 +200,6 @@
 
             const url = "{{ route('pagos.consultarTransaccion') }}";
 
-            // Realizar la consulta al backend
             fetch(url, {
                     method: "POST",
                     headers: {
@@ -219,9 +222,11 @@
                             title: "Estado de Transacción",
                             text: `Estado: ${estado}`,
                         }).then(() => {
-                            if (estado.includes("COMPLETADO")) {
-                                // Si está completado, actualiza el estado del pago
-                                actualizarEstadoPago(button.getAttribute("data-id-pago"));
+                            // Solo actualiza si el estado contiene "COMPLETADO - PROCESADO"
+                            if (estado.includes("COMPLETADO - PROCESADO")) {
+                                actualizarEstadoPago(button.getAttribute("data-id-pago"), estado);
+                            } else {
+                                Swal.fire("Aviso", "El pago no está confirmado como COMPLETADO - PROCESADO.", "info");
                             }
                         });
                     } else {
@@ -234,8 +239,8 @@
                 });
         }
 
-        // Función para actualizar el estado del pago
-        function actualizarEstadoPago(idPago) {
+
+        function actualizarEstadoPago(idPago, estadoTransaccion) {
             const url = "{{ route('pagos.actualizarEstado') }}";
 
             fetch(url, {
@@ -245,7 +250,8 @@
                         "X-CSRF-TOKEN": "{{ csrf_token() }}",
                     },
                     body: JSON.stringify({
-                        idPago: idPago
+                        idPago: idPago,
+                        estadoTransaccion: estadoTransaccion, // Asegurarse de pasar el estado correctamente
                     }),
                 })
                 .then(response => response.json())
@@ -253,10 +259,10 @@
                     if (data.error === 0) {
                         Swal.fire("Éxito", "El estado del pago ha sido actualizado.", "success");
 
-                        // Recargar la tabla o la página para reflejar los cambios
+                        // Recargar la tabla para reflejar los cambios
                         location.reload();
                     } else {
-                        Swal.fire("Error", "No se pudo actualizar el estado del pago: " + data.message, "error");
+                        Swal.fire("Error", data.message || "No se pudo actualizar el estado del pago.", "error");
                     }
                 })
                 .catch(error => {

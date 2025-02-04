@@ -70,41 +70,55 @@ class PagoFacilController extends Controller
             'transaccionDePago' => 'required|string',
         ]);
 
-        // Debug: Log para verificar el valor recibido
-        \Log::info('Transaccion recibida: ' . $validatedData['transaccionDePago']);
+        try {
+            $result = app('App\Services\PagoFacilService')->consultarTransaccion($validatedData['transaccionDePago']);
 
-        $result = $this->pagoFacilService->consultarTransaccion($validatedData['transaccionDePago']);
+            if (!isset($result['values'])) {
+                return response()->json([
+                    'error' => 1,
+                    'message' => 'No se encontraron datos de la transacción.',
+                    'messageSistema' => $result['message'] ?? 'Respuesta inválida del servidor de PagoFácil',
+                ], 500);
+            }
 
-        if (!isset($result['values'])) {
+            return response()->json($result);
+        } catch (\Exception $e) {
             return response()->json([
                 'error' => 1,
-                'message' => 'No se encontraron datos de la transacción.',
-                'messageSistema' => $result['message'] ?? 'Respuesta inválida del servidor de PagoFácil',
+                'message' => 'Error al verificar la transacción.',
+                'details' => $e->getMessage(),
             ], 500);
         }
-
-        return response()->json($result);
     }
+
     public function actualizarEstadoPago(Request $request)
     {
         $validatedData = $request->validate([
             'idPago' => 'required|integer',
+            'estadoTransaccion' => 'required|string',
         ]);
 
         try {
-            // Busca el pago en la base de datos
-            $pago = Pago::findOrFail($validatedData['idPago']);
+            // Validar que el estado de la transacción contenga "COMPLETADO - PROCESADO"
+            if (!str_contains($validatedData['estadoTransaccion'], 'COMPLETADO - PROCESADO')) {
+                return response()->json([
+                    'error' => 1,
+                    'message' => 'El estado de la transacción no es válido para actualizar el pago.',
+                ], 400);
+            }
 
-            // Actualiza el estado a 'Pagado'
-            $pago->estado = 1; // Asume que 1 significa "Pagado"
-            $pago->metodo_pago_id = 2; // 2 corresponde a "QR"
+            $pago = Pago::findOrFail($validatedData['idPago']);
+            $pago->estado = 1; // Pagado
+            $pago->metodo_pago_id = 2; // QR
             $pago->save();
 
             return response()->json([
                 'error' => 0,
-                'message' => 'El estado del pago se ha actualizado correctamente.',
+                'message' => 'El estado del pago y el método de pago se han actualizado correctamente.',
             ]);
         } catch (\Exception $e) {
+            \Log::error('Error al actualizar el estado del pago: ' . $e->getMessage());
+
             return response()->json([
                 'error' => 1,
                 'message' => 'Error al actualizar el estado del pago.',
