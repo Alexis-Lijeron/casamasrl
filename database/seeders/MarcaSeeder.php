@@ -3,14 +3,12 @@
 namespace Database\Seeders;
 
 use App\Models\Marca;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
 class MarcaSeeder extends Seeder
 {
     public function run(): void
     {
-        // Marcas de productos lácteos
         Marca::create(['nombre' => 'Nestlé']);
         Marca::create(['nombre' => 'Danone']);
         Marca::create(['nombre' => 'La Serenísima']);
@@ -21,5 +19,9 @@ class MarcaSeeder extends Seeder
         Marca::create(['nombre' => 'Gloria']);
         Marca::create(['nombre' => 'Yoplait']);
         Marca::create(['nombre' => 'Santa Clara']);
+        Marca::create(['nombre' => 'PIL Andina']);
+        Marca::create(['nombre' => 'Delizia']);
+        Marca::create(['nombre' => 'Lacteos Bolivia']);
+        Marca::create(['nombre' => 'Artesanal']);
     }
 }

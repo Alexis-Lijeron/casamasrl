@@ -3,7 +3,6 @@
 namespace Database\Seeders;
 
 use App\Models\Categoria;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
 class CategoriaSeeder extends Seeder
@@ -31,8 +30,13 @@ class CategoriaSeeder extends Seeder
         ]);
 
         Categoria::create([
-            'nombre' => 'Postres Lácteos',
-            'descripcion' => 'Flanes, natillas y otros postres lácteos'
+            'nombre' => 'Dulces Lácteos',
+            'descripcion' => 'Dulce de leche y otros postres lácteos'
+        ]);
+
+        Categoria::create([
+            'nombre' => 'Cremas',
+            'descripcion' => 'Cremas de leche para cocinar o batir'
         ]);
     }
 }
