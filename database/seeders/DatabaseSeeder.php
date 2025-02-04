@@ -28,7 +28,7 @@ class DatabaseSeeder extends Seeder
             PagoSeeder::class,
             VentaSeeder::class,
             DetalleVentaSeeder::class,
-
+            ProductoAlmacenSeeder::class,
         ]);
     }
 }
