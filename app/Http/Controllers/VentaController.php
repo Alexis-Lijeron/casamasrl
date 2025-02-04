@@ -150,10 +150,33 @@ class VentaController extends Controller
         }
     }
 
-    public function show(NotaVenta $venta)
+    public function show(string $id)
     {
-        //
+        // Cargar la venta con las relaciones necesarias: cliente, usuario y productos asociados (con su producto)
+        $venta = NotaVenta::with(['cliente', 'usuario', 'productosAlmacen.producto'])->find($id);
+
+        if (!$venta) {
+            session()->flash('error', 'La venta no existe');
+            return redirect()->route('ventas.index');
+        }
+
+        // Mapear los productos asociados para enviar a la vista
+        $productosAsociados = $venta->productosAlmacen->map(function ($productoAlmacen) {
+            return [
+                'id'           => $productoAlmacen->producto_id,
+                'nombre'       => $productoAlmacen->producto->nombre,
+                'cantidad'     => $productoAlmacen->pivot->cantidad,
+                'precio_venta' => $productoAlmacen->pivot->precio_venta,
+                'subtotal'     => $productoAlmacen->pivot->cantidad * $productoAlmacen->pivot->precio_venta,
+                // Si en tu modelo de ventas también manejas almacenes, puedes incluirlos:
+                // 'almacenNombre' => $productoAlmacen->almacen->nombre,
+                // 'almacenId'     => $productoAlmacen->almacen->id,
+            ];
+        });
+
+        return view('dashboard.ventas.show', compact('venta', 'productosAsociados'));
     }
+
 
     public function edit(string $id)
     {
