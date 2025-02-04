@@ -7,10 +7,6 @@
           <div class="form-group px-4 pt-2">
             <i class="fas fa-edit fa-2x"></i>
             <h3 class="fs-1 d-inline-block ml-1">Detalles de la compra</h3>
-            <a href="{{ route('compras.index') }}" class="btn btn-primary waves-effect waves-light float-right">
-              <i class="fas fa-arrow-left"></i>&nbsp;
-              Volver
-            </a>
           </div>
 
           <div class="row px-4">
@@ -76,6 +72,10 @@
                   </tr>
                 </tbody>
               </table>
+              <a href="{{ route('compras.index') }}" class="btn btn-primary waves-effect waves-light float-right">
+                <i class="fas fa-arrow-left"></i>&nbsp;
+                Volver
+              </a>
               <a href="{{ route('compras.imprimir', $compra->id) }}" target="_blank" class="btn btn-secondary no-print">
                 <i class="fas fa-print"></i> Imprimir Factura
               </a>

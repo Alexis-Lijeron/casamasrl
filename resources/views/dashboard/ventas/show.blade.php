@@ -8,9 +8,6 @@
                     <div class="form-group px-4 pt-2">
                         <i class="fas fa-eye fa-2x"></i>
                         <h3 class="fs-1 d-inline-block ml-1">Detalles de la venta</h3>
-                        <a href="{{ route('ventas.index') }}" class="btn btn-primary waves-effect waves-light float-right">
-                            <i class="fas fa-arrow-left"></i>&nbsp;Volver
-                        </a>
                     </div>
 
                     <!-- Datos principales de la venta -->
@@ -80,6 +77,9 @@
                             </table>
                         </div>
                     </div>
+                    <a href="{{ route('ventas.index') }}" class="btn btn-primary waves-effect waves-light float-right">
+                        <i class="fas fa-arrow-left"></i>&nbsp;Volver
+                    </a>
                     <a href="{{ route('ventas.imprimir', $venta->id) }}" target="_blank" class="btn btn-secondary no-print">
                         <i class="fas fa-print"></i> Imprimir Factura
                     </a>
