@@ -176,6 +176,7 @@ Route::middleware(['auth'])->group(function () {
             Route::post('/compras/delete/{id}', 'destroy')->name('compras.delete');
             Route::get('/compras/obtenerProductosPorAlmacen/{almacen_id}', 'obtenerProductosPorAlmacen')->name('compras.obtenerProductosPorAlmacen');
             Route::post('/compras/confirmarCompra/{id}', 'confirmarCompra')->name('compras.confirmarCompra');
+            Route::get('compras/{id}/imprimir', [CompraController::class, 'imprimir'])->name('compras.imprimir');
         });
     });
 
@@ -198,6 +199,7 @@ Route::middleware(['auth'])->group(function () {
             Route::post('/ventas', 'store')->middleware('permission:ventas.crear')->name('ventas.store');
             Route::put('/ventas/update/{id}', 'update')->name('ventas.update');
             Route::post('/ventas/delete/{id}', 'destroy')->name('ventas.delete');
+            Route::get('ventas/{id}/imprimir', [VentaController::class, 'imprimir'])->name('ventas.imprimir');
         });
     });
 

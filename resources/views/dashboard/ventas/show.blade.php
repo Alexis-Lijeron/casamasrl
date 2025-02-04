@@ -80,6 +80,9 @@
                             </table>
                         </div>
                     </div>
+                    <a href="{{ route('ventas.imprimir', $venta->id) }}" target="_blank" class="btn btn-secondary no-print">
+                        <i class="fas fa-print"></i> Imprimir Factura
+                    </a>
 
                 </div>
             </div>

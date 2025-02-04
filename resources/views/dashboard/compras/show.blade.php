@@ -76,6 +76,10 @@
                   </tr>
                 </tbody>
               </table>
+              <a href="{{ route('compras.imprimir', $compra->id) }}" target="_blank" class="btn btn-secondary no-print">
+                <i class="fas fa-print"></i> Imprimir Factura
+              </a>
+
             </div>
 
           </div>

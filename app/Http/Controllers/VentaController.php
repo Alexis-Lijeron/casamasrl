@@ -331,4 +331,25 @@ class VentaController extends Controller
         session()->flash('eliminado', 'Venta eliminada correctamente');
         return redirect()->route('ventas.index');
     }
+    public function imprimir($id)
+    {
+        $venta = NotaVenta::with(['cliente', 'usuario', 'productosAlmacen.producto'])->find($id);
+
+        if (!$venta) {
+            session()->flash('error', 'La venta no existe');
+            return redirect()->route('ventas.index');
+        }
+
+        $productosAsociados = $venta->productosAlmacen->map(function ($productoAlmacen) {
+            return [
+                'id'           => $productoAlmacen->producto_id,
+                'nombre'       => $productoAlmacen->producto->nombre,
+                'cantidad'     => $productoAlmacen->pivot->cantidad,
+                'precio_venta' => $productoAlmacen->pivot->precio_venta,
+                'subtotal'     => $productoAlmacen->pivot->cantidad * $productoAlmacen->pivot->precio_venta,
+            ];
+        });
+
+        return view('dashboard.ventas.imprimir', compact('venta', 'productosAsociados'));
+    }
 }

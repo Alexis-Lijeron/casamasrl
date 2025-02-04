@@ -114,7 +114,7 @@ class CompraController extends Controller
                 'almacenId' => $productoAlmacen->almacen->id,
             ];
         });
-        
+
         // dd($productosAsociados);
         return view('dashboard.compras.show', compact('productosAsociados', 'compra'));
     }
@@ -176,7 +176,7 @@ class CompraController extends Controller
             //     'monto' => $request->total,
             //     'fecha_pago' => now(),
             // ]);
-            
+
             // Eliminar los productos anteriores de la relación de la compra 
             $compra->productosAlmacen()->detach();
 
@@ -237,13 +237,13 @@ class CompraController extends Controller
                 'descripcion' => 'Compra de productos',
                 'usuario_id' => getUsuario()->id,
             ]);
-            
+
             foreach ($productos as $producto) {
                 // Guardar los productos en la tabla de detalle_ajustes
                 $ajusteInventario->productosAlmacen()->attach($producto->id, [
                     'cantidad' => $producto->pivot->cantidad,
                 ]);
-                
+
                 // Actualizar el stock en la tabla producto_almacen
                 $producto->update([
                     'stock' => $producto->stock + $producto->pivot->cantidad,
@@ -273,5 +273,29 @@ class CompraController extends Controller
 
         $compra->delete();
         return redirect()->route('compras.index')->with('eliminado', 'Compra eliminada correctamente');
+    }
+    public function imprimir($id)
+    {
+        $compra = NotaCompra::with('productosAlmacen')->find($id);
+
+        if (!$compra) {
+            session()->flash('error', 'La compra no existe');
+            return redirect()->route('compras.index');
+        }
+
+        $productosAsociados = $compra->productosAlmacen->map(function ($productoAlmacen) {
+            return [
+                'id'              => $productoAlmacen->producto_id,
+                'nombre'          => $productoAlmacen->producto->nombre,
+                'cantidad'        => $productoAlmacen->pivot->cantidad,
+                'precio_compra'   => $productoAlmacen->pivot->precio_compra,
+                'subtotal'        => $productoAlmacen->pivot->cantidad * $productoAlmacen->pivot->precio_compra,
+                'productoAlmacenId' => $productoAlmacen->id,
+                'almacenNombre'   => $productoAlmacen->almacen->nombre,
+                'almacenId'       => $productoAlmacen->almacen->id,
+            ];
+        });
+
+        return view('dashboard.compras.imprimir', compact('compra', 'productosAsociados'));
     }
 }
