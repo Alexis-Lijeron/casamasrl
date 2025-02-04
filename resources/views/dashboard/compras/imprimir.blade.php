@@ -5,49 +5,111 @@
     <meta charset="UTF-8">
     <title>Factura de Compra - #{{ $compra->id }}</title>
     <style>
-        /* Estilos generales para la impresión */
+        /* Estilos Generales */
         body {
             font-family: Arial, sans-serif;
             font-size: 12px;
             margin: 20px;
+            background-color: #fff;
+            color: #333;
         }
 
-        .header,
-        .footer {
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            border: 1px solid #ccc;
+            padding: 20px;
+        }
+
+        header,
+        footer {
             text-align: center;
-        }
-
-        .invoice-info,
-        .provider-info,
-        .totales {
-            width: 100%;
             margin-bottom: 20px;
         }
 
-        .invoice-info td,
-        .provider-info td,
-        .totales td {
-            padding: 5px;
+        header h1 {
+            margin: 0;
+            font-size: 24px;
+            color: #444;
         }
 
-        .productos {
+        header p,
+        footer p {
+            margin: 5px 0;
+        }
+
+        hr {
+            border: 0;
+            border-top: 1px solid #ccc;
+            margin: 20px 0;
+        }
+
+        /* Sección no imprimible para datos adicionales */
+        .no-print {
+            background-color: #f9f9f9;
+            padding: 15px;
+            border: 1px solid #ddd;
+            margin-bottom: 20px;
+        }
+
+        .no-print h2 {
+            margin-top: 0;
+        }
+
+        .form-group {
+            margin-bottom: 10px;
+        }
+
+        .form-group label {
+            font-weight: bold;
+            display: inline-block;
+            width: 180px;
+        }
+
+        .form-group input {
+            padding: 5px;
+            border: 1px solid #ccc;
+            border-radius: 3px;
+            width: 300px;
+        }
+
+        button {
+            padding: 6px 12px;
+            margin-right: 10px;
+            background-color: #007bff;
+            border: none;
+            border-radius: 3px;
+            color: #fff;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        /* Tablas */
+        table {
             width: 100%;
             border-collapse: collapse;
             margin-bottom: 20px;
         }
 
-        .productos th,
-        .productos td {
-            border: 1px solid #000;
-            padding: 5px;
-            text-align: center;
+        table th,
+        table td {
+            padding: 10px;
+            border: 1px solid #ccc;
+            text-align: left;
         }
 
-        /* La sección no-print se mostrará en pantalla pero se ocultará al imprimir */
-        .no-print {
-            display: block;
+        table th {
+            background-color: #f2f2f2;
         }
 
+        .text-right {
+            text-align: right;
+        }
+
+        /* Ocultar elementos no deseados en impresión */
         @media print {
             .no-print {
                 display: none;
@@ -55,7 +117,7 @@
         }
     </style>
     <script>
-        // Función para actualizar dinámicamente los datos de dirección e identificación del proveedor en la factura
+        // Actualiza los campos de dirección e identificación en la factura
         function updateInvoiceProvider() {
             var direccion = document.getElementById('input-direccion').value;
             var identificacion = document.getElementById('input-identificacion').value;
@@ -66,104 +128,105 @@
 </head>
 
 <body>
-    <!-- Sección para ingresar datos adicionales (no se imprimirá) -->
-    <div class="no-print">
-        <h2>Datos adicionales para la factura</h2>
-        <div>
-            <label for="input-direccion"><strong>Dirección del Proveedor:</strong></label>
-            <input type="text" id="input-direccion" value="{{ $compra->proveedor?->direccion ?? '' }}">
+    <div class="container">
+        <!-- Datos adicionales (no se imprimen) -->
+        <div class="no-print">
+            <h2>Datos adicionales para la factura</h2>
+            <div class="form-group">
+                <label for="input-direccion">Dirección del Proveedor:</label>
+                <input type="text" id="input-direccion" value="{{ $compra->proveedor?->direccion ?? '' }}">
+            </div>
+            <div class="form-group">
+                <label for="input-identificacion">Identificación del Proveedor:</label>
+                <input type="text" id="input-identificacion" value="{{ $compra->proveedor?->identificacion ?? '' }}">
+            </div>
+            <div>
+                <button onclick="updateInvoiceProvider()">Actualizar Datos</button>
+                <button onclick="window.print()">Imprimir Factura</button>
+            </div>
+            <hr>
         </div>
-        <div>
-            <label for="input-identificacion"><strong>Identificación del Proveedor:</strong></label>
-            <input type="text" id="input-identificacion" value="{{ $compra->proveedor?->identificacion ?? '' }}">
-        </div>
-        <div style="margin-top: 10px;">
-            <button onclick="updateInvoiceProvider()">Actualizar Datos</button>
-            <button onclick="window.print()">Imprimir Factura</button>
-        </div>
-        <hr>
-    </div>
 
-    <!-- Encabezado de la Empresa -->
-    <div class="header">
-        <h1>LACTEOS CASAMASRL</h1>
-        <p>Dirección: Avenida Italia , entre Av.Cumavi y Libertador</p>
-        <p>Teléfono: (+591) 76607405 | NIT: 13431977</p>
-        <hr>
-    </div>
+        <!-- Encabezado de la Empresa -->
+        <header>
+            <h1>LACTEOS CASAMASRL</h1>
+            <p>Dirección: Avenida Italia, entre Av. Cumavi y Libertador</p>
+            <p>Teléfono: (+591) 76607405 | NIT: 13431977</p>
+            <hr>
+        </header>
 
-    <!-- Información de la Factura -->
-    <table class="invoice-info">
-        <tr>
-            <td><strong>N° de Factura:</strong> {{ $compra->id }}</td>
-            <td><strong>Fecha de Compra:</strong> {{ formatearFecha($compra->fecha_compra) }}</td>
-        </tr>
-        <tr>
-            <td colspan="2">
-                <strong>Registrado por:</strong> {{ $compra->usuario->nombre }} {{ $compra->usuario->apellido }}
-            </td>
-        </tr>
-    </table>
-
-    <!-- Información del Proveedor -->
-    <table class="provider-info">
-        <tr>
-            <td>
-                <strong>Proveedor:</strong> {{ $compra->proveedor->nombre_empresa }}<br>
-                <strong>Encargado:</strong> {{ $compra->proveedor->nombre_encargado }}
-            </td>
-            <td>
-                <strong>Dirección:</strong>
-                <span id="invoice-direccion">{{ $compra->proveedor?->direccion ?? 'N/A' }}</span>
-            </td>
-        </tr>
-        <tr>
-            <td colspan="2">
-                <strong>Identificación:</strong>
-                <span id="invoice-identificacion">{{ $compra->proveedor?->identificacion ?? 'N/A' }}</span>
-            </td>
-        </tr>
-    </table>
-
-    <!-- Detalle de Productos Comprados -->
-    <h2 style="text-align: center;">Detalle de Productos</h2>
-    <table class="productos">
-        <thead>
+        <!-- Información de la Factura -->
+        <table>
             <tr>
-                <th>Producto</th>
-                <th>Almacén</th>
-                <th>Cantidad</th>
-                <th>Precio Unitario</th>
-                <th>Subtotal</th>
+                <td><strong>N° de Factura:</strong> {{ $compra->id }}</td>
+                <td><strong>Fecha de Compra:</strong> {{ formatearFecha($compra->fecha_compra) }}</td>
             </tr>
-        </thead>
-        <tbody>
-            @foreach($productosAsociados as $producto)
             <tr>
-                <td>{{ $producto['nombre'] }}</td>
-                <td>{{ $producto['almacenNombre'] }}</td>
-                <td>{{ $producto['cantidad'] }}</td>
-                <td>Bs. {{ number_format($producto['precio_compra'], 2, ',', '.') }}</td>
-                <td>Bs. {{ number_format($producto['subtotal'], 2, ',', '.') }}</td>
+                <td colspan="2">
+                    <strong>Registrado por:</strong> {{ $compra->usuario->nombre }} {{ $compra->usuario->apellido }}
+                </td>
             </tr>
-            @endforeach
-        </tbody>
-    </table>
+        </table>
 
-    <!-- Totales de la Factura -->
-    <table class="totales">
-        <tr>
-            <td style="text-align: right;"><strong>Total:</strong></td>
-            <td style="text-align: center;">Bs. {{ number_format($compra->monto_total, 2, ',', '.') }}</td>
-        </tr>
-        <!-- Aquí puedes agregar otros totales, como impuestos o descuentos, si es necesario -->
-    </table>
+        <!-- Información del Proveedor -->
+        <table>
+            <tr>
+                <td>
+                    <strong>Proveedor:</strong> {{ $compra->proveedor->nombre_empresa }}<br>
+                    <strong>Encargado:</strong> {{ $compra->proveedor->nombre_encargado }}
+                </td>
+                <td>
+                    <strong>Dirección:</strong>
+                    <span id="invoice-direccion">{{ $compra->proveedor?->direccion ?? 'N/A' }}</span>
+                </td>
+            </tr>
+            <tr>
+                <td colspan="2">
+                    <strong>Identificación:</strong>
+                    <span id="invoice-identificacion">{{ $compra->proveedor?->identificacion ?? 'N/A' }}</span>
+                </td>
+            </tr>
+        </table>
 
-    <!-- Pie de Página -->
-    <div class="footer">
-        <hr>
-        <p>¡Gracias por su compra!</p>
-        <p>Factura generada por el sistema el {{ now()->format('d/m/Y H:i') }}</p>
+        <!-- Detalle de Productos Comprados -->
+        <h2 style="text-align: center;">Detalle de Productos</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Producto</th>
+                    <th>Almacén</th>
+                    <th>Cantidad</th>
+                    <th class="text-right">Precio Unitario</th>
+                    <th class="text-right">Subtotal</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach($productosAsociados as $producto)
+                <tr>
+                    <td>{{ $producto['nombre'] }}</td>
+                    <td>{{ $producto['almacenNombre'] }}</td>
+                    <td>{{ $producto['cantidad'] }}</td>
+                    <td class="text-right">Bs. {{ number_format($producto['precio_compra'], 2, ',', '.') }}</td>
+                    <td class="text-right">Bs. {{ number_format($producto['subtotal'], 2, ',', '.') }}</td>
+                </tr>
+                @endforeach
+            </tbody>
+        </table>
+
+        <!-- Totales de la Factura -->
+        <table>
+            <tr>
+                <td class="text-right"><strong>Total:</strong></td>
+                <td class="text-right">Bs. {{ number_format($compra->monto_total, 2, ',', '.') }}</td>
+            </tr>
+        </table>
+
+        <!-- Pie de Página -->
+        <footer>
+            <hr>
+            <p>¡Gracias por su compra!</p>
+            <p>Factura generada por el sistema el {{ now()->format('d/m/Y H:i') }}</p>
+        </footer>
     </div>
 </body>
 
