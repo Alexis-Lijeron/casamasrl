@@ -129,7 +129,14 @@
                             table { width: 100%; border-collapse: collapse; margin-top: 20px; }
                             th, td { border: 1px solid #ddd; text-align: center; padding: 8px; }
                             th { background-color: #f4f4f4; }
-                            .badge { padding: 5px 10px; border-radius: 5px; color: white; }
+                            .badge { padding: 5px 10px; border-radius: 5px; color: white; font-weight: bold; }
+                            @media print {
+                                body { -webkit-print-color-adjust: exact; }
+                                .badge { color: white; }
+                            }
+                            .badge.vencido { background-color: #f46a6a; } /* Rojo */
+                            .badge.proximo { background-color: #f4a261; } /* Amarillo */
+                            .badge.valido { background-color: #2a9d8f; } /* Verde */
                         </style>
                     </head>
                     <body>
