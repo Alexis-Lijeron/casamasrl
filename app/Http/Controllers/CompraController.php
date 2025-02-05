@@ -247,7 +247,6 @@ class CompraController extends Controller
                 // Actualizar el stock en la tabla producto_almacen
                 $producto->update([
                     'stock' => $producto->stock + $producto->pivot->cantidad,
-                    'fecha_vencimiento' => now()->addMonths(6),
                 ]);
             }
 
