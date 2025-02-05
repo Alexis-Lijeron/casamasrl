@@ -11,6 +11,8 @@ use App\Models\DetalleCompra;
 use App\Models\Marca;
 use App\Models\NotaCompra;
 use Illuminate\Support\Facades\DB;
+use App\Models\ProductoAlmacen;
+use Illuminate\Http\Request;
 
 class AlmacenController extends Controller
 {
@@ -174,4 +176,21 @@ class AlmacenController extends Controller
 
     //     return response()->json($stock, 200);
     // }
+    public function vencimientos(Request $request)
+    {
+        $query = ProductoAlmacen::query();
+
+        // Filtros según el tipo seleccionado
+        if ($request->filter_type == 'vencidos') {
+            $query->where('fecha_vencimiento', '<', now());
+        } elseif ($request->filter_type == 'proximos') {
+            $query->whereBetween('fecha_vencimiento', [now(), now()->addMonth()]);
+        } elseif ($request->filter_type == 'rango' && $request->start_date && $request->end_date) {
+            $query->whereBetween('fecha_vencimiento', [$request->start_date, $request->end_date]);
+        }
+
+        $productos = $query->with('producto', 'almacen')->get();
+
+        return view('dashboard.almacenes.vencimientos', compact('productos'));
+    }
 }

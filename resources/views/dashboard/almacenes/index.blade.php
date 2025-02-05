@@ -14,6 +14,12 @@
                         </a>
                         @endif
                     </div>
+                    <div class="form-group">
+                        <a href="{{ route('almacenes.vencimientos') }}" class="btn btn-info waves-effect waves-light">
+                            <i class="fas fa-calendar-alt"></i>&nbsp;
+                            Gestionar Productos por Vencimiento
+                        </a>
+                    </div>
                 </div>
 
                 <div class="card-box">

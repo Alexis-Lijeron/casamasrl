@@ -127,6 +127,7 @@ Route::middleware(['auth'])->group(function () {
             Route::post('/almacenes', 'store')->middleware('permission:almacenes.crear')->name('almacenes.store');
             Route::post('/almacenes/update/{id}', 'update')->middleware('permission:almacenes.editar')->name('almacenes.update');
             Route::post('/almacenes/delete/{id}', 'destroy')->middleware('permission:almacenes.eliminar')->name('almacenes.delete');
+            Route::get('/almacenes/vencimientos', 'vencimientos')->name('almacenes.vencimientos');
         });
     });
 
