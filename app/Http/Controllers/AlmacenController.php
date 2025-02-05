@@ -44,9 +44,12 @@ class AlmacenController extends Controller
             if ($request['productos']) {
                 $productos = json_decode($request['productos'], true);
                 foreach ($productos as $producto) {
-                    $almacen->productos()->attach($producto['productoId']);
+                    $almacen->productos()->attach($producto['productoId'], [
+                        'fecha_vencimiento' => $producto['fechaVencimiento'],
+                    ]);
                 }
             }
+
 
             DB::commit();
             session()->flash('guardado', '¡Guardado! El almacén ha sido guardado exitosamente.');
@@ -121,16 +124,14 @@ class AlmacenController extends Controller
                 'descripcion' => $request['descripcion'],
             ]);
 
-            // Colocar una fecha de vencimiento para 6 meses después
-            $fechaVencimiento = now()->addMonths(6);
-
-            // Si se han seleccionado productos, se guardan en la tabla almacen_producto
-            if ($request['productos']) {
-                $almacen->productos()->detach();
+            if ($request->filled('productos')) {
                 $productos = json_decode($request['productos'], true);
+
+                $almacen->productos()->detach();
+
                 foreach ($productos as $producto) {
                     $almacen->productos()->attach($producto['productoId'], [
-                        'fecha_vencimiento' => $fechaVencimiento,
+                        'fecha_vencimiento' => $producto['fechaVencimiento'],
                     ]);
                 }
             }

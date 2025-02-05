@@ -8,7 +8,7 @@
 
                     <div class="form-group px-4 pt-2">
                         <i class="fas fa-pencil-alt fa-2x"></i>
-                        <h3 class="fs-1 d-inline-block ml-1">Editar almacen</h3>
+                        <h3 class="fs-1 d-inline-block ml-1">Editar Almacén</h3>
                     </div>
 
                     <form class="px-4 pt-2 pb-2" action="{{ route('almacenes.update', $almacen['id']) }}" method="post">
@@ -18,7 +18,7 @@
                                 <div class="form-group">
                                     <label for="nombre" class="control-label">Nombre</label>
                                     <input type="text" class="form-control" id="nombre" name="nombre"
-                                        placeholder="Introduzca el nombre del almacen" value="{{ old('nombre', $almacen['nombre']) }}">
+                                        placeholder="Introduzca el nombre del almacén" value="{{ old('nombre', $almacen['nombre']) }}">
                                     @error('nombre')
                                     <span class="error text-danger">* {{ $message }}</span>
                                     @enderror
@@ -46,23 +46,23 @@
 
                             <div class="col-md-6 bg-light rounded p-3">
                                 <div class="form-row align-items-end">
-                                    <div class="form-group col-md-9">
+                                    <div class="form-group col-md-6">
                                         <label for="producto_id">Producto</label>
-                                        <select id="producto_id" class="form-control" style="width: 100%;"
-                                            data-toggle="select2">
+                                        <select id="producto_id" class="form-control" style="width: 100%;" data-toggle="select2">
                                             <option value="">Seleccione un producto</option>
                                             @foreach ($productos as $producto)
-                                            <option value="{{ $producto->id }}" data-nombre="{{ $producto->nombre }}"
-                                                data-precio="{{ $producto->precio }}">
+                                            <option value="{{ $producto->id }}" data-nombre="{{ $producto->nombre }}">
                                                 {{ $producto->nombre }}
                                             </option>
                                             @endforeach
                                         </select>
                                     </div>
                                     <div class="form-group col-md-3">
-                                        <button type="button" class="btn btn-success btn-block"
-                                            id="agregar-producto">Agregar
-                                        </button>
+                                        <label>Fecha de Vencimiento</label>
+                                        <input type="date" id="fecha_vencimiento" class="form-control">
+                                    </div>
+                                    <div class="form-group col-md-3">
+                                        <button type="button" class="btn btn-success btn-block" id="agregar-producto">Agregar</button>
                                     </div>
                                 </div>
 
@@ -71,17 +71,17 @@
                                     <div class="form-group col-md-12">
                                         <label class="mb-2">Productos agregados</label>
                                         <table class="table table-bordered">
-                                            <thead class="bg-dark text-white ">
+                                            <thead class="bg-dark text-white">
                                                 <tr>
                                                     <th class="text-center">Producto</th>
+                                                    <th class="text-center">Fecha de Vencimiento</th>
                                                     <th class="text-center">Acciones</th>
                                                 </tr>
                                             </thead>
                                             <tbody class="bg-white" id="productos-table-body">
                                                 <tr id="mensaje-vacio" class="text-center">
-                                                    <td colspan="5">No hay productos agregados.</td>
+                                                    <td colspan="3">No hay productos agregados.</td>
                                                 </tr>
-                                                <!-- Los productos se irán agregando aquí -->
                                             </tbody>
                                         </table>
                                     </div>
@@ -103,42 +103,32 @@
     @push('js')
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            const productos = []; // Array para almacenar productos seleccionados
+            const productos = [];
             const productoSelect = document.getElementById('producto_id');
             const productosTableBody = document.getElementById('productos-table-body');
             const productosInput = document.getElementById('productos-input');
             const mensajeVacio = document.getElementById('mensaje-vacio');
+            const fechaVencimientoInput = document.getElementById('fecha_vencimiento');
 
-            const productosAsociados = @json($almacen -> productos);
+            const productosAsociados = @json($almacen->productos);
 
-            // Cargar los datos en la variable productos
+            // Precargar productos con sus fechas de vencimiento
             productosAsociados.forEach(producto => {
-                const productoId = producto.id;
-                const productoNombre = producto.nombre;
-
-                // Agregar objeto al array productos
                 productos.push({
-                    productoId,
-                    productoNombre
+                    productoId: producto.id,
+                    productoNombre: producto.nombre,
+                    fechaVencimiento: producto.pivot.fecha_vencimiento ? producto.pivot.fecha_vencimiento.split(' ')[0] : ''
                 });
             });
-
-            // Renderizar la tabla con los productos actuales
             renderTable();
 
-            // Manejo de cambios en el select
-            productoSelect.addEventListener('change', function() {
-                const selectedValue = this.value;
-                const selectedOption = this.options[this.selectedIndex];
-            });
-
-            // Agregar producto al array y mostrar en la tabla
             document.getElementById('agregar-producto').addEventListener('click', function() {
                 const productoId = productoSelect.value;
                 const productoNombre = productoSelect.options[productoSelect.selectedIndex]?.text;
+                const fechaVencimiento = fechaVencimientoInput.value;
 
-                if (!productoId) {
-                    mostrarAlerta('Oops!', 'Seleccione un producto.', 'info');
+                if (!productoId || !fechaVencimiento) {
+                    mostrarAlerta('Oops!', 'Seleccione un producto y una fecha de vencimiento.', 'info');
                     return;
                 }
 
@@ -147,32 +137,32 @@
                     return;
                 }
 
-                // Agregar al array de productos
                 productos.push({
                     productoId,
-                    productoNombre
+                    productoNombre,
+                    fechaVencimiento
                 });
 
-                // Actualizar tabla
                 renderTable();
-
-                // Limpiar los campos
                 productoSelect.value = '';
+                fechaVencimientoInput.value = '';
             });
 
-            // Renderizar la tabla con los productos actuales
             function renderTable() {
                 productosTableBody.innerHTML = '';
                 productos.forEach((producto, index) => {
                     const row = document.createElement('tr');
                     row.innerHTML = `
-                    <td class="align-middle text-center">${producto.productoNombre}</td>
-                    <td class="align-middle text-center">
-                        <button type="button" class="btn btn-danger btn-sm" data-index="${index}">
-                            <i class="fas fa-trash-alt"></i>
-                        </button>
-                    </td>
-                `;
+                <td class="align-middle text-center">${producto.productoNombre}</td>
+                <td class="align-middle text-center">
+                    <input type="date" class="form-control fecha-vencimiento" data-index="${index}" value="${producto.fechaVencimiento}">
+                </td>
+                <td class="align-middle text-center">
+                    <button type="button" class="btn btn-danger btn-sm" data-index="${index}">
+                        <i class="fas fa-trash-alt"></i>
+                    </button>
+                </td>
+            `;
                     productosTableBody.appendChild(row);
                 });
 
@@ -180,20 +170,22 @@
                     productosTableBody.appendChild(mensajeVacio);
                 }
 
-                // Actualizar el input oculto para enviar los datos al backend
                 productosInput.value = JSON.stringify(productos);
 
-                // Asignar eventos a los botones de eliminar
-                const deleteButtons = productosTableBody.querySelectorAll('.btn-danger');
-                deleteButtons.forEach(button => {
+                document.querySelectorAll('.btn-danger').forEach(button => {
                     button.addEventListener('click', function() {
-                        const index = this.dataset.index;
-                        eliminarProducto(index);
+                        eliminarProducto(this.dataset.index);
+                    });
+                });
+
+                document.querySelectorAll('.fecha-vencimiento').forEach(input => {
+                    input.addEventListener('change', function() {
+                        productos[this.dataset.index].fechaVencimiento = this.value;
+                        productosInput.value = JSON.stringify(productos);
                     });
                 });
             }
 
-            // Función para eliminar un producto
             function eliminarProducto(index) {
                 productos.splice(index, 1);
                 renderTable();

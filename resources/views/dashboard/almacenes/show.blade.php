@@ -29,6 +29,7 @@
                                     <tr>
                                         <th>Producto</th>
                                         <th>Stock Disponible</th>
+                                        <th>Fecha de Vencimiento</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -46,16 +47,51 @@
                                                 {{ obtenerStockDisponibleAlmacen($producto->id, $almacen->id) }}
                                             </span>
                                         </td>
+                                        <td>
+                                            @php
+                                            $fechaVencimiento = $producto->pivot->fecha_vencimiento;
+                                            $fechaFormateada = $fechaVencimiento ? date('d/m/Y', strtotime($fechaVencimiento)) : '-- Sin fecha --';
+
+                                            // Evaluar estados
+                                            $estadoFecha = '';
+                                            if ($fechaVencimiento) {
+                                            $fechaTimestamp = strtotime($fechaVencimiento);
+                                            $hoyTimestamp = strtotime(now());
+                                            $unMesDespuesTimestamp = strtotime('+1 month');
+
+                                            if ($fechaTimestamp < $hoyTimestamp) {
+                                                $estadoFecha='vencido' ; // Producto vencido
+                                                } elseif ($fechaTimestamp <=$unMesDespuesTimestamp) {
+                                                $estadoFecha='proximo' ; // Próximo a vencer
+                                                } else {
+                                                $estadoFecha='valido' ; // Fecha válida
+                                                }
+                                                }
+                                                @endphp
+
+                                                <span class="badge"
+                                                @if($estadoFecha==='vencido' )
+                                                style="background-color: #f46a6a" {{-- Rojo: Vencido --}}
+                                                @elseif($estadoFecha==='proximo' )
+                                                style="background-color: #f4a261" {{-- Amarillo: Próximo a vencer --}}
+                                                @else
+                                                style="background-color: #2a9d8f" {{-- Verde: Fecha válida --}}
+                                                @endif>
+                                                {{ $fechaFormateada }}
+                                                </span>
+                                        </td>
+
                                     </tr>
                                     @empty
                                     <tr>
-                                        <td colspan="2" class="text-center">No hay productos en este almacén.</td>
+                                        <td colspan="3" class="text-center">No hay productos en este almacén.</td>
                                     </tr>
                                     @endforelse
                                 </tbody>
                             </table>
                         </div>
                     </div>
+
                     <div class="col-md-6 text-right">
                         <a href="{{ route('almacenes.index') }}" class="btn btn-secondary">
                             <i class="fas fa-arrow-left"></i> Volver
@@ -66,6 +102,7 @@
                         </a>
                         @endif
                     </div>
+
                 </div>
             </div>
         </div>
