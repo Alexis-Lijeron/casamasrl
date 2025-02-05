@@ -6,6 +6,10 @@ use App\Models\Almacen;
 use App\Http\Requests\StoreAlmacenRequest;
 use App\Http\Requests\UpdateAlmacenRequest;
 use App\Models\Producto;
+use App\Models\Categoria;
+use App\Models\DetalleCompra;
+use App\Models\Marca;
+use App\Models\NotaCompra;
 use Illuminate\Support\Facades\DB;
 
 class AlmacenController extends Controller
@@ -54,10 +58,39 @@ class AlmacenController extends Controller
         }
     }
 
-    public function show(Almacen $almacen)
+    public function show(string $id)
     {
-        //
+        $almacen = Almacen::find($id);
+
+        if (!$almacen) {
+            session()->flash('error', 'Almacén no encontrado.');
+            return redirect()->back();
+        }
+
+        $productos = $almacen->productos->map(function ($producto) {
+
+            $compra = DetalleCompra::where('producto_almacen_id', $producto->pivot->id)->first();
+
+            return [
+                'id' => $producto->id,
+                'nombre' => $producto->nombre,
+                'descripcion' => $producto->descripcion,
+                'categoria' => $producto->categoria->nombre,
+                'marca' => $producto->marca->nombre,
+                'precio_venta' => $producto->precio_venta,
+                'precio_compra' => $compra ? $compra->precio_compra : 0,
+                'imagen' => $producto->url_imagen,
+                'stock' => $producto->pivot->stock,
+                'fecha_vencimiento' => $producto->pivot->fecha_vencimiento,
+            ];
+        });
+
+        $categorias = Categoria::all();
+        $marcas = Marca::all();
+
+        return view('dashboard.almacenes.show', compact('almacen', 'productos', 'categorias', 'marcas'));
     }
+
 
     public function edit(string $id)
     {

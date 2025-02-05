@@ -24,7 +24,7 @@ class Producto extends Model
     public function almacenes()
     {
         return $this->belongsToMany(Almacen::class, 'producto_almacen', 'producto_id', 'almacen_id')
-            ->withPivot('stock', 'fecha_vencimiento')
+            ->withPivot('id', 'stock', 'fecha_vencimiento')
             ->withTimestamps();
     }
 
@@ -41,23 +41,22 @@ class Producto extends Model
     }
 
     public function promociones()
-{
-    return $this->belongsToMany(Promocion::class, 'producto_promocion')
-                ->withPivot('precio_con_descuento')
-                ->withTimestamps();
-}
+    {
+        return $this->belongsToMany(Promocion::class, 'producto_promocion')
+            ->withPivot('precio_con_descuento')
+            ->withTimestamps();
+    }
 
-public function getPrecioActualAttribute()
-{
-    $promocionActiva = $this->promociones()
-        ->where('fecha_inicio', '<=', now())
-        ->where('fecha_fin', '>=', now())
-        ->where('estado', 'activo')
-        ->first();
+    public function getPrecioActualAttribute()
+    {
+        $promocionActiva = $this->promociones()
+            ->where('fecha_inicio', '<=', now())
+            ->where('fecha_fin', '>=', now())
+            ->where('estado', 'activo')
+            ->first();
 
-    return $promocionActiva
-        ? $promocionActiva->pivot->precio_con_descuento
-        : $this->precio_venta;
-}
-
+        return $promocionActiva
+            ? $promocionActiva->pivot->precio_con_descuento
+            : $this->precio_venta;
+    }
 }

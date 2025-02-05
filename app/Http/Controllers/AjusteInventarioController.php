@@ -210,4 +210,48 @@ class AjusteInventarioController extends Controller
             return back()->withInput()->with('error', $e->getMessage());
         }
     }
+    public function destroy(string $id)
+    {
+        $ajuste = AjusteInventario::find($id);
+
+        if (!$ajuste) {
+            session()->flash('error', 'Ajuste de inventario no encontrado.');
+            return redirect()->back();
+        }
+
+        DB::beginTransaction();
+        try {
+            // Eliminar los detalles del ajuste
+            foreach ($ajuste->productosAlmacen as $detalle) {
+                $productoAlmacen = ProductoAlmacen::find($detalle->id);
+                if ($productoAlmacen) {
+                    // Revertir el stock al estado anterior
+                    $nuevoStock = $productoAlmacen->stock - $detalle->pivot->cantidad;
+
+                    // Validar que el stock no sea negativo
+                    if ($nuevoStock < 0) {
+                        throw new \Exception(
+                            "El stock no puede ser negativo después de revertir el ajuste para el producto '{$productoAlmacen->producto->nombre}' en el almacén '{$productoAlmacen->almacen->nombre}'."
+                        );
+                    }
+
+                    // Actualizar el stock
+                    $productoAlmacen->update([
+                        'stock' => $nuevoStock,
+                    ]);
+                }
+            }
+
+            // Eliminar el ajuste de inventario
+            $ajuste->delete();
+
+            DB::commit();
+            session()->flash('eliminado', 'Ajuste de inventario eliminado correctamente.');
+            return redirect()->route('ajustes.index');
+        } catch (\Exception $e) {
+            DB::rollBack();
+            session()->flash('error', $e->getMessage());
+            return redirect()->back();
+        }
+    }
 }

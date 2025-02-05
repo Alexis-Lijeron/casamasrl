@@ -51,6 +51,10 @@
                                     </td>
                                     <td class="align-middle text-nowrap" style="width: 150px;">
                                         <div class="d-flex justify-content-center">
+                                            <a href="{{ route('almacenes.show', $almacen['id']) }}" title="Ver detalles"
+                                                class="btn btn-sm btn-warning mx-1">
+                                                <i class="fas fa-eye"></i>
+                                            </a>
                                             @if(auth()->user()->hasPermission('almacenes.editar'))
                                             <a href="{{ route('almacenes.edit', $almacen['id']) }}" title="Editar"
                                                 class="btn btn-sm btn-primary mr-1"><i class="fas fa-edit"></i></a>
